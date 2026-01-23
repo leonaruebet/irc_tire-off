@@ -244,6 +244,115 @@
         "delete_error": "Failed to delete car"
       }
     },
+    "services_page": {
+      "title": "Service Records",
+      "add_record": "Add Record",
+      "search_placeholder": "Search by plate, phone, or branch...",
+      "search": "Search",
+      "table": {
+        "date": "Date",
+        "license_plate": "License Plate",
+        "phone": "Phone",
+        "branch": "Branch",
+        "odometer": "Odometer",
+        "total": "Total",
+        "services": "Services",
+        "actions": "Actions"
+      },
+      "showing": "Showing {from} to {to} of {total}",
+      "page_of": "Page {page} of {total}",
+      "no_records": "No service records found",
+      "delete_dialog": {
+        "title": "Delete Service Record",
+        "description": "Are you sure you want to delete this service record? This action cannot be undone.",
+        "cancel": "Cancel",
+        "delete": "Delete"
+      },
+      "toast": {
+        "deleted": "Service record deleted successfully",
+        "delete_error": "Failed to delete service record"
+      }
+    },
+    "branches_page": {
+      "title": "Branch Management",
+      "add_branch": "Add Branch",
+      "active": "Active",
+      "inactive": "Inactive",
+      "no_branches": "No branches found",
+      "table": {
+        "name": "Name",
+        "code": "Code",
+        "address": "Address",
+        "phone": "Phone",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "dialog": {
+        "add_title": "Add New Branch",
+        "edit_title": "Edit Branch",
+        "name_label": "Branch Name",
+        "name_placeholder": "e.g., Bangkok Main",
+        "code_label": "Branch Code",
+        "code_placeholder": "e.g., BKK01",
+        "address_label": "Address",
+        "address_placeholder": "e.g., 123 Main Street",
+        "phone_label": "Phone",
+        "phone_placeholder": "e.g., 02-123-4567",
+        "cancel": "Cancel",
+        "create": "Create",
+        "update": "Update"
+      },
+      "toast": {
+        "created": "Branch created successfully",
+        "updated": "Branch updated successfully",
+        "error": "Error"
+      }
+    },
+    "import_page": {
+      "title": "Import Service Records",
+      "upload_title": "Upload File",
+      "upload_description": "Upload Excel or CSV file with service records",
+      "drop_here": "Drop file here",
+      "drag_drop": "Drag and drop file here, or click to browse",
+      "supported_files": "Supports .xlsx, .xls, .csv",
+      "records_ready": "{count} records ready to import",
+      "clear": "Clear",
+      "import_records": "Import Records",
+      "table": {
+        "row_num": "#",
+        "license_plate": "License Plate",
+        "phone": "Phone",
+        "branch": "Branch",
+        "date": "Date",
+        "odometer": "Odometer",
+        "tire": "Tire",
+        "oil": "Oil"
+      },
+      "showing_first": "Showing first {count} of {total} records",
+      "results": {
+        "title": "Import Results",
+        "records_imported": "Records Imported",
+        "duplicates_skipped": "Duplicates Skipped",
+        "duplicates_note": "{count} duplicate records were skipped. These records already exist in the system.",
+        "errors": "Errors",
+        "errors_list": "Error Details:"
+      },
+      "toast": {
+        "completed": "Import Completed",
+        "completed_desc": "{success} records imported, {errors} errors",
+        "failed": "Import Failed",
+        "invalid_file": "Invalid File",
+        "invalid_file_desc": "Please upload a valid Excel or CSV file with data",
+        "parsed": "File Parsed Successfully",
+        "parsed_desc": "{count} records found",
+        "parse_error": "Parse Error",
+        "parse_error_desc": "Failed to parse the file. Please check the format."
+      },
+      "columns": {
+        "title": "Supported Column Headers",
+        "description": "Use these Thai column headers in your Excel file"
+      }
+    },
     "add_service": {
       "title": "Add Service Record",
       "description": "Add a new service record for a car",
@@ -311,7 +420,8 @@
         "title": "Tire Rotation/Balance",
         "description": "Record tire rotation/balancing/alignment service",
         "notes": "Notes",
-        "notes_placeholder": "e.g., Tire rotation and balance"
+        "notes_placeholder": "e.g., Tire rotation and balance",
+        "default_notes": "Tire rotation and balance"
       },
       "buttons": {
         "cancel": "Cancel",

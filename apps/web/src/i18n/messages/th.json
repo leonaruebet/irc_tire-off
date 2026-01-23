@@ -245,6 +245,115 @@
         "delete_error": "ไม่สามารถลบรถได้"
       }
     },
+    "services_page": {
+      "title": "ประวัติบริการ",
+      "add_record": "เพิ่มประวัติ",
+      "search_placeholder": "ค้นหาทะเบียน, เบอร์โทร, หรือสาขา...",
+      "search": "ค้นหา",
+      "table": {
+        "date": "วันที่",
+        "license_plate": "ทะเบียนรถ",
+        "phone": "เบอร์โทร",
+        "branch": "สาขา",
+        "odometer": "เลขไมล์",
+        "total": "รวม",
+        "services": "บริการ",
+        "actions": "การดำเนินการ"
+      },
+      "showing": "แสดง {from} ถึง {to} จาก {total}",
+      "page_of": "หน้า {page} จาก {total}",
+      "no_records": "ไม่พบประวัติบริการ",
+      "delete_dialog": {
+        "title": "ลบประวัติบริการ",
+        "description": "คุณแน่ใจหรือไม่ว่าต้องการลบประวัติบริการนี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้",
+        "cancel": "ยกเลิก",
+        "delete": "ลบ"
+      },
+      "toast": {
+        "deleted": "ลบประวัติบริการสำเร็จ",
+        "delete_error": "ไม่สามารถลบประวัติบริการได้"
+      }
+    },
+    "branches_page": {
+      "title": "จัดการสาขา",
+      "add_branch": "เพิ่มสาขา",
+      "active": "ใช้งาน",
+      "inactive": "ไม่ใช้งาน",
+      "no_branches": "ไม่พบสาขา",
+      "table": {
+        "name": "ชื่อสาขา",
+        "code": "รหัส",
+        "address": "ที่อยู่",
+        "phone": "เบอร์โทร",
+        "status": "สถานะ",
+        "actions": "การดำเนินการ"
+      },
+      "dialog": {
+        "add_title": "เพิ่มสาขาใหม่",
+        "edit_title": "แก้ไขสาขา",
+        "name_label": "ชื่อสาขา",
+        "name_placeholder": "เช่น สาขาสยาม",
+        "code_label": "รหัสสาขา",
+        "code_placeholder": "เช่น BKK01",
+        "address_label": "ที่อยู่",
+        "address_placeholder": "เช่น 123 ถนนสุขุมวิท",
+        "phone_label": "เบอร์โทรศัพท์",
+        "phone_placeholder": "เช่น 02-123-4567",
+        "cancel": "ยกเลิก",
+        "create": "สร้าง",
+        "update": "อัปเดต"
+      },
+      "toast": {
+        "created": "สร้างสาขาสำเร็จ",
+        "updated": "อัปเดตสาขาสำเร็จ",
+        "error": "เกิดข้อผิดพลาด"
+      }
+    },
+    "import_page": {
+      "title": "นำเข้าประวัติบริการ",
+      "upload_title": "อัปโหลดไฟล์",
+      "upload_description": "อัปโหลดไฟล์ Excel หรือ CSV ที่มีประวัติบริการ",
+      "drop_here": "วางไฟล์ที่นี่",
+      "drag_drop": "ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์",
+      "supported_files": "รองรับไฟล์ .xlsx, .xls, .csv",
+      "records_ready": "พบ {count} รายการพร้อมนำเข้า",
+      "clear": "ล้าง",
+      "import_records": "นำเข้าข้อมูล",
+      "table": {
+        "row_num": "#",
+        "license_plate": "ทะเบียนรถ",
+        "phone": "เบอร์โทร",
+        "branch": "สาขา",
+        "date": "วันที่",
+        "odometer": "เลขไมล์",
+        "tire": "ยาง",
+        "oil": "น้ำมัน"
+      },
+      "showing_first": "แสดง {count} รายการแรกจากทั้งหมด {total} รายการ",
+      "results": {
+        "title": "ผลการนำเข้า",
+        "records_imported": "นำเข้าสำเร็จ",
+        "duplicates_skipped": "ข้ามรายการซ้ำ",
+        "duplicates_note": "ข้าม {count} รายการที่ซ้ำกับที่มีอยู่ในระบบ",
+        "errors": "ข้อผิดพลาด",
+        "errors_list": "รายละเอียดข้อผิดพลาด:"
+      },
+      "toast": {
+        "completed": "นำเข้าข้อมูลสำเร็จ",
+        "completed_desc": "นำเข้า {success} รายการ ผิดพลาด {errors} รายการ",
+        "failed": "นำเข้าข้อมูลไม่สำเร็จ",
+        "invalid_file": "ไฟล์ไม่ถูกต้อง",
+        "invalid_file_desc": "กรุณาอัปโหลดไฟล์ Excel หรือ CSV ที่มีข้อมูล",
+        "parsed": "อ่านไฟล์สำเร็จ",
+        "parsed_desc": "พบ {count} รายการ",
+        "parse_error": "อ่านไฟล์ไม่สำเร็จ",
+        "parse_error_desc": "ไม่สามารถอ่านไฟล์ได้ กรุณาตรวจสอบรูปแบบไฟล์"
+      },
+      "columns": {
+        "title": "หัวคอลัมน์ที่รองรับ",
+        "description": "ใช้หัวคอลัมน์ภาษาไทยเหล่านี้ในไฟล์ Excel ของคุณ"
+      }
+    },
     "add_service": {
       "title": "เพิ่มประวัติบริการ",
       "description": "เพิ่มประวัติบริการใหม่สำหรับรถ",
@@ -312,7 +421,8 @@
         "title": "สลับยาง-ถ่วงล้อ",
         "description": "บันทึกการสลับยาง/ถ่วงล้อ/ตั้งศูนย์ล้อ",
         "notes": "หมายเหตุ",
-        "notes_placeholder": "เช่น สลับยาง-ถ่วงล้อ"
+        "notes_placeholder": "เช่น สลับยาง-ถ่วงล้อ",
+        "default_notes": "สลับยาง-ถ่วงล้อ"
       },
       "buttons": {
         "cancel": "ยกเลิก",

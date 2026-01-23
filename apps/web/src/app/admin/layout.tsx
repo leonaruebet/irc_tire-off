@@ -105,18 +105,18 @@ export default function AdminLayout({
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed lg:static inset-y-0 left-0 z-50 w-64 bg-card border-r transform transition-transform duration-200 ease-in-out",
+          "fixed lg:static inset-y-0 left-0 z-50 w-52 bg-card border-r transform transition-transform duration-200 ease-in-out",
           sidebar_open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="h-16 flex items-center px-6 border-b">
-            <h1 className="text-xl font-bold">{t("tiretrack_admin")}</h1>
+          <div className="h-14 flex items-center px-4 border-b">
+            <h1 className="text-lg font-bold">{t("tiretrack_admin")}</h1>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-1">
+          <nav className="flex-1 px-2 py-3 space-y-0.5">
             {nav_items.map((item) => {
               const is_active =
                 pathname === item.href ||
@@ -128,13 +128,13 @@ export default function AdminLayout({
                   href={item.href}
                   onClick={() => set_sidebar_open(false)}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                    "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors",
                     is_active
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >
-                  <item.icon className="h-5 w-5" />
+                  <item.icon className="h-4 w-4" />
                   {t(item.label_key)}
                 </Link>
               );
@@ -142,13 +142,13 @@ export default function AdminLayout({
           </nav>
 
           {/* Logout button */}
-          <div className="p-4 border-t">
+          <div className="px-2 py-3 border-t">
             <Button
               variant="ghost"
-              className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive"
+              className="w-full justify-start gap-2 px-3 py-1.5 h-auto text-sm text-muted-foreground hover:text-destructive"
               onClick={handle_logout}
             >
-              <LogOut className="h-5 w-5" />
+              <LogOut className="h-4 w-4" />
               {t("logout")}
             </Button>
           </div>

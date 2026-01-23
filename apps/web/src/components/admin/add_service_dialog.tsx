@@ -278,7 +278,7 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
             {
               from_position: "FL" as const,
               to_position: "RR" as const,
-              notes: tire_switch_notes || "สลับยาง-ถ่วงล้อ",
+              notes: tire_switch_notes || t("tire_switch.default_notes"),
             },
           ]
         : undefined,
