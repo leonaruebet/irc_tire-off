@@ -102,6 +102,23 @@
     "loading": "กำลังโหลด...",
     "tiretrack_admin": "ระบบจัดการ TireTrack",
 
+    "login_page": {
+      "admin_portal": "ระบบจัดการ",
+      "sign_in_subtitle": "เข้าสู่ระบบเพื่อจัดการข้อมูล TireOff",
+      "sign_in": "เข้าสู่ระบบ",
+      "enter_credentials": "กรอกข้อมูลเข้าสู่ระบบผู้ดูแล",
+      "username": "ชื่อผู้ใช้",
+      "username_placeholder": "admin",
+      "username_required": "กรุณากรอกชื่อผู้ใช้",
+      "password": "รหัสผ่าน",
+      "password_placeholder": "••••••••",
+      "password_required": "กรุณากรอกรหัสผ่าน",
+      "login_success": "เข้าสู่ระบบสำเร็จ",
+      "login_failed": "เข้าสู่ระบบล้มเหลว",
+      "customer_portal": "สำหรับลูกค้า?",
+      "login_here": "เข้าสู่ระบบที่นี่"
+    },
+
     "stats": {
       "total_users": "ผู้ใช้ทั้งหมด",
       "total_cars": "รถทั้งหมด",
@@ -212,6 +229,8 @@
       "results": {
         "title": "ผลการนำเข้า",
         "records_imported": "นำเข้าสำเร็จ",
+        "duplicates_skipped": "ข้ามรายการซ้ำ",
+        "duplicates_note": "ตรวจพบ {count} รายการซ้ำและข้ามไป เพื่อป้องกันข้อมูลซ้ำซ้อน",
         "errors": "ข้อผิดพลาด",
         "errors_list": "รายการข้อผิดพลาด:"
       },

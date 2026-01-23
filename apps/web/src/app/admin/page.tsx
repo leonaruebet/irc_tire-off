@@ -73,7 +73,7 @@ export default function AdminDashboardPage() {
               {stats.recent_visits.map((visit) => (
                 <div
                   key={visit.id}
-                  className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 rounded-lg bg-muted/50"
                 >
                   <div>
                     <p className="font-medium">{visit.car_plate}</p>

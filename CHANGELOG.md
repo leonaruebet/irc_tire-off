@@ -4,6 +4,224 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-24 - Excel Data Parity: Admin UI & User Display Enhancements
+
+#### Added
+- **Admin AddServiceDialog - Oil Change Fields**:
+  - `engine_type` dropdown (เบนซิน, ดีเซล, ไฮบริด, ไฟฟ้า)
+  - `oil_type` dropdown (สังเคราะห์แท้, กึ่งสังเคราะห์, ธรรมดา)
+  - `price` input field for oil change cost
+- **Admin AddServiceDialog - Tire Switch Recording**:
+  - Checkbox to enable tire switch/rotation recording
+  - Notes field for service details (e.g., สลับยาง-ถ่วงล้อ)
+  - Stores same data as Excel import (tire_switches table)
+
+#### Changed
+- **TireInfoList (User Display)**: Now shows all Excel fields
+  - Production week: `(สัปดาห์ผลิต: 1225)` appended to brand/model
+  - Price per tire: `ราคาต่อเส้น: 5,200 บาท`
+  - Branch name: `สาขา: ทรัพย์ไพศาลวีลส์ บางแค`
+- **OilChangeHistory (User Display)**: Now shows all Excel fields
+  - Engine type: `เครื่องยนต์: เบนซิน`
+  - Price: `ราคา: 1,800 บาท`
+
+#### i18n Translations Added
+- `admin.add_service.oil.engine_type`, `engine_type_placeholder`
+- `admin.add_service.oil.engine_gasoline`, `engine_diesel`, `engine_hybrid`, `engine_electric`
+- `admin.add_service.oil.type_synthetic`, `type_semi_synthetic`, `type_conventional`
+- `admin.add_service.oil.price`, `price_placeholder`
+- `admin.add_service.tire_switch.*` (title, description, notes, notes_placeholder)
+- `oil.price` for user display
+
+#### Data Flow (Excel Import ↔ UI Form)
+Both methods now store identical data:
+| Field | Excel Column | UI Form | Database |
+|-------|-------------|---------|----------|
+| Engine type | เครื่องยนต์ | Dropdown | OilChange.engine_type |
+| Oil type | ประเภทน้ำมันเครื่อง | Dropdown | OilChange.oil_type |
+| Oil price | ราคาทั้งหมด | Input | OilChange.price |
+| Tire switch | บริการที่เข้ารับ | Checkbox+Notes | TireSwitch |
+| Production week | สัปดาห์ผลิต | Input | TireChange.production_week |
+
+#### Files Modified
+- `apps/web/src/components/admin/add_service_dialog.tsx` - Added oil/tire_switch fields
+- `apps/web/src/components/service/tire_info_list.tsx` - Display production_week, price, branch
+- `apps/web/src/components/service/oil_change_history.tsx` - Display engine_type, price
+- `apps/web/src/i18n/messages/en.json` - Added translations
+- `apps/web/src/i18n/messages/th.json` - Added translations
+
+---
+
+### 2026-01-24 - Admin Cars Management & Service Dialog Car Selection
+
+#### Added
+- **Admin Cars Page** (`/admin/cars`): New page for managing cars in admin portal
+  - Full CRUD operations (create, read, update, delete)
+  - Search by license plate, phone, or owner name with plate normalization
+  - Pagination with 20 items per page
+  - Table view with license plate, owner phone, owner name, car model, service count
+  - Add/Edit dialog with all car fields (plate, phone, owner name, model, year, color, VIN)
+  - Delete confirmation dialog with soft delete
+  - Responsive design from the start
+  - Full i18n support (Thai/English)
+
+- **AddServiceDialog Car Selection**: Admin can now select existing cars when adding service records
+  - Toggle between "Select Existing" and "Enter New" modes
+  - Car search with Command/Popover components
+  - Search by plate, phone, or owner name (minimum 2 characters)
+  - Selected car display with plate, phone, owner name, and model
+  - Clear selection button to start fresh
+  - Form auto-fills when car is selected
+
+- **Admin Car API Endpoints** in `packages/api/src/routers/admin.ts`:
+  - `admin.list_cars`: Paginated list with search support
+  - `admin.get_car`: Get single car by ID
+  - `admin.create_car`: Create new car (or restore if soft-deleted)
+  - `admin.update_car`: Update car details
+  - `admin.delete_car`: Soft delete car
+  - `admin.search_cars`: Simplified search for dropdown selection
+
+- **i18n Translations**: Added comprehensive translations for both features
+  - `admin.cars`: Navigation label
+  - `admin.cars_page.*`: All cars page translations
+  - `admin.add_service.form.*`: Car selection translations
+  - Thai and English support
+
+#### Changed
+- **Admin Layout**: Added "Cars" navigation item with Car icon
+- **AddServiceDialog**: Rewrote to support car selection workflow
+  - Car must be selected or entered before submitting
+  - Submit button disabled until car is selected in "Select Existing" mode
+
+#### Files Modified
+- `apps/web/src/app/admin/layout.tsx` - Added cars nav item
+- `apps/web/src/app/admin/cars/page.tsx` - New admin cars page
+- `apps/web/src/components/admin/add_service_dialog.tsx` - Car selection feature
+- `apps/web/src/i18n/messages/en.json` - Added admin cars and service translations
+- `apps/web/src/i18n/messages/th.json` - Added admin cars and service translations
+- `packages/api/src/routers/admin.ts` - Added car management endpoints
+
+---
+
+### 2026-01-24 - Admin Portal Responsive Design
+
+#### Changed
+- **Admin Dashboard**: Recent visits now stack vertically on mobile
+- **Admin Services Page**:
+  - Pagination controls now stack on mobile (`flex-col sm:flex-row`)
+  - Page info text centered on mobile
+- **Admin Branches Page**:
+  - Header buttons now stack on mobile
+  - Added `overflow-x-auto` wrapper for table horizontal scrolling
+  - Add button now full-width on mobile
+- **Admin Import Page**:
+  - File preview header buttons stack on mobile
+  - Import result stats grid: `grid-cols-1 sm:grid-cols-3`
+  - Preview table has min-width for proper horizontal scroll
+- **AddServiceDialog**:
+  - Basic info form: `grid-cols-1 sm:grid-cols-2`
+  - Tire details grid: `grid-cols-1 sm:grid-cols-3`
+  - Oil change grid: `grid-cols-1 sm:grid-cols-2`
+  - Dialog width: `w-[95vw] max-w-2xl` for mobile
+  - Submit buttons stack vertically on mobile (`flex-col-reverse sm:flex-row`)
+
+#### Files Modified
+- `apps/web/src/app/admin/page.tsx` - Dashboard recent visits responsive
+- `apps/web/src/app/admin/services/page.tsx` - Pagination responsive
+- `apps/web/src/app/admin/branches/page.tsx` - Header and table responsive
+- `apps/web/src/app/admin/import/page.tsx` - Preview and results responsive
+- `apps/web/src/components/admin/add_service_dialog.tsx` - Form grids responsive
+
+---
+
+### 2026-01-24 - Admin Portal i18n Support
+
+#### Added
+- **Admin Login Page i18n**: Full Thai/English translation support
+  - Added `admin.login_page` namespace with all login form translations
+  - Translations for: admin_portal, sign_in, credentials, username, password, login messages
+  - Customer portal link text translated
+- **Admin Import Page i18n**: Full Thai/English translation support
+  - Connected existing `admin.import_page` translations to the component
+  - All upload, preview, and result messages now translated
+  - Added missing `duplicates_skipped` and `duplicates_note` to Thai translations
+- **AddServiceDialog i18n**: Full Thai/English translation support
+  - Connected existing `admin.add_service` translations to the component
+  - Form labels, placeholders, tire/oil sections, and buttons all translated
+
+#### Changed
+- **`/admin/login/page.tsx`**: Replaced all hardcoded strings with i18n translations
+  - Uses `useTranslations("admin.login_page")`
+  - Zod validation messages now translated
+  - Toast messages now translated
+- **`/admin/import/page.tsx`**: Replaced all hardcoded strings with i18n translations
+  - Uses `useTranslations("admin.import_page")`
+  - Toast messages now translated
+  - Table headers and result labels now translated
+- **`/components/admin/add_service_dialog.tsx`**: Replaced all hardcoded strings with i18n translations
+  - Uses `useTranslations("admin.add_service")`
+  - Form fields, tire section, oil section, and buttons now translated
+
+#### Files Modified
+- `packages/shared/src/i18n/messages/th.json` - Added admin.login_page namespace, added duplicates translations
+- `packages/shared/src/i18n/messages/en.json` - Added admin.login_page namespace
+- `apps/web/src/app/admin/login/page.tsx` - Added i18n support
+- `apps/web/src/app/admin/import/page.tsx` - Added i18n support
+- `apps/web/src/components/admin/add_service_dialog.tsx` - Added i18n support
+
+---
+
+### 2026-01-24 - License Plate Search Normalization & User Car CRUD
+
+#### Added
+- **`normalize_plate_for_search()` utility**: New function in shared utils for normalizing license plate search queries
+  - Converts dashes to spaces for consistent matching
+  - Returns both normalized and stripped versions for flexible matching
+  - Ensures "กข-1234", "กข 1234", and "กข1234" all find the same car
+
+- **User-side car search**: Added search parameter to `car.list` query
+  - Users can now search their cars by license plate
+  - Handles dash/space variations automatically
+
+- **`car.get_by_plate` query**: New endpoint to get car by license plate
+  - Normalizes input plate before lookup
+  - Returns car details with last service info
+  - Only returns cars owned by the authenticated user
+
+#### User Car CRUD Summary (all scoped to user's phone)
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `car.list` | query | List user's cars (with optional search by plate) |
+| `car.get` | query | Get single car by ID with full stats |
+| `car.get_by_plate` | query | Get car by license plate (normalized) |
+| `car.add` | mutation | Add new car (plates auto-normalized, no approval needed) |
+| `car.update` | mutation | Update car details (model, year, color, VIN) |
+| `car.remove` | mutation | Soft delete car (can be restored by re-adding) |
+
+#### Changed
+- **`normalize_license_plate()` enhanced**: Added multiple space collapse (multiple spaces become single space)
+- **`car.list`**: Now accepts optional `search` parameter for filtering by plate
+- **Admin search (`list_visits`)**: Now normalizes license plate search input before querying
+  - Searches both normalized and original input for maximum flexibility
+
+#### Technical Details
+- `packages/shared/src/utils/index.ts`:
+  - Enhanced `normalize_license_plate()` with `replace(/\s+/g, " ")` for space collapsing
+  - Added `normalize_plate_for_search()` function returning `{ normalized, stripped }`
+- `packages/api/src/routers/car.ts`:
+  - Added `search` input parameter to `list` query
+  - Added `get_by_plate` query with plate normalization
+  - Imported `normalize_plate_for_search` from shared
+- `packages/api/src/routers/admin.ts`:
+  - Updated `list_visits` search to normalize plate input before query
+
+#### Files Modified
+- `packages/shared/src/utils/index.ts` - Added normalize_plate_for_search, enhanced normalize_license_plate
+- `packages/api/src/routers/car.ts` - Added search to list, added get_by_plate query
+- `packages/api/src/routers/admin.ts` - Updated search logic with plate normalization
+
+---
+
 ### 2026-01-24 - Fix Vercel Build
 
 #### Fixed

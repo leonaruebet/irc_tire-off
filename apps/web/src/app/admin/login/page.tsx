@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, Lock } from "lucide-react";
@@ -19,19 +20,23 @@ import {
 } from "@/components/ui/card";
 import { toast } from "@/hooks/use_toast";
 
-const login_schema = z.object({
-  username: z.string().min(1, "Username is required"),
-  password: z.string().min(1, "Password is required"),
-});
-
-type LoginFormData = z.infer<typeof login_schema>;
-
 /**
  * Admin login page
  * Uses hardcoded credentials: admin / tireoff2024
+ * Supports i18n for Thai/English
  */
 export default function AdminLoginPage() {
+  console.log("[AdminLoginPage] Rendering");
+
   const router = useRouter();
+  const t = useTranslations("admin.login_page");
+
+  const login_schema = z.object({
+    username: z.string().min(1, t("username_required")),
+    password: z.string().min(1, t("password_required")),
+  });
+
+  type LoginFormData = z.infer<typeof login_schema>;
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(login_schema),
@@ -49,7 +54,7 @@ export default function AdminLoginPage() {
       localStorage.setItem("admin_token", data.token);
 
       toast({
-        title: "Login successful",
+        title: t("login_success"),
       });
 
       router.push("/admin");
@@ -57,13 +62,18 @@ export default function AdminLoginPage() {
     onError: (error) => {
       console.error("[AdminLogin] Error", error);
       toast({
-        title: "Login failed",
+        title: t("login_failed"),
         description: error.message,
         variant: "destructive",
       });
     },
   });
 
+  /**
+   * Handle form submission
+   * Triggers login mutation
+   * @param data - Form data with username and password
+   */
   function on_submit(data: LoginFormData) {
     console.log("[AdminLogin] Submitting");
     login.mutate(data);
@@ -76,26 +86,26 @@ export default function AdminLoginPage() {
           <div className="mx-auto w-12 h-12 bg-primary rounded-full flex items-center justify-center mb-4">
             <Lock className="h-6 w-6 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold">Admin Portal</h1>
+          <h1 className="text-2xl font-bold">{t("admin_portal")}</h1>
           <p className="mt-2 text-muted-foreground">
-            Sign in to manage TireOff data
+            {t("sign_in_subtitle")}
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Sign In</CardTitle>
+            <CardTitle>{t("sign_in")}</CardTitle>
             <CardDescription>
-              Enter your admin credentials
+              {t("enter_credentials")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={form.handleSubmit(on_submit)} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username">{t("username")}</Label>
                 <Input
                   id="username"
-                  placeholder="admin"
+                  placeholder={t("username_placeholder")}
                   {...form.register("username")}
                 />
                 {form.formState.errors.username && (
@@ -105,11 +115,11 @@ export default function AdminLoginPage() {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t("password")}</Label>
                 <Input
                   id="password"
                   type="password"
-                  placeholder="••••••••"
+                  placeholder={t("password_placeholder")}
                   {...form.register("password")}
                 />
                 {form.formState.errors.password && (
@@ -126,14 +136,14 @@ export default function AdminLoginPage() {
                 {login.isPending && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Sign In
+                {t("sign_in")}
               </Button>
             </form>
           </CardContent>
         </Card>
 
         <p className="text-center text-sm text-muted-foreground">
-          Customer portal? <a href="/login" className="text-primary hover:underline">Login here</a>
+          {t("customer_portal")} <a href="/login" className="text-primary hover:underline">{t("login_here")}</a>
         </p>
       </div>
     </div>

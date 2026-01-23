@@ -86,10 +86,12 @@ function TireInfoCard({
     );
   }
 
-  // Format tire brand and model
-  const tire_name = [tire.tire.brand, tire.tire.tire_model]
-    .filter(Boolean)
-    .join(" ") || "-";
+  // Format tire brand and model with production week
+  const tire_name_parts = [tire.tire.brand, tire.tire.tire_model].filter(Boolean);
+  const tire_name = tire_name_parts.join(" ") || "-";
+  const production_info = tire.tire.production_week
+    ? ` (${t("production_week")}: ${tire.tire.production_week})`
+    : "";
 
   return (
     <Card className="border border-gray-200">
@@ -97,13 +99,22 @@ function TireInfoCard({
         {/* Position header */}
         <h3 className="font-semibold text-base uppercase mb-3">{position_label}</h3>
 
-        {/* Tire brand/model */}
-        <p className="text-sm font-medium text-foreground mb-2">{tire_name}</p>
+        {/* Tire brand/model with production week */}
+        <p className="text-sm font-medium text-foreground mb-2">
+          {tire_name}{production_info}
+        </p>
 
         {/* Tire size */}
         {tire.tire.tire_size && (
           <p className="text-sm text-muted-foreground mb-1">
             ขนาดยาง : {tire.tire.tire_size}
+          </p>
+        )}
+
+        {/* Price per tire */}
+        {tire.tire.price_per_tire && (
+          <p className="text-sm text-muted-foreground mb-1">
+            {t("price_per_tire")}: {format_number(tire.tire.price_per_tire)} บาท
           </p>
         )}
 
@@ -116,8 +127,15 @@ function TireInfoCard({
 
         {/* Install odometer */}
         {tire.install_odometer_km !== undefined && (
-          <p className="text-sm text-muted-foreground mb-3">
+          <p className="text-sm text-muted-foreground mb-1">
             {t("installed_km")}: {format_number(tire.install_odometer_km)}
+          </p>
+        )}
+
+        {/* Branch */}
+        {tire.branch_name && (
+          <p className="text-sm text-muted-foreground mb-3">
+            {t("branch")}: {tire.branch_name}
           </p>
         )}
 

@@ -152,6 +152,13 @@ export function OilChangeHistory({ car_id }: OilChangeHistoryProps) {
             </div>
           )}
 
+          {/* Engine type */}
+          {latest_oil.engine_type && (
+            <div className="text-sm text-muted-foreground">
+              {t("engine_type")}: {latest_oil.engine_type}
+            </div>
+          )}
+
           {/* Last change date */}
           <div className="flex items-center gap-2 text-sm">
             <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -165,6 +172,13 @@ export function OilChangeHistory({ car_id }: OilChangeHistoryProps) {
             <span className="text-muted-foreground">{t("odometer")}:</span>
             <span className="font-medium">{format_number(latest_oil.odometer_km)} {t("km")}</span>
           </div>
+
+          {/* Price */}
+          {latest_oil.price && (
+            <div className="text-sm text-muted-foreground">
+              {t("price")}: {format_number(latest_oil.price)} บาท
+            </div>
+          )}
         </div>
 
         {/* Next service recommendation */}

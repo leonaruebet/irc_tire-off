@@ -160,10 +160,34 @@ export function calculate_skip(page: number, limit: number): number {
  * Removes dashes, trims, and uppercases
  *
  * @param plate - Raw license plate input
- * @returns Normalized plate
+ * @returns Normalized plate with single space separator
  */
 export function normalize_license_plate(plate: string): string {
-  return plate.replace(/[-]/g, " ").trim().toUpperCase();
+  return plate
+    .replace(/[-]/g, " ") // Replace dashes with spaces
+    .replace(/\s+/g, " ") // Collapse multiple spaces to single space
+    .trim()
+    .toUpperCase();
+}
+
+/**
+ * Normalize license plate for search queries
+ * Creates a pattern that can match plates regardless of dash/space formatting
+ * Returns both the normalized form and a stripped form for flexible matching
+ *
+ * @param search_input - User's search input (may contain dashes, spaces, or neither)
+ * @returns Object with normalized plate and stripped plate (no spaces/dashes)
+ */
+export function normalize_plate_for_search(search_input: string): {
+  normalized: string;
+  stripped: string;
+} {
+  const normalized = normalize_license_plate(search_input);
+  const stripped = search_input
+    .replace(/[-\s]/g, "") // Remove all dashes and spaces
+    .trim()
+    .toUpperCase();
+  return { normalized, stripped };
 }
 
 /**

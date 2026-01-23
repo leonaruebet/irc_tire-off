@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
+import { useTranslations } from "next-intl";
 import * as XLSX from "xlsx";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -64,9 +65,13 @@ const COLUMN_MAP: Record<string, keyof ParsedRecord> = {
 /**
  * Admin import page
  * Upload Excel/CSV files to bulk import service records
+ * Supports i18n for Thai/English
  */
 export default function AdminImportPage() {
+  console.log("[AdminImportPage] Rendering");
+
   const utils = trpc.useUtils();
+  const t = useTranslations("admin.import_page");
   const [parsed_data, set_parsed_data] = useState<ParsedRecord[]>([]);
   const [file_name, set_file_name] = useState<string>("");
   const [import_result, set_import_result] = useState<{
@@ -78,25 +83,33 @@ export default function AdminImportPage() {
 
   const import_mutation = trpc.admin.import_records.useMutation({
     onSuccess: (result) => {
+      console.log("[AdminImportPage] Import success", result);
       set_import_result(result);
-      const duplicate_msg = result.duplicate_count > 0 ? `, ${result.duplicate_count} duplicates skipped` : "";
+      const duplicate_msg = result.duplicate_count > 0 ? `, ${result.duplicate_count} ${t("results.duplicates_skipped").toLowerCase()}` : "";
       toast({
-        title: "Import completed",
-        description: `${result.success_count} records imported${duplicate_msg}, ${result.error_count} errors`,
+        title: t("toast.completed"),
+        description: t("toast.completed_desc", { success: result.success_count, errors: result.error_count }) + duplicate_msg,
       });
       utils.admin.list_visits.invalidate();
       utils.admin.stats.invalidate();
     },
     onError: (error) => {
+      console.error("[AdminImportPage] Import error", error);
       toast({
-        title: "Import failed",
+        title: t("toast.failed"),
         description: error.message,
         variant: "destructive",
       });
     },
   });
 
+  /**
+   * Handle file drop
+   * Parses Excel/CSV file and extracts records
+   * @param accepted_files - Files dropped by user
+   */
   const on_drop = useCallback((accepted_files: File[]) => {
+    console.log("[AdminImportPage] File dropped");
     const file = accepted_files[0];
     if (!file) return;
 
@@ -114,8 +127,8 @@ export default function AdminImportPage() {
 
         if (json_data.length < 2) {
           toast({
-            title: "Invalid file",
-            description: "File must have headers and at least one row of data",
+            title: t("toast.invalid_file"),
+            description: t("toast.invalid_file_desc"),
             variant: "destructive",
           });
           return;
@@ -167,21 +180,21 @@ export default function AdminImportPage() {
 
         set_parsed_data(records);
         toast({
-          title: "File parsed",
-          description: `Found ${records.length} valid records`,
+          title: t("toast.parsed"),
+          description: t("toast.parsed_desc", { count: records.length }),
         });
       } catch (error) {
-        console.error("Error parsing file:", error);
+        console.error("[AdminImportPage] Error parsing file:", error);
         toast({
-          title: "Parse error",
-          description: "Failed to parse file. Please check the format.",
+          title: t("toast.parse_error"),
+          description: t("toast.parse_error_desc"),
           variant: "destructive",
         });
       }
     };
 
     reader.readAsArrayBuffer(file);
-  }, []);
+  }, [t]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: on_drop,
@@ -193,12 +206,22 @@ export default function AdminImportPage() {
     maxFiles: 1,
   });
 
+  /**
+   * Handle import button click
+   * Triggers import mutation
+   */
   function handle_import() {
+    console.log("[AdminImportPage] Starting import");
     if (parsed_data.length === 0) return;
     import_mutation.mutate({ records: parsed_data });
   }
 
+  /**
+   * Reset import state
+   * Clears parsed data and results
+   */
   function reset_import() {
+    console.log("[AdminImportPage] Resetting import");
     set_parsed_data([]);
     set_file_name("");
     set_import_result(null);
@@ -206,15 +229,14 @@ export default function AdminImportPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Import Data</h1>
+      <h1 className="text-2xl font-bold">{t("title")}</h1>
 
       {/* Upload area */}
       <Card>
         <CardHeader>
-          <CardTitle>Upload Excel/CSV File</CardTitle>
+          <CardTitle>{t("upload_title")}</CardTitle>
           <CardDescription>
-            Import service records from Excel or CSV files. The file should have
-            Thai column headers matching the standard format.
+            {t("upload_description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -229,12 +251,12 @@ export default function AdminImportPage() {
             <input {...getInputProps()} />
             <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
             {isDragActive ? (
-              <p className="text-lg">Drop the file here...</p>
+              <p className="text-lg">{t("drop_here")}</p>
             ) : (
               <>
-                <p className="text-lg mb-2">Drag & drop a file here, or click to select</p>
+                <p className="text-lg mb-2">{t("drag_drop")}</p>
                 <p className="text-sm text-muted-foreground">
-                  Supports .xlsx, .xls, .csv files
+                  {t("supported_files")}
                 </p>
               </>
             )}
@@ -246,40 +268,40 @@ export default function AdminImportPage() {
       {parsed_data.length > 0 && (
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex items-center gap-3">
-                <FileSpreadsheet className="h-5 w-5 text-primary" />
-                <div>
-                  <CardTitle>{file_name}</CardTitle>
-                  <CardDescription>{parsed_data.length} records ready to import</CardDescription>
+                <FileSpreadsheet className="h-5 w-5 text-primary flex-shrink-0" />
+                <div className="min-w-0">
+                  <CardTitle className="truncate">{file_name}</CardTitle>
+                  <CardDescription>{t("records_ready", { count: parsed_data.length })}</CardDescription>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={reset_import}>
-                  Clear
+              <div className="flex gap-2 w-full sm:w-auto">
+                <Button variant="outline" onClick={reset_import} className="flex-1 sm:flex-initial">
+                  {t("clear")}
                 </Button>
-                <Button onClick={handle_import} disabled={import_mutation.isPending}>
+                <Button onClick={handle_import} disabled={import_mutation.isPending} className="flex-1 sm:flex-initial">
                   {import_mutation.isPending && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  Import Records
+                  {t("import_records")}
                 </Button>
               </div>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0 sm:p-6">
             <div className="max-h-[400px] overflow-auto">
-              <Table>
+              <Table className="min-w-[800px]">
                 <TableHeader>
                   <TableRow>
-                    <TableHead>#</TableHead>
-                    <TableHead>License Plate</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Branch</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Odometer</TableHead>
-                    <TableHead>Tire</TableHead>
-                    <TableHead>Oil</TableHead>
+                    <TableHead>{t("table.row_num")}</TableHead>
+                    <TableHead>{t("table.license_plate")}</TableHead>
+                    <TableHead>{t("table.phone")}</TableHead>
+                    <TableHead>{t("table.branch")}</TableHead>
+                    <TableHead>{t("table.date")}</TableHead>
+                    <TableHead>{t("table.odometer")}</TableHead>
+                    <TableHead>{t("table.tire")}</TableHead>
+                    <TableHead>{t("table.oil")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -319,7 +341,7 @@ export default function AdminImportPage() {
               </Table>
               {parsed_data.length > 50 && (
                 <p className="text-center text-sm text-muted-foreground py-4">
-                  Showing first 50 of {parsed_data.length} records
+                  {t("showing_first", { count: 50, total: parsed_data.length })}
                 </p>
               )}
             </div>
@@ -341,41 +363,41 @@ export default function AdminImportPage() {
               ) : (
                 <XCircle className="h-5 w-5 text-destructive" />
               )}
-              Import Results
+              {t("results.title")}
             </CardTitle>
             {import_result.duplicate_count > 0 && import_result.error_count === 0 && (
               <CardDescription className="text-yellow-600">
-                {import_result.duplicate_count} duplicate records were detected and skipped to prevent data duplication.
+                {t("results.duplicates_note", { count: import_result.duplicate_count })}
               </CardDescription>
             )}
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-3 gap-4 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
               <div className="p-4 rounded-lg bg-green-50 text-green-700">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5" />
+                  <CheckCircle className="h-5 w-5 flex-shrink-0" />
                   <p className="text-2xl font-bold">{import_result.success_count}</p>
                 </div>
-                <p className="text-sm">Records imported</p>
+                <p className="text-sm">{t("results.records_imported")}</p>
               </div>
               <div className="p-4 rounded-lg bg-yellow-50 text-yellow-700">
                 <div className="flex items-center gap-2">
-                  <Copy className="h-5 w-5" />
+                  <Copy className="h-5 w-5 flex-shrink-0" />
                   <p className="text-2xl font-bold">{import_result.duplicate_count}</p>
                 </div>
-                <p className="text-sm">Duplicates skipped</p>
+                <p className="text-sm">{t("results.duplicates_skipped")}</p>
               </div>
               <div className="p-4 rounded-lg bg-red-50 text-red-700">
                 <div className="flex items-center gap-2">
-                  <XCircle className="h-5 w-5" />
+                  <XCircle className="h-5 w-5 flex-shrink-0" />
                   <p className="text-2xl font-bold">{import_result.error_count}</p>
                 </div>
-                <p className="text-sm">Errors</p>
+                <p className="text-sm">{t("results.errors")}</p>
               </div>
             </div>
             {import_result.errors.length > 0 && (
               <div className="space-y-2">
-                <p className="font-medium text-sm">Errors:</p>
+                <p className="font-medium text-sm">{t("results.errors_list")}</p>
                 <div className="bg-muted rounded-lg p-3 max-h-[200px] overflow-auto text-sm">
                   {import_result.errors.map((error, i) => (
                     <p key={i} className="text-destructive">
@@ -392,9 +414,9 @@ export default function AdminImportPage() {
       {/* Column mapping reference */}
       <Card>
         <CardHeader>
-          <CardTitle>Supported Column Headers</CardTitle>
+          <CardTitle>{t("columns.title")}</CardTitle>
           <CardDescription>
-            Your Excel/CSV file should include these Thai column headers
+            {t("columns.description")}
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -210,8 +210,8 @@ export default function AdminServicesPage() {
               </div>
 
               {/* Pagination */}
-              <div className="flex items-center justify-between p-4 border-t">
-                <p className="text-sm text-muted-foreground">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-t">
+                <p className="text-sm text-muted-foreground text-center sm:text-left">
                   {t("showing", {
                     from: (page - 1) * 20 + 1,
                     to: Math.min(page * 20, data.total),
@@ -227,7 +227,7 @@ export default function AdminServicesPage() {
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
-                  <span className="text-sm">
+                  <span className="text-sm whitespace-nowrap">
                     {t("page_of", { page, total: data.total_pages })}
                   </span>
                   <Button

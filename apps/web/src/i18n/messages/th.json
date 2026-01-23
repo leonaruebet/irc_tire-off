@@ -134,7 +134,7 @@
     "title": "น้ำมันเครื่อง",
     "model": "รุ่นน้ำมันเครื่อง",
     "viscosity": "ความหนืด",
-    "engine_type": "ประเภทเครื่องยนต์",
+    "engine_type": "เครื่องยนต์",
     "oil_type": "ประเภท",
     "interval": "ระยะเปลี่ยนถ่าย (กม.)",
     "type_synthetic": "สังเคราะห์แท้",
@@ -146,6 +146,7 @@
     "approx": "ประมาณ",
     "or": "หรือ",
     "km": "กม.",
+    "price": "ราคา",
     "no_data": "ยังไม่มีประวัติเปลี่ยนน้ำมันเครื่อง"
   },
   "nav": {
@@ -184,9 +185,143 @@
   "admin": {
     "title": "ระบบจัดการ",
     "dashboard": "แดชบอร์ด",
+    "cars": "รถยนต์",
     "services": "ประวัติบริการ",
     "import": "นำเข้าข้อมูล",
     "branches": "สาขา",
-    "search_placeholder": "ค้นหาทะเบียน, เบอร์โทร..."
+    "search_placeholder": "ค้นหาทะเบียน, เบอร์โทร...",
+    "loading": "กำลังโหลด...",
+    "tiretrack_admin": "TireOff Admin",
+    "logout": "ออกจากระบบ",
+    "cars_page": {
+      "title": "จัดการรถยนต์",
+      "add_car": "เพิ่มรถ",
+      "search_placeholder": "ค้นหาทะเบียน, เบอร์โทร, หรือชื่อเจ้าของ...",
+      "search": "ค้นหา",
+      "showing": "แสดง {from} ถึง {to} จาก {total}",
+      "page_of": "หน้า {page} จาก {total}",
+      "no_cars": "ไม่พบรถยนต์",
+      "table": {
+        "license_plate": "ทะเบียนรถ",
+        "owner_phone": "เบอร์โทร",
+        "owner_name": "ชื่อเจ้าของ",
+        "car_model": "รุ่นรถ",
+        "service_count": "บริการ",
+        "actions": "การดำเนินการ"
+      },
+      "dialog": {
+        "add_title": "เพิ่มรถใหม่",
+        "edit_title": "แก้ไขรถ",
+        "license_plate": "ทะเบียนรถ",
+        "license_plate_placeholder": "เช่น กข 1234",
+        "phone": "เบอร์โทรศัพท์",
+        "phone_placeholder": "เช่น 0812345678",
+        "owner_name": "ชื่อเจ้าของ",
+        "owner_name_placeholder": "เช่น สมชาย ใจดี",
+        "car_model": "รุ่นรถ",
+        "car_model_placeholder": "เช่น Toyota Camry",
+        "car_year": "ปีรถ",
+        "car_year_placeholder": "เช่น 2566",
+        "car_color": "สีรถ",
+        "car_color_placeholder": "เช่น ขาว",
+        "car_vin": "หมายเลขตัวถัง",
+        "car_vin_placeholder": "เช่น JTDKN3DU5A0000001",
+        "cancel": "ยกเลิก",
+        "create": "สร้าง",
+        "update": "อัปเดต"
+      },
+      "delete_dialog": {
+        "title": "ลบรถ",
+        "description": "คุณแน่ใจหรือไม่ว่าต้องการลบรถคันนี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้",
+        "cancel": "ยกเลิก",
+        "delete": "ลบ"
+      },
+      "toast": {
+        "created": "สร้างรถสำเร็จ",
+        "restored": "กู้คืนรถสำเร็จ",
+        "updated": "อัปเดตรถสำเร็จ",
+        "deleted": "ลบรถสำเร็จ",
+        "error": "เกิดข้อผิดพลาด",
+        "delete_error": "ไม่สามารถลบรถได้"
+      }
+    },
+    "add_service": {
+      "title": "เพิ่มประวัติบริการ",
+      "description": "เพิ่มประวัติบริการใหม่สำหรับรถ",
+      "form": {
+        "car_selection": "รถ",
+        "select_existing": "เลือกรถที่มี",
+        "enter_new": "กรอกใหม่",
+        "search_car_placeholder": "ค้นหารถ...",
+        "search_car_input": "ค้นหาทะเบียน, เบอร์โทร, หรือชื่อ...",
+        "no_cars_found": "ไม่พบรถ",
+        "type_to_search": "พิมพ์อย่างน้อย 2 ตัวอักษรเพื่อค้นหา",
+        "license_plate": "ทะเบียนรถ",
+        "license_plate_placeholder": "เช่น กข 1234",
+        "phone": "เบอร์โทรศัพท์",
+        "phone_placeholder": "เช่น 0812345678",
+        "car_model": "รุ่นรถ",
+        "car_model_placeholder": "เช่น Toyota Camry",
+        "branch": "สาขา",
+        "branch_placeholder": "เลือกสาขา",
+        "visit_date": "วันที่เข้ารับบริการ",
+        "odometer": "เลขไมล์ (กม.)",
+        "odometer_placeholder": "เช่น 50000",
+        "total_price": "ราคารวม",
+        "total_price_placeholder": "เช่น 5000"
+      },
+      "tire": {
+        "title": "เปลี่ยนยาง",
+        "add_tire": "เพิ่มยาง",
+        "tire_num": "ยาง #{num}",
+        "position": "ตำแหน่ง",
+        "size": "ขนาด",
+        "size_placeholder": "เช่น 205/55R16",
+        "brand": "ยี่ห้อ",
+        "brand_placeholder": "เช่น Michelin",
+        "model": "รุ่น",
+        "model_placeholder": "เช่น Primacy 4",
+        "production_week": "สัปดาห์ผลิต",
+        "production_week_placeholder": "เช่น 2423",
+        "price": "ราคา/เส้น",
+        "price_placeholder": "เช่น 3500"
+      },
+      "oil": {
+        "title": "เปลี่ยนน้ำมันเครื่อง",
+        "model": "รุ่นน้ำมัน",
+        "model_placeholder": "เช่น Castrol GTX",
+        "viscosity": "ความหนืด",
+        "viscosity_placeholder": "เช่น 5W-40",
+        "type": "ประเภท",
+        "type_placeholder": "เลือกประเภท",
+        "type_synthetic": "สังเคราะห์แท้",
+        "type_semi_synthetic": "กึ่งสังเคราะห์",
+        "type_conventional": "ธรรมดา",
+        "engine_type": "ประเภทเครื่องยนต์",
+        "engine_type_placeholder": "เลือกประเภทเครื่องยนต์",
+        "engine_gasoline": "เบนซิน",
+        "engine_diesel": "ดีเซล",
+        "engine_hybrid": "ไฮบริด",
+        "engine_electric": "ไฟฟ้า",
+        "interval": "ระยะเปลี่ยน (กม.)",
+        "interval_placeholder": "เช่น 10000",
+        "price": "ราคา",
+        "price_placeholder": "เช่น 1800"
+      },
+      "tire_switch": {
+        "title": "สลับยาง-ถ่วงล้อ",
+        "description": "บันทึกการสลับยาง/ถ่วงล้อ/ตั้งศูนย์ล้อ",
+        "notes": "หมายเหตุ",
+        "notes_placeholder": "เช่น สลับยาง-ถ่วงล้อ"
+      },
+      "buttons": {
+        "cancel": "ยกเลิก",
+        "create": "สร้างประวัติ"
+      },
+      "toast": {
+        "created": "สร้างประวัติบริการสำเร็จ",
+        "error": "เกิดข้อผิดพลาดในการสร้างประวัติบริการ"
+      }
+    }
   }
 }

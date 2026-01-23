@@ -155,9 +155,9 @@ export default function AdminBranchesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <Button onClick={open_add_dialog}>
+        <Button onClick={open_add_dialog} className="w-full sm:w-auto">
           <Plus className="h-4 w-4 mr-2" />
           {t("add_branch")}
         </Button>
@@ -172,6 +172,7 @@ export default function AdminBranchesPage() {
               ))}
             </div>
           ) : branches && branches.length > 0 ? (
+            <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -216,6 +217,7 @@ export default function AdminBranchesPage() {
                 ))}
               </TableBody>
             </Table>
+            </div>
           ) : (
             <div className="p-8 text-center text-muted-foreground">
               {t("no_branches")}

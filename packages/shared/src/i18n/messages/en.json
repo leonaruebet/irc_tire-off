@@ -102,6 +102,23 @@
     "loading": "Loading...",
     "tiretrack_admin": "TireTrack Admin",
 
+    "login_page": {
+      "admin_portal": "Admin Portal",
+      "sign_in_subtitle": "Sign in to manage TireOff data",
+      "sign_in": "Sign In",
+      "enter_credentials": "Enter your admin credentials",
+      "username": "Username",
+      "username_placeholder": "admin",
+      "username_required": "Username is required",
+      "password": "Password",
+      "password_placeholder": "••••••••",
+      "password_required": "Password is required",
+      "login_success": "Login successful",
+      "login_failed": "Login failed",
+      "customer_portal": "Customer portal?",
+      "login_here": "Login here"
+    },
+
     "stats": {
       "total_users": "Total Users",
       "total_cars": "Total Cars",

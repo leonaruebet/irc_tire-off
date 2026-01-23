@@ -10,33 +10,60 @@ import {
   add_car_schema,
   update_car_schema,
   normalize_license_plate,
+  normalize_plate_for_search,
 } from "@tireoff/shared";
 
 export const car_router = create_router({
   /**
    * List all cars for current user
+   * Supports optional search by license plate (handles dash/space variations)
+   *
+   * @param search - Optional license plate search (e.g., "กข-1234" or "กข 1234")
    */
-  list: protected_procedure.query(async ({ ctx }) => {
-    console.log("[Car] List cars", { user_id: ctx.user.id });
+  list: protected_procedure
+    .input(
+      z
+        .object({
+          search: z.string().optional(),
+        })
+        .optional()
+    )
+    .query(async ({ ctx, input }) => {
+      console.log("[Car] List cars", { user_id: ctx.user.id, search: input?.search });
 
-    const cars = await ctx.db.car.findMany({
-      where: {
+      // Build where clause with optional search
+      const where: any = {
         owner_id: ctx.user.id,
         is_deleted: false,
-      },
-      orderBy: { created_at: "desc" },
-      include: {
-        service_visits: {
-          orderBy: { visit_date: "desc" },
-          take: 1,
-          include: {
-            branch: true,
-            tire_changes: true,
-            oil_changes: true,
+      };
+
+      // If search provided, normalize and filter by license plate
+      if (input?.search) {
+        const { normalized } = normalize_plate_for_search(input.search);
+        console.log("[Car] Search normalized", { original: input.search, normalized });
+
+        // Search with normalized plate (handles กข-1234 vs กข 1234)
+        where.OR = [
+          { license_plate: { contains: normalized, mode: "insensitive" } },
+          { license_plate: { contains: input.search, mode: "insensitive" } },
+        ];
+      }
+
+      const cars = await ctx.db.car.findMany({
+        where,
+        orderBy: { created_at: "desc" },
+        include: {
+          service_visits: {
+            orderBy: { visit_date: "desc" },
+            take: 1,
+            include: {
+              branch: true,
+              tire_changes: true,
+              oil_changes: true,
+            },
           },
         },
-      },
-    });
+      });
 
     // Transform to include summary data
     const result = cars.map((car) => {
@@ -164,6 +191,68 @@ export const car_router = create_router({
             oil_changes: v.oil_changes.length,
           },
         })),
+      };
+    }),
+
+  /**
+   * Get car by license plate
+   * Handles plate format variations (กข-1234 vs กข 1234 vs กข1234)
+   *
+   * @param license_plate - License plate to search (any format)
+   */
+  get_by_plate: protected_procedure
+    .input(z.object({ license_plate: z.string() }))
+    .query(async ({ ctx, input }) => {
+      // Normalize the input plate to handle dash/space variations
+      const normalized_plate = normalize_license_plate(input.license_plate);
+      console.log("[Car] Get car by plate", {
+        input: input.license_plate,
+        normalized: normalized_plate,
+      });
+
+      const car = await ctx.db.car.findFirst({
+        where: {
+          license_plate: normalized_plate,
+          owner_id: ctx.user.id,
+          is_deleted: false,
+        },
+        include: {
+          service_visits: {
+            orderBy: { visit_date: "desc" },
+            take: 1,
+            include: {
+              branch: true,
+            },
+          },
+        },
+      });
+
+      if (!car) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Car not found",
+        });
+      }
+
+      const last_visit = car.service_visits[0];
+
+      console.log("[Car] Get car by plate completed", { car_id: car.id });
+
+      return {
+        id: car.id,
+        license_plate: car.license_plate,
+        car_model: car.car_model,
+        car_year: car.car_year,
+        car_color: car.car_color,
+        car_vin: car.car_vin,
+        created_at: car.created_at,
+        last_service: last_visit
+          ? {
+              date: last_visit.visit_date,
+              branch: last_visit.branch.name,
+              odometer_km: last_visit.odometer_km,
+            }
+          : null,
       };
     }),
 

@@ -12,6 +12,7 @@ import {
   paginate,
   service_visit_schema,
   normalize_license_plate,
+  normalize_plate_for_search,
 } from "@tireoff/shared";
 
 // Hardcoded admin credentials (in production, use proper auth)
@@ -128,8 +129,21 @@ export const admin_router = create_router({
       const where: any = {};
 
       if (input.search) {
+        // Normalize search input for license plate matching
+        // Handles both "กข-1234" and "กข 1234" finding the same car
+        const { normalized: normalized_plate_search } = normalize_plate_for_search(input.search);
+
+        console.log("[Admin] Search normalized", {
+          original: input.search,
+          normalized: normalized_plate_search,
+        });
+
         where.OR = [
+          // Search by normalized license plate (handles dash/space variations)
+          { car: { license_plate: { contains: normalized_plate_search, mode: "insensitive" } } },
+          // Also search original input for partial matches
           { car: { license_plate: { contains: input.search, mode: "insensitive" } } },
+          // Search by phone number
           { car: { owner: { phone: { contains: input.search } } } },
         ];
       }
@@ -452,6 +466,298 @@ export const admin_router = create_router({
       });
 
       return branch;
+    }),
+
+  // ============================================
+  // CAR MANAGEMENT (Admin)
+  // ============================================
+
+  /**
+   * List all cars with owner info and service count
+   * Supports search by license plate or phone
+   */
+  list_cars: public_procedure
+    .input(
+      z.object({
+        search: z.string().optional(),
+        page: z.number().default(1),
+        limit: z.number().default(20),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      console.log("[Admin] List cars", input);
+
+      const where: any = {
+        is_deleted: false,
+      };
+
+      if (input.search) {
+        const { normalized } = normalize_plate_for_search(input.search);
+        where.OR = [
+          { license_plate: { contains: normalized, mode: "insensitive" } },
+          { license_plate: { contains: input.search, mode: "insensitive" } },
+          { owner: { phone: { contains: input.search } } },
+          { owner: { name: { contains: input.search, mode: "insensitive" } } },
+        ];
+      }
+
+      const [cars, total] = await Promise.all([
+        ctx.db.car.findMany({
+          where,
+          include: {
+            owner: {
+              select: {
+                id: true,
+                phone: true,
+                name: true,
+              },
+            },
+            _count: {
+              select: {
+                service_visits: true,
+              },
+            },
+          },
+          orderBy: { created_at: "desc" },
+          skip: calculate_skip(input.page, input.limit),
+          take: input.limit,
+        }),
+        ctx.db.car.count({ where }),
+      ]);
+
+      const data = cars.map((car) => ({
+        id: car.id,
+        license_plate: car.license_plate,
+        car_model: car.car_model,
+        car_year: car.car_year,
+        car_color: car.car_color,
+        car_vin: car.car_vin,
+        owner: car.owner,
+        service_count: car._count.service_visits,
+        created_at: car.created_at,
+      }));
+
+      return paginate(data, total, input);
+    }),
+
+  /**
+   * Get single car with full details
+   */
+  get_car: public_procedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      console.log("[Admin] Get car", { id: input.id });
+
+      const car = await ctx.db.car.findUnique({
+        where: { id: input.id },
+        include: {
+          owner: true,
+          service_visits: {
+            orderBy: { visit_date: "desc" },
+            take: 10,
+            include: {
+              branch: true,
+              tire_changes: true,
+              oil_changes: true,
+            },
+          },
+        },
+      });
+
+      if (!car) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Car not found",
+        });
+      }
+
+      return car;
+    }),
+
+  /**
+   * Create a new car with owner
+   */
+  create_car: public_procedure
+    .input(
+      z.object({
+        license_plate: z.string().min(1),
+        phone: z.string().min(10),
+        owner_name: z.string().optional(),
+        car_model: z.string().optional(),
+        car_year: z.string().optional(),
+        car_color: z.string().optional(),
+        car_vin: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      console.log("[Admin] Create car", { plate: input.license_plate });
+
+      const normalized_plate = normalize_license_plate(input.license_plate);
+
+      // Check if plate already exists
+      const existing = await ctx.db.car.findUnique({
+        where: { license_plate: normalized_plate },
+      });
+
+      if (existing && !existing.is_deleted) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Car with this license plate already exists",
+        });
+      }
+
+      // Find or create owner by phone
+      let owner = await ctx.db.user.findUnique({
+        where: { phone: input.phone },
+      });
+
+      if (!owner) {
+        owner = await ctx.db.user.create({
+          data: {
+            phone: input.phone,
+            name: input.owner_name,
+            phone_masked: `${input.phone.slice(0, 3)}xxxx${input.phone.slice(-3)}`,
+          },
+        });
+        console.log("[Admin] Created new owner", { phone: input.phone });
+      } else if (input.owner_name && !owner.name) {
+        // Update owner name if provided and not set
+        await ctx.db.user.update({
+          where: { id: owner.id },
+          data: { name: input.owner_name },
+        });
+      }
+
+      // If car was soft-deleted, restore it
+      if (existing && existing.is_deleted) {
+        const restored = await ctx.db.car.update({
+          where: { id: existing.id },
+          data: {
+            is_deleted: false,
+            owner_id: owner.id,
+            car_model: input.car_model || existing.car_model,
+            car_year: input.car_year || existing.car_year,
+            car_color: input.car_color || existing.car_color,
+            car_vin: input.car_vin || existing.car_vin,
+          },
+          include: { owner: true },
+        });
+        console.log("[Admin] Restored car", { id: restored.id });
+        return { ...restored, restored: true };
+      }
+
+      // Create new car
+      const car = await ctx.db.car.create({
+        data: {
+          license_plate: normalized_plate,
+          car_model: input.car_model,
+          car_year: input.car_year,
+          car_color: input.car_color,
+          car_vin: input.car_vin,
+          owner_id: owner.id,
+        },
+        include: { owner: true },
+      });
+
+      console.log("[Admin] Created car", { id: car.id });
+      return { ...car, restored: false };
+    }),
+
+  /**
+   * Update car details
+   */
+  update_car: public_procedure
+    .input(
+      z.object({
+        id: z.string(),
+        car_model: z.string().optional(),
+        car_year: z.string().optional(),
+        car_color: z.string().optional(),
+        car_vin: z.string().optional(),
+        owner_name: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      console.log("[Admin] Update car", { id: input.id });
+
+      const { id, owner_name, ...car_data } = input;
+
+      const car = await ctx.db.car.update({
+        where: { id },
+        data: car_data,
+        include: { owner: true },
+      });
+
+      // Update owner name if provided
+      if (owner_name) {
+        await ctx.db.user.update({
+          where: { id: car.owner_id },
+          data: { name: owner_name },
+        });
+      }
+
+      return car;
+    }),
+
+  /**
+   * Delete car (soft delete)
+   */
+  delete_car: public_procedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      console.log("[Admin] Delete car", { id: input.id });
+
+      await ctx.db.car.update({
+        where: { id: input.id },
+        data: { is_deleted: true },
+      });
+
+      return { success: true };
+    }),
+
+  /**
+   * Search cars for dropdown/autocomplete
+   * Returns simplified list for selection
+   */
+  search_cars: public_procedure
+    .input(z.object({ query: z.string() }))
+    .query(async ({ ctx, input }) => {
+      console.log("[Admin] Search cars", { query: input.query });
+
+      if (!input.query || input.query.length < 2) {
+        return [];
+      }
+
+      const { normalized } = normalize_plate_for_search(input.query);
+
+      const cars = await ctx.db.car.findMany({
+        where: {
+          is_deleted: false,
+          OR: [
+            { license_plate: { contains: normalized, mode: "insensitive" } },
+            { license_plate: { contains: input.query, mode: "insensitive" } },
+            { owner: { phone: { contains: input.query } } },
+          ],
+        },
+        include: {
+          owner: {
+            select: {
+              phone: true,
+              name: true,
+            },
+          },
+        },
+        take: 10,
+        orderBy: { created_at: "desc" },
+      });
+
+      return cars.map((car) => ({
+        id: car.id,
+        license_plate: car.license_plate,
+        car_model: car.car_model,
+        owner_phone: car.owner.phone,
+        owner_name: car.owner.name,
+      }));
     }),
 
   /**
