@@ -4,6 +4,18 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-24 - Fix Vercel Build
+
+#### Fixed
+- **Prisma generate on Vercel**: Added `postinstall` script to packages/db that runs `prisma generate`
+- **Removed dotenv dependency**: The `generate` script no longer requires dotenv, making it work on Vercel where env vars are provided directly
+- **Added generate:local**: New script for local development that uses dotenv
+
+#### Files Modified
+- `packages/db/package.json` - Added postinstall hook and fixed generate script
+
+---
+
 ### 2026-01-23 - Fix ThaiBulkSMS OTP Verification
 
 #### Root Cause (Part 1)
