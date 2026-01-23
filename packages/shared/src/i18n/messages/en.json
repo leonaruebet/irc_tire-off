@@ -1,0 +1,299 @@
+{
+  "common": {
+    "app_name": "TireOff",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "close": "Close",
+    "no_data": "No data found"
+  },
+  "auth": {
+    "login_title": "Login",
+    "phone_label": "Phone Number",
+    "phone_placeholder": "0812345678",
+    "phone_invalid": "Invalid phone number format",
+    "request_otp": "Request OTP",
+    "otp_title": "Verify OTP",
+    "otp_label": "OTP Code",
+    "otp_placeholder": "Enter 6-digit code",
+    "otp_sent": "OTP sent to {phone}",
+    "otp_invalid": "Invalid OTP code",
+    "otp_expired": "OTP expired. Please request a new code.",
+    "otp_resend": "Resend OTP",
+    "otp_resend_wait": "Resend OTP in {seconds} seconds",
+    "verify": "Verify",
+    "back": "Back",
+    "logout": "Logout",
+    "logout_confirm": "Are you sure you want to logout?"
+  },
+  "car": {
+    "title": "My Cars",
+    "add_car": "Add Car",
+    "license_plate": "License Plate",
+    "license_plate_placeholder": "e.g., กข 1234",
+    "license_plate_invalid": "Invalid license plate format",
+    "car_model": "Car Model",
+    "car_model_placeholder": "e.g., Toyota Camry",
+    "no_cars": "No cars registered yet",
+    "add_first_car": "Add your first car",
+    "remove_car": "Remove Car",
+    "remove_car_confirm": "Are you sure you want to remove {plate} from your account?",
+    "last_service": "Last Service",
+    "last_tire_change": "Last Tire Change",
+    "last_oil_change": "Last Oil Change"
+  },
+  "service": {
+    "history": "Service History",
+    "tire_change": "Tire Change History",
+    "tire_switch": "Tire Switch History",
+    "oil_change": "Oil Change History",
+    "date": "Date",
+    "branch": "Branch",
+    "odometer": "Odometer (km)",
+    "total_price": "Total Price",
+    "no_records": "No service records found",
+    "detail": "Details"
+  },
+  "tire": {
+    "position": "Position",
+    "position_fl": "Front Left",
+    "position_fr": "Front Right",
+    "position_rl": "Rear Left",
+    "position_rr": "Rear Right",
+    "position_sp": "Spare",
+    "size": "Tire Size",
+    "brand": "Brand",
+    "model": "Tire Model",
+    "production_week": "Production Week",
+    "price_per_tire": "Price per Tire",
+    "switch_from": "From",
+    "switch_to": "To"
+  },
+  "oil": {
+    "model": "Oil Model",
+    "viscosity": "Viscosity",
+    "engine_type": "Engine Type",
+    "oil_type": "Oil Type",
+    "interval": "Change Interval (km)"
+  },
+  "nav": {
+    "home": "Home",
+    "cars": "My Cars",
+    "profile": "Profile"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "dashboard": "Dashboard",
+    "services": "Service Records",
+    "import": "Import Data",
+    "branches": "Branches",
+    "search_placeholder": "Search plate, phone...",
+    "logout": "Logout",
+    "loading": "Loading...",
+    "tiretrack_admin": "TireTrack Admin",
+
+    "stats": {
+      "total_users": "Total Users",
+      "total_cars": "Total Cars",
+      "service_visits": "Service Visits",
+      "branches_count": "Branches"
+    },
+
+    "recent_visits": {
+      "title": "Recent Service Visits",
+      "no_visits": "No service visits yet"
+    },
+
+    "services_page": {
+      "title": "Service Records",
+      "add_record": "Add Record",
+      "search_placeholder": "Search by plate or phone...",
+      "search": "Search",
+      "no_records": "No service records found",
+      "showing": "Showing {from} to {to} of {total} results",
+      "page_of": "Page {page} of {total}",
+
+      "table": {
+        "date": "Date",
+        "license_plate": "License Plate",
+        "phone": "Phone",
+        "branch": "Branch",
+        "odometer": "Odometer",
+        "total": "Total",
+        "services": "Services",
+        "actions": "Actions"
+      },
+
+      "delete_dialog": {
+        "title": "Delete Service Visit?",
+        "description": "This action cannot be undone. This will permanently delete the service visit and all related records.",
+        "cancel": "Cancel",
+        "delete": "Delete"
+      },
+
+      "toast": {
+        "deleted": "Service visit deleted",
+        "delete_error": "Error deleting visit"
+      }
+    },
+
+    "branches_page": {
+      "title": "Branches",
+      "add_branch": "Add Branch",
+      "no_branches": "No branches found. Add your first branch.",
+      "active": "Active",
+      "inactive": "Inactive",
+
+      "table": {
+        "name": "Name",
+        "code": "Code",
+        "address": "Address",
+        "phone": "Phone",
+        "status": "Status",
+        "actions": "Actions"
+      },
+
+      "dialog": {
+        "add_title": "Add Branch",
+        "edit_title": "Edit Branch",
+        "name_label": "Branch Name *",
+        "name_placeholder": "สาขาสุขุมวิท",
+        "code_label": "Branch Code",
+        "code_placeholder": "SKV01",
+        "address_label": "Address",
+        "address_placeholder": "123 Sukhumvit Rd, Bangkok",
+        "phone_label": "Phone",
+        "phone_placeholder": "02-123-4567",
+        "cancel": "Cancel",
+        "create": "Create",
+        "update": "Update"
+      },
+
+      "toast": {
+        "created": "Branch created",
+        "updated": "Branch updated",
+        "error": "Error"
+      }
+    },
+
+    "import_page": {
+      "title": "Import Data",
+      "upload_title": "Upload Excel/CSV File",
+      "upload_description": "Import service records from Excel or CSV files. The file should have Thai column headers matching the standard format.",
+      "drop_here": "Drop the file here...",
+      "drag_drop": "Drag & drop a file here, or click to select",
+      "supported_files": "Supports .xlsx, .xls, .csv files",
+      "records_ready": "{count} records ready to import",
+      "clear": "Clear",
+      "import_records": "Import Records",
+      "showing_first": "Showing first {count} of {total} records",
+
+      "table": {
+        "row_num": "#",
+        "license_plate": "License Plate",
+        "phone": "Phone",
+        "branch": "Branch",
+        "date": "Date",
+        "odometer": "Odometer",
+        "tire": "Tire",
+        "oil": "Oil"
+      },
+
+      "results": {
+        "title": "Import Results",
+        "records_imported": "Records imported",
+        "duplicates_skipped": "Duplicates skipped",
+        "duplicates_note": "{count} duplicate records were detected and skipped to prevent data duplication.",
+        "errors": "Errors",
+        "errors_list": "Errors:"
+      },
+
+      "columns": {
+        "title": "Supported Column Headers",
+        "description": "Your Excel/CSV file should include these Thai column headers"
+      },
+
+      "toast": {
+        "completed": "Import completed",
+        "completed_desc": "{success} records imported, {errors} errors",
+        "failed": "Import failed",
+        "parsed": "File parsed",
+        "parsed_desc": "Found {count} valid records",
+        "invalid_file": "Invalid file",
+        "invalid_file_desc": "File must have headers and at least one row of data",
+        "parse_error": "Parse error",
+        "parse_error_desc": "Failed to parse file. Please check the format."
+      }
+    },
+
+    "add_service": {
+      "title": "Add Service Record",
+      "description": "Create a new service visit record",
+
+      "form": {
+        "license_plate": "License Plate *",
+        "license_plate_placeholder": "กข 1234",
+        "phone": "Phone *",
+        "phone_placeholder": "0812345678",
+        "car_model": "Car Model",
+        "car_model_placeholder": "Toyota Camry",
+        "branch": "Branch *",
+        "branch_placeholder": "Select branch",
+        "visit_date": "Visit Date *",
+        "odometer": "Odometer (km) *",
+        "odometer_placeholder": "50000",
+        "total_price": "Total Price",
+        "total_price_placeholder": "2500"
+      },
+
+      "tire": {
+        "title": "Tire Changes",
+        "add_tire": "Add Tire",
+        "tire_num": "Tire #{num}",
+        "position": "Position",
+        "size": "Size",
+        "size_placeholder": "205/55R16",
+        "brand": "Brand",
+        "brand_placeholder": "Michelin",
+        "model": "Model",
+        "model_placeholder": "Primacy 4",
+        "production_week": "Production Week",
+        "production_week_placeholder": "2524",
+        "price": "Price",
+        "price_placeholder": "3500"
+      },
+
+      "oil": {
+        "title": "Oil Change",
+        "model": "Oil Model",
+        "model_placeholder": "Castrol Edge",
+        "viscosity": "Viscosity",
+        "viscosity_placeholder": "5W-30",
+        "type": "Oil Type",
+        "type_placeholder": "Synthetic",
+        "interval": "Interval (km)",
+        "interval_placeholder": "10000"
+      },
+
+      "buttons": {
+        "cancel": "Cancel",
+        "create": "Create Record"
+      },
+
+      "toast": {
+        "created": "Service record created",
+        "error": "Error creating record"
+      }
+    }
+  }
+}

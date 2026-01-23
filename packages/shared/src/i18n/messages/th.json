@@ -1,0 +1,297 @@
+{
+  "common": {
+    "app_name": "TireOff",
+    "loading": "กำลังโหลด...",
+    "error": "เกิดข้อผิดพลาด",
+    "retry": "ลองอีกครั้ง",
+    "cancel": "ยกเลิก",
+    "confirm": "ยืนยัน",
+    "save": "บันทึก",
+    "delete": "ลบ",
+    "edit": "แก้ไข",
+    "add": "เพิ่ม",
+    "search": "ค้นหา",
+    "back": "กลับ",
+    "next": "ถัดไป",
+    "submit": "ส่ง",
+    "close": "ปิด",
+    "no_data": "ไม่พบข้อมูล"
+  },
+  "auth": {
+    "login_title": "เข้าสู่ระบบ",
+    "phone_label": "เบอร์โทรศัพท์",
+    "phone_placeholder": "0812345678",
+    "phone_invalid": "รูปแบบเบอร์โทรศัพท์ไม่ถูกต้อง",
+    "request_otp": "รับรหัส OTP",
+    "otp_title": "ยืนยันรหัส OTP",
+    "otp_label": "รหัส OTP",
+    "otp_placeholder": "กรอกรหัส 6 หลัก",
+    "otp_sent": "ส่งรหัส OTP ไปที่ {phone}",
+    "otp_invalid": "รหัส OTP ไม่ถูกต้อง",
+    "otp_expired": "รหัส OTP หมดอายุ กรุณาขอรหัสใหม่",
+    "otp_resend": "ส่งรหัสอีกครั้ง",
+    "otp_resend_wait": "ส่งรหัสอีกครั้งใน {seconds} วินาที",
+    "verify": "ยืนยัน",
+    "back": "กลับ",
+    "logout": "ออกจากระบบ",
+    "logout_confirm": "คุณต้องการออกจากระบบหรือไม่?"
+  },
+  "car": {
+    "title": "รถของฉัน",
+    "add_car": "เพิ่มรถ",
+    "license_plate": "ทะเบียนรถ",
+    "license_plate_placeholder": "เช่น กข 1234",
+    "license_plate_invalid": "รูปแบบทะเบียนรถไม่ถูกต้อง",
+    "car_model": "รุ่นรถ",
+    "car_model_placeholder": "เช่น Toyota Camry",
+    "no_cars": "ยังไม่มีรถในระบบ",
+    "add_first_car": "เพิ่มรถคันแรกของคุณ",
+    "remove_car": "นำรถออก",
+    "remove_car_confirm": "คุณต้องการนำรถ {plate} ออกจากบัญชีหรือไม่?",
+    "last_service": "เข้ารับบริการล่าสุด",
+    "last_tire_change": "เปลี่ยนยางล่าสุด",
+    "last_oil_change": "เปลี่ยนน้ำมันเครื่องล่าสุด"
+  },
+  "service": {
+    "history": "ประวัติการบริการ",
+    "tire_change": "ประวัติเปลี่ยนยาง",
+    "tire_switch": "ประวัติสลับยาง",
+    "oil_change": "ประวัติเปลี่ยนน้ำมันเครื่อง",
+    "date": "วันที่",
+    "branch": "สาขา",
+    "odometer": "ระยะทาง (กม.)",
+    "total_price": "ราคารวม",
+    "no_records": "ไม่พบประวัติการบริการ",
+    "detail": "รายละเอียด"
+  },
+  "tire": {
+    "position": "ตำแหน่ง",
+    "position_fl": "หน้าซ้าย",
+    "position_fr": "หน้าขวา",
+    "position_rl": "หลังซ้าย",
+    "position_rr": "หลังขวา",
+    "position_sp": "อะไหล่",
+    "size": "ไซส์ยาง",
+    "brand": "ยี่ห้อ",
+    "model": "รุ่นยาง",
+    "production_week": "สัปดาห์ผลิต",
+    "price_per_tire": "ราคาต่อเส้น",
+    "switch_from": "จาก",
+    "switch_to": "ไป"
+  },
+  "oil": {
+    "model": "รุ่นน้ำมันเครื่อง",
+    "viscosity": "ความหนืด",
+    "engine_type": "ประเภทเครื่องยนต์",
+    "oil_type": "ประเภทน้ำมัน",
+    "interval": "ระยะเปลี่ยนถ่าย (กม.)"
+  },
+  "nav": {
+    "home": "หน้าแรก",
+    "cars": "รถของฉัน",
+    "profile": "โปรไฟล์"
+  },
+  "admin": {
+    "title": "ระบบจัดการ",
+    "dashboard": "แดชบอร์ด",
+    "services": "ประวัติบริการ",
+    "import": "นำเข้าข้อมูล",
+    "branches": "สาขา",
+    "search_placeholder": "ค้นหาทะเบียน, เบอร์โทร...",
+    "logout": "ออกจากระบบ",
+    "loading": "กำลังโหลด...",
+    "tiretrack_admin": "ระบบจัดการ TireTrack",
+
+    "stats": {
+      "total_users": "ผู้ใช้ทั้งหมด",
+      "total_cars": "รถทั้งหมด",
+      "service_visits": "การเข้ารับบริการ",
+      "branches_count": "สาขา"
+    },
+
+    "recent_visits": {
+      "title": "การเข้ารับบริการล่าสุด",
+      "no_visits": "ยังไม่มีการเข้ารับบริการ"
+    },
+
+    "services_page": {
+      "title": "ประวัติบริการ",
+      "add_record": "เพิ่มข้อมูล",
+      "search_placeholder": "ค้นหาทะเบียนหรือเบอร์โทร...",
+      "search": "ค้นหา",
+      "no_records": "ไม่พบประวัติบริการ",
+      "showing": "แสดง {from} ถึง {to} จาก {total} รายการ",
+      "page_of": "หน้า {page} จาก {total}",
+
+      "table": {
+        "date": "วันที่",
+        "license_plate": "ทะเบียนรถ",
+        "phone": "เบอร์โทร",
+        "branch": "สาขา",
+        "odometer": "เลขไมล์",
+        "total": "ยอดรวม",
+        "services": "บริการ",
+        "actions": "จัดการ"
+      },
+
+      "delete_dialog": {
+        "title": "ลบประวัติบริการ?",
+        "description": "การกระทำนี้ไม่สามารถยกเลิกได้ ข้อมูลการเข้ารับบริการและข้อมูลที่เกี่ยวข้องทั้งหมดจะถูกลบอย่างถาวร",
+        "cancel": "ยกเลิก",
+        "delete": "ลบ"
+      },
+
+      "toast": {
+        "deleted": "ลบประวัติบริการแล้ว",
+        "delete_error": "เกิดข้อผิดพลาดในการลบ"
+      }
+    },
+
+    "branches_page": {
+      "title": "สาขา",
+      "add_branch": "เพิ่มสาขา",
+      "no_branches": "ไม่พบสาขา กรุณาเพิ่มสาขาแรกของคุณ",
+      "active": "เปิดใช้งาน",
+      "inactive": "ปิดใช้งาน",
+
+      "table": {
+        "name": "ชื่อ",
+        "code": "รหัส",
+        "address": "ที่อยู่",
+        "phone": "เบอร์โทร",
+        "status": "สถานะ",
+        "actions": "จัดการ"
+      },
+
+      "dialog": {
+        "add_title": "เพิ่มสาขา",
+        "edit_title": "แก้ไขสาขา",
+        "name_label": "ชื่อสาขา *",
+        "name_placeholder": "สาขาสุขุมวิท",
+        "code_label": "รหัสสาขา",
+        "code_placeholder": "SKV01",
+        "address_label": "ที่อยู่",
+        "address_placeholder": "123 ถ.สุขุมวิท กรุงเทพฯ",
+        "phone_label": "เบอร์โทร",
+        "phone_placeholder": "02-123-4567",
+        "cancel": "ยกเลิก",
+        "create": "สร้าง",
+        "update": "อัปเดต"
+      },
+
+      "toast": {
+        "created": "สร้างสาขาแล้ว",
+        "updated": "อัปเดตสาขาแล้ว",
+        "error": "เกิดข้อผิดพลาด"
+      }
+    },
+
+    "import_page": {
+      "title": "นำเข้าข้อมูล",
+      "upload_title": "อัปโหลดไฟล์ Excel/CSV",
+      "upload_description": "นำเข้าข้อมูลบริการจากไฟล์ Excel หรือ CSV ไฟล์ควรมีหัวคอลัมน์ภาษาไทยตามรูปแบบมาตรฐาน",
+      "drop_here": "วางไฟล์ที่นี่...",
+      "drag_drop": "ลากและวางไฟล์ที่นี่ หรือคลิกเพื่อเลือก",
+      "supported_files": "รองรับไฟล์ .xlsx, .xls, .csv",
+      "records_ready": "{count} รายการพร้อมนำเข้า",
+      "clear": "ล้าง",
+      "import_records": "นำเข้าข้อมูล",
+      "showing_first": "แสดง {count} จาก {total} รายการแรก",
+
+      "table": {
+        "row_num": "#",
+        "license_plate": "ทะเบียนรถ",
+        "phone": "เบอร์โทร",
+        "branch": "สาขา",
+        "date": "วันที่",
+        "odometer": "เลขไมล์",
+        "tire": "ยาง",
+        "oil": "น้ำมัน"
+      },
+
+      "results": {
+        "title": "ผลการนำเข้า",
+        "records_imported": "นำเข้าสำเร็จ",
+        "errors": "ข้อผิดพลาด",
+        "errors_list": "รายการข้อผิดพลาด:"
+      },
+
+      "columns": {
+        "title": "หัวคอลัมน์ที่รองรับ",
+        "description": "ไฟล์ Excel/CSV ของคุณควรมีหัวคอลัมน์ภาษาไทยเหล่านี้"
+      },
+
+      "toast": {
+        "completed": "นำเข้าข้อมูลเสร็จสิ้น",
+        "completed_desc": "นำเข้า {success} รายการ, {errors} ข้อผิดพลาด",
+        "failed": "นำเข้าข้อมูลล้มเหลว",
+        "parsed": "อ่านไฟล์แล้ว",
+        "parsed_desc": "พบ {count} รายการที่ถูกต้อง",
+        "invalid_file": "ไฟล์ไม่ถูกต้อง",
+        "invalid_file_desc": "ไฟล์ต้องมีหัวคอลัมน์และข้อมูลอย่างน้อย 1 แถว",
+        "parse_error": "ข้อผิดพลาดในการอ่านไฟล์",
+        "parse_error_desc": "ไม่สามารถอ่านไฟล์ได้ กรุณาตรวจสอบรูปแบบ"
+      }
+    },
+
+    "add_service": {
+      "title": "เพิ่มประวัติบริการ",
+      "description": "สร้างข้อมูลการเข้ารับบริการใหม่",
+
+      "form": {
+        "license_plate": "ทะเบียนรถ *",
+        "license_plate_placeholder": "กข 1234",
+        "phone": "เบอร์โทร *",
+        "phone_placeholder": "0812345678",
+        "car_model": "รุ่นรถ",
+        "car_model_placeholder": "Toyota Camry",
+        "branch": "สาขา *",
+        "branch_placeholder": "เลือกสาขา",
+        "visit_date": "วันที่เข้ารับบริการ *",
+        "odometer": "เลขไมล์ (กม.) *",
+        "odometer_placeholder": "50000",
+        "total_price": "ราคารวม",
+        "total_price_placeholder": "2500"
+      },
+
+      "tire": {
+        "title": "เปลี่ยนยาง",
+        "add_tire": "เพิ่มยาง",
+        "tire_num": "ยางที่ #{num}",
+        "position": "ตำแหน่ง",
+        "size": "ขนาด",
+        "size_placeholder": "205/55R16",
+        "brand": "ยี่ห้อ",
+        "brand_placeholder": "Michelin",
+        "model": "รุ่น",
+        "model_placeholder": "Primacy 4",
+        "production_week": "สัปดาห์ผลิต",
+        "production_week_placeholder": "2524",
+        "price": "ราคา",
+        "price_placeholder": "3500"
+      },
+
+      "oil": {
+        "title": "เปลี่ยนน้ำมันเครื่อง",
+        "model": "รุ่นน้ำมัน",
+        "model_placeholder": "Castrol Edge",
+        "viscosity": "ความหนืด",
+        "viscosity_placeholder": "5W-30",
+        "type": "ประเภท",
+        "type_placeholder": "สังเคราะห์แท้",
+        "interval": "ระยะเปลี่ยนถ่าย (กม.)",
+        "interval_placeholder": "10000"
+      },
+
+      "buttons": {
+        "cancel": "ยกเลิก",
+        "create": "สร้างข้อมูล"
+      },
+
+      "toast": {
+        "created": "สร้างประวัติบริการแล้ว",
+        "error": "เกิดข้อผิดพลาดในการสร้าง"
+      }
+    }
+  }
+}

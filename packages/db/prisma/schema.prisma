@@ -1,0 +1,287 @@
+// Prisma schema for TireOff Tire Age Tracking System
+// Using MongoDB as the database
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER & AUTH MODELS
+// ============================================
+
+/// User identified by phone number (primary identifier)
+model User {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  phone        String   @unique
+  phone_masked String? // Masked version for display (e.g., 08x-xxx-x789)
+  name         String? // Customer name (ชื่อลูกค้า)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  last_login   DateTime?
+
+  // Relations
+  cars       Car[]
+  otp_tokens OTPToken[]
+  sessions   Session[]
+
+  @@map("users")
+}
+
+/// OTP tokens for phone verification
+model OTPToken {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  user_id      String   @db.ObjectId
+  code         String
+  expires_at   DateTime
+  attempts     Int      @default(0)
+  verified     Boolean  @default(false)
+  created_at   DateTime @default(now())
+
+  // Rate limiting
+  cooldown_until DateTime?
+
+  // ThaiBulkSMS OTP token for verification
+  sms_token String?
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([expires_at])
+  @@map("otp_tokens")
+}
+
+/// User sessions
+model Session {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  user_id    String   @db.ObjectId
+  token      String   @unique
+  device     String?
+  ip_address String?
+  expires_at DateTime
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([expires_at])
+  @@map("sessions")
+}
+
+// ============================================
+// CAR & SERVICE MODELS
+// ============================================
+
+/// Car registered by license plate
+model Car {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  license_plate String   @unique
+  car_model     String?  // รุ่นรถ
+  car_year      String?  // ปีรถ
+  car_color     String?  // สีรถ
+  car_vin       String?  // หมายเลขตัวถัง (VIN)
+  owner_id      String   @db.ObjectId
+  is_deleted    Boolean  @default(false)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  owner          User           @relation(fields: [owner_id], references: [id])
+  service_visits ServiceVisit[]
+
+  @@index([owner_id])
+  @@map("cars")
+}
+
+/// Branch/location where services are performed
+model Branch {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String   @unique
+  code       String?  @unique
+  address    String?
+  phone      String?
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  service_visits ServiceVisit[]
+
+  @@map("branches")
+}
+
+/// Service visit header record
+model ServiceVisit {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  car_id        String   @db.ObjectId
+  branch_id     String   @db.ObjectId
+  visit_date    DateTime
+  odometer_km   Int // ระยะที่เข้ารับบริการ
+  total_price   Float?
+  services_note String? // Free text for other services
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  // Import tracking
+  import_batch_id String? @db.ObjectId
+
+  car           Car           @relation(fields: [car_id], references: [id])
+  branch        Branch        @relation(fields: [branch_id], references: [id])
+  import_batch  ImportBatch?  @relation(fields: [import_batch_id], references: [id])
+  tire_changes  TireChange[]
+  tire_switches TireSwitch[]
+  oil_changes   OilChange[]
+
+  @@index([car_id])
+  @@index([branch_id])
+  @@index([visit_date])
+  @@map("service_visits")
+}
+
+/// Tire change record per position
+model TireChange {
+  id               String       @id @default(auto()) @map("_id") @db.ObjectId
+  service_visit_id String       @db.ObjectId
+  position         TirePosition // FL, FR, RL, RR
+  tire_size        String? // ไซส์ยาง
+  brand            String? // ยี่ห้อ
+  tire_model       String? // รุ่นยาง
+  production_week  String? // สัปดาห์ผลิต (e.g., "2523" = week 25, year 2023)
+  price_per_tire   Float? // ราคาเส้นละ
+  created_at       DateTime     @default(now())
+
+  service_visit ServiceVisit @relation(fields: [service_visit_id], references: [id], onDelete: Cascade)
+
+  @@index([service_visit_id])
+  @@map("tire_changes")
+}
+
+/// Tire switch/rotation record
+model TireSwitch {
+  id               String       @id @default(auto()) @map("_id") @db.ObjectId
+  service_visit_id String       @db.ObjectId
+  from_position    TirePosition
+  to_position      TirePosition
+  notes            String?
+  created_at       DateTime     @default(now())
+
+  service_visit ServiceVisit @relation(fields: [service_visit_id], references: [id], onDelete: Cascade)
+
+  @@index([service_visit_id])
+  @@map("tire_switches")
+}
+
+/// Oil change record
+model OilChange {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  service_visit_id String   @db.ObjectId
+  oil_model        String? // ชื่อรุ่น
+  viscosity        String? // ความหนืด (e.g., 5W-30)
+  engine_type      String? // เครื่องยนต์
+  oil_type         String? // ประเภทน้ำมันเครื่อง
+  interval_km      Int? // ระยะเปลี่ยนถ่าย (กม.)
+  price            Float?
+  created_at       DateTime @default(now())
+
+  service_visit ServiceVisit @relation(fields: [service_visit_id], references: [id], onDelete: Cascade)
+
+  @@index([service_visit_id])
+  @@map("oil_changes")
+}
+
+// ============================================
+// ADMIN MODELS
+// ============================================
+
+/// Admin user for portal access
+model AdminUser {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  email         String    @unique
+  password_hash String
+  name          String?
+  role          AdminRole @default(STAFF)
+  branch_id     String?   @db.ObjectId // Optional branch restriction
+  is_active     Boolean   @default(true)
+  last_login    DateTime?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  audit_logs     AuditLog[]
+  import_batches ImportBatch[]
+
+  @@map("admin_users")
+}
+
+/// Import batch for tracking data imports
+model ImportBatch {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  admin_id      String       @db.ObjectId
+  file_name     String
+  total_rows    Int
+  success_count Int          @default(0)
+  error_count   Int          @default(0)
+  status        ImportStatus @default(PENDING)
+  error_details Json? // Array of error messages
+  created_at    DateTime     @default(now())
+  completed_at  DateTime?
+
+  admin          AdminUser      @relation(fields: [admin_id], references: [id])
+  service_visits ServiceVisit[]
+
+  @@index([admin_id])
+  @@map("import_batches")
+}
+
+/// Audit log for admin actions
+model AuditLog {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  admin_id    String      @db.ObjectId
+  action      AuditAction
+  entity_type String // e.g., "service_visit", "tire_change"
+  entity_id   String      @db.ObjectId
+  old_value   Json?
+  new_value   Json?
+  ip_address  String?
+  created_at  DateTime    @default(now())
+
+  admin AdminUser @relation(fields: [admin_id], references: [id])
+
+  @@index([admin_id])
+  @@index([entity_type, entity_id])
+  @@index([created_at])
+  @@map("audit_logs")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum TirePosition {
+  FL // Front Left
+  FR // Front Right
+  RL // Rear Left
+  RR // Rear Right
+  SP // Spare
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  STAFF
+}
+
+enum ImportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  IMPORT
+}
