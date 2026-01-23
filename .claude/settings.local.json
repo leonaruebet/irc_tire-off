@@ -42,7 +42,8 @@
       "Bash(curl:*)",
       "Bash(git add:*)",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nfix: Fix Vercel monorepo deployment configuration\n\n- Removed outputDirectory from vercel.json \\(let Vercel auto-detect\\)\n- Added globalEnv to turbo.json for environment variables\n- Fixed turbo.json outputs to use full path from root\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
-      "Bash(git push)"
+      "Bash(git push)",
+      "Bash(git commit:*)"
     ]
   }
 }
