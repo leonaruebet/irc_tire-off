@@ -9,13 +9,16 @@
     "SMS_API_KEY",
     "SMS_API_SECRET",
     "SMS_SENDER_ID",
+    "OTP_EXPIRY_MINUTES",
+    "OTP_COOLDOWN_SECONDS",
+    "OTP_MAX_ATTEMPTS",
     "NEXT_TELEMETRY_DISABLED"
   ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": ["apps/web/.next/**", "!apps/web/.next/cache/**", "dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "dev": {
       "cache": false,
