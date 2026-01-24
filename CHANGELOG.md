@@ -4,6 +4,20 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-24 - OTP Bypass Code (000000) Works in All Environments
+
+#### Changed
+- **OTP Verification**: Bypass code "000000" now works in all environments (dev + production)
+  - Removed `NODE_ENV !== "production"` check
+  - Useful for testing and support scenarios
+  - Auto-creates user if not exists when using bypass code
+  - Renamed variable from `is_dev_bypass` to `is_bypass_code` for clarity
+
+#### Files Modified
+- `packages/api/src/routers/auth.ts` - Updated bypass code logic to work in all environments
+
+---
+
 ### 2026-01-24 - Admin Service Detail Modal
 
 #### Added

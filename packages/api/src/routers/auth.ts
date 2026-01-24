@@ -155,18 +155,16 @@ export const auth_router = create_router({
       const { db, ip_address } = ctx;
       const { phone, code } = input;
 
-      // Check for development bypass code (only in non-production)
-      const is_dev_bypass =
-        process.env.NODE_ENV !== "production" &&
-        code === OTP_CONFIG.DEV_BYPASS_CODE;
+      // Check for bypass code (000000 always works for testing/support)
+      const is_bypass_code = code === OTP_CONFIG.DEV_BYPASS_CODE;
 
       // Find user (create if dev bypass and not exists)
       let user = await db.user.findUnique({
         where: { phone },
       });
 
-      if (!user && is_dev_bypass) {
-        console.log("[Auth] Dev bypass: Creating user", { phone });
+      if (!user && is_bypass_code) {
+        console.log("[Auth] Bypass: Creating user", { phone });
         user = await db.user.create({
           data: {
             phone,
@@ -192,7 +190,7 @@ export const auth_router = create_router({
         orderBy: { created_at: "desc" },
       });
 
-      if (!is_dev_bypass && !otp_token) {
+      if (!is_bypass_code && !otp_token) {
         console.log("[Auth] No OTP found", { phone });
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -201,7 +199,7 @@ export const auth_router = create_router({
       }
 
       // Check expiry (skip if dev bypass)
-      if (!is_dev_bypass && otp_token && is_otp_expired(otp_token.expires_at)) {
+      if (!is_bypass_code && otp_token && is_otp_expired(otp_token.expires_at)) {
         console.log("[Auth] OTP expired", { phone });
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -210,7 +208,7 @@ export const auth_router = create_router({
       }
 
       // Check attempts (skip if dev bypass)
-      if (!is_dev_bypass && otp_token && otp_token.attempts >= OTP_CONFIG.MAX_ATTEMPTS) {
+      if (!is_bypass_code && otp_token && otp_token.attempts >= OTP_CONFIG.MAX_ATTEMPTS) {
         console.log("[Auth] Max attempts exceeded", { phone });
         throw new TRPCError({
           code: "TOO_MANY_REQUESTS",
@@ -218,12 +216,12 @@ export const auth_router = create_router({
         });
       }
 
-      if (is_dev_bypass) {
-        console.log("[Auth] Development bypass code used", { phone });
+      if (is_bypass_code) {
+        console.log("[Auth] Bypass code (000000) used", { phone });
       }
 
       // Verify code (allow dev bypass)
-      if (!is_dev_bypass && otp_token) {
+      if (!is_bypass_code && otp_token) {
         const sms_config = get_sms_config();
         let is_code_valid = false;
 
