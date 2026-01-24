@@ -4,6 +4,29 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-24 - Tire Age Display in Human-Readable Duration Format
+
+#### Changed
+- **TireCardCompact Component**: Changed tire age display from raw days (e.g., "730 วัน") to human-readable duration format
+  - Now shows "1 ปี 3 เดือน" (TH) or "1 year 3 months" (EN) instead of "730 วัน"
+  - Uses locale-aware formatting (Thai/English)
+  - Shows only significant parts: years+months if years>0, months only if <1 year, days only if <1 month
+
+#### Added
+- **format_days_as_duration() Utility**: New shared utility function for converting days to human-readable duration
+  - Parameters: `total_days` (number), `locale` ('th' | 'en')
+  - Returns formatted string like "1 ปี 3 เดือน" or "1 year 3 months"
+  - Smart formatting: omits zero-value components for cleaner display
+- **get_duration_parts() Utility**: Helper function to decompose days into years, months, days
+  - Returns `DurationParts` interface with `{ years, months, days }`
+- **DurationParts Interface**: Type definition for duration components
+
+#### Files Modified
+- `packages/shared/src/utils/index.ts` - Added format_days_as_duration(), get_duration_parts(), DurationParts
+- `apps/web/src/components/service/tire_status_visual.tsx` - Updated TireCardCompact to use duration format
+
+---
+
 ### 2026-01-24 - Default Language Changed to Thai & i18n Fixes
 
 #### Changed

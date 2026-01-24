@@ -1,10 +1,10 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { CheckCircle, AlertTriangle, XCircle, CircleDot, Calendar, Clock } from "lucide-react";
-import { format_date, type TireUsageStatus } from "@tireoff/shared";
+import { format_date, format_days_as_duration, type TireUsageStatus } from "@tireoff/shared";
 
 /**
  * Tire data interface for visual display
@@ -582,13 +582,15 @@ function calculate_days_since(from_date: Date): number {
 
 /**
  * Compact tire card for overlay display
- * Shows last change date and days since changed
+ * Shows last change date and duration since changed in human-readable format
+ * (e.g., "1 ปี 3 เดือน" or "1 year 3 months")
  *
  * @param props - Tire status data
  * @returns Compact styled tire card with date info
  */
 function TireCardCompact({ tire }: { tire: TireStatus }) {
   const t = useTranslations("tire");
+  const locale = useLocale() as "th" | "en";
   console.log("[TireCardCompact] Rendering", { position: tire.position, has_data: tire.has_data });
 
   if (!tire.has_data || !tire.install_date) {
@@ -605,6 +607,8 @@ function TireCardCompact({ tire }: { tire: TireStatus }) {
 
   // Calculate days directly from install_date to ensure consistency
   const days_since = calculate_days_since(tire.install_date);
+  // Format days as human-readable duration (e.g., "1 ปี 3 เดือน" or "1 year 3 months")
+  const duration_text = format_days_as_duration(days_since, locale);
 
   return (
     <Card className="p-2.5 rounded-lg shadow-lg border border-sky-200 bg-white/95 backdrop-blur-sm">
@@ -616,14 +620,14 @@ function TireCardCompact({ tire }: { tire: TireStatus }) {
 
       {/* Date display */}
       <div className="text-[11px] font-medium text-gray-700 mb-1.5">
-        {format_date(tire.install_date, "th")}
+        {format_date(tire.install_date, locale)}
       </div>
 
-      {/* Days since changed */}
+      {/* Duration since changed (in year/month format) */}
       <div className="flex items-center gap-1 text-sky-600">
         <Clock className="h-3 w-3" />
         <span className="text-[10px] font-medium">
-          {days_since} {t("days_ago")}
+          {duration_text}
         </span>
       </div>
     </Card>

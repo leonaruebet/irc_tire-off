@@ -52,6 +52,79 @@ export function format_date(date: Date, locale: "th" | "en" = "th"): string {
 }
 
 /**
+ * Duration parts interface for formatting days into human-readable duration
+ */
+export interface DurationParts {
+  /** Number of years (0+) */
+  years: number;
+  /** Number of months (0-11) */
+  months: number;
+  /** Number of days (0-29) */
+  days: number;
+}
+
+/**
+ * Convert days into years, months, and days components
+ *
+ * @param total_days - Total number of days to convert
+ * @returns Object containing years, months, and remaining days
+ */
+export function get_duration_parts(total_days: number): DurationParts {
+  console.log("[get_duration_parts] Converting days to duration", { total_days });
+  const years = Math.floor(total_days / 365);
+  const remaining_after_years = total_days % 365;
+  const months = Math.floor(remaining_after_years / 30);
+  const days = remaining_after_years % 30;
+
+  return { years, months, days };
+}
+
+/**
+ * Format days as human-readable duration string (e.g., "1 ปี 3 เดือน" or "1 year 3 months")
+ * Shows only the most significant non-zero parts for cleaner display:
+ * - If years > 0: shows years and months (omits days)
+ * - If no years but months > 0: shows months (omits days unless months is 0)
+ * - If only days: shows days
+ *
+ * @param total_days - Total number of days to format
+ * @param locale - 'th' or 'en' for localized output
+ * @returns Formatted duration string
+ */
+export function format_days_as_duration(
+  total_days: number,
+  locale: "th" | "en" = "th"
+): string {
+  console.log("[format_days_as_duration] Formatting days as duration", { total_days, locale });
+
+  const { years, months, days } = get_duration_parts(total_days);
+
+  const parts: string[] = [];
+
+  // Thai labels
+  const year_label = locale === "th" ? "ปี" : years === 1 ? "year" : "years";
+  const month_label = locale === "th" ? "เดือน" : months === 1 ? "month" : "months";
+  const day_label = locale === "th" ? "วัน" : days === 1 ? "day" : "days";
+
+  if (years > 0) {
+    parts.push(`${years} ${year_label}`);
+  }
+  if (months > 0) {
+    parts.push(`${months} ${month_label}`);
+  }
+  // Only show days if there are no years and no months, OR if total_days is very small
+  if (days > 0 && years === 0 && months === 0) {
+    parts.push(`${days} ${day_label}`);
+  }
+
+  // If everything is 0, show "0 days"
+  if (parts.length === 0) {
+    parts.push(`0 ${locale === "th" ? "วัน" : "days"}`);
+  }
+
+  return parts.join(" ");
+}
+
+/**
  * Format date with time
  *
  * @param date - Date to format
