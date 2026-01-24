@@ -192,6 +192,32 @@
     "loading": "Loading...",
     "tiretrack_admin": "TireOff Admin",
     "logout": "Logout",
+    "stats": {
+      "total_users": "Total Users",
+      "total_cars": "Total Cars",
+      "service_visits": "Service Visits",
+      "branches_count": "Branches"
+    },
+    "recent_visits": {
+      "title": "Recent Service Visits",
+      "no_visits": "No recent service visits"
+    },
+    "login_page": {
+      "admin_portal": "Admin Portal",
+      "sign_in_subtitle": "Sign in to access the admin panel",
+      "sign_in": "Sign In",
+      "enter_credentials": "Enter your admin credentials",
+      "username": "Username",
+      "username_placeholder": "Enter username",
+      "username_required": "Username is required",
+      "password": "Password",
+      "password_placeholder": "Enter password",
+      "password_required": "Password is required",
+      "login_success": "Login successful",
+      "login_failed": "Login failed",
+      "customer_portal": "Looking for customer portal?",
+      "login_here": "Login here"
+    },
     "cars_page": {
       "title": "Car Management",
       "add_car": "Add Car",

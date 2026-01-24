@@ -193,6 +193,32 @@
     "loading": "กำลังโหลด...",
     "tiretrack_admin": "TireOff Admin",
     "logout": "ออกจากระบบ",
+    "stats": {
+      "total_users": "ผู้ใช้ทั้งหมด",
+      "total_cars": "รถยนต์ทั้งหมด",
+      "service_visits": "เข้ารับบริการ",
+      "branches_count": "สาขา"
+    },
+    "recent_visits": {
+      "title": "เข้ารับบริการล่าสุด",
+      "no_visits": "ไม่มีประวัติการเข้ารับบริการ"
+    },
+    "login_page": {
+      "admin_portal": "ระบบจัดการผู้ดูแล",
+      "sign_in_subtitle": "เข้าสู่ระบบเพื่อเข้าถึงแผงควบคุมผู้ดูแล",
+      "sign_in": "เข้าสู่ระบบ",
+      "enter_credentials": "กรอกข้อมูลผู้ดูแลระบบ",
+      "username": "ชื่อผู้ใช้",
+      "username_placeholder": "กรอกชื่อผู้ใช้",
+      "username_required": "กรุณากรอกชื่อผู้ใช้",
+      "password": "รหัสผ่าน",
+      "password_placeholder": "กรอกรหัสผ่าน",
+      "password_required": "กรุณากรอกรหัสผ่าน",
+      "login_success": "เข้าสู่ระบบสำเร็จ",
+      "login_failed": "เข้าสู่ระบบไม่สำเร็จ",
+      "customer_portal": "ไปที่หน้าเข้าสู่ระบบลูกค้า?",
+      "login_here": "เข้าสู่ระบบที่นี่"
+    },
     "cars_page": {
       "title": "จัดการรถยนต์",
       "add_car": "เพิ่มรถ",
