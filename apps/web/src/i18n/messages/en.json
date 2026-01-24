@@ -418,7 +418,13 @@
         "production_week": "Production Week",
         "production_week_placeholder": "e.g., 2423",
         "price": "Price/Tire",
-        "price_placeholder": "e.g., 3500"
+        "price_placeholder": "e.g., 3500",
+        "position_fl": "Front Left (FL)",
+        "position_fr": "Front Right (FR)",
+        "position_rl": "Rear Left (RL)",
+        "position_rr": "Rear Right (RR)",
+        "change": "Change",
+        "no_change": "No Change"
       },
       "oil": {
         "title": "Oil Change",
@@ -447,7 +453,12 @@
         "description": "Record tire rotation/balancing/alignment service",
         "notes": "Notes",
         "notes_placeholder": "e.g., Tire rotation and balance",
-        "default_notes": "Tire rotation and balance"
+        "default_notes": "Tire rotation and balance",
+        "select_wheels": "Select wheels to rotate",
+        "position_fl": "Front Left",
+        "position_fr": "Front Right",
+        "position_rl": "Rear Left",
+        "position_rr": "Rear Right"
       },
       "buttons": {
         "cancel": "Cancel",

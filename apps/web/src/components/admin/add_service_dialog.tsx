@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Plus, X, Search, Car, ChevronDown } from "lucide-react";
+import { Loader2, X, Search, Car, ChevronDown, Check, Square } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +27,13 @@ import {
 import { Combobox } from "@/components/ui/combobox";
 import { toast } from "@/hooks/use_toast";
 import { TIRE_POSITION_LABELS, type TirePosition } from "@tireoff/shared";
+
+// Type for 4 main wheel positions (excluding spare)
+type MainWheelPosition = "FL" | "FR" | "RL" | "RR";
 import { cn } from "@/lib/utils";
+
+// All 4 wheel positions
+const WHEEL_POSITIONS: MainWheelPosition[] = ["FL", "FR", "RL", "RR"];
 
 interface TireChangeData {
   position: TirePosition;
@@ -36,6 +42,7 @@ interface TireChangeData {
   tire_model: string;
   production_week: string;
   price_per_tire: number | undefined;
+  is_changed: boolean; // Whether this wheel was changed or not
 }
 
 interface SelectedCar {
@@ -78,7 +85,21 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
 
   type FormData = z.infer<typeof form_schema>;
 
-  const [tire_changes, set_tire_changes] = useState<TireChangeData[]>([]);
+  // Tire changes state - now initialized with all 4 wheels
+  const [has_tire_change, set_has_tire_change] = useState(false);
+  const [tire_changes, set_tire_changes] = useState<TireChangeData[]>(
+    WHEEL_POSITIONS.map((pos) => ({
+      position: pos,
+      tire_size: "",
+      brand: "",
+      tire_model: "",
+      production_week: "",
+      price_per_tire: undefined,
+      is_changed: false,
+    }))
+  );
+
+  // Oil change state
   const [has_oil_change, set_has_oil_change] = useState(false);
   const [oil_data, set_oil_data] = useState({
     oil_model: "",
@@ -92,6 +113,12 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
   // Tire switch state
   const [has_tire_switch, set_has_tire_switch] = useState(false);
   const [tire_switch_notes, set_tire_switch_notes] = useState("");
+  const [tire_switch_wheels, set_tire_switch_wheels] = useState<Record<MainWheelPosition, boolean>>({
+    FL: false,
+    FR: false,
+    RL: false,
+    RR: false,
+  });
 
   // Car search state
   const [car_search_query, set_car_search_query] = useState("");
@@ -124,7 +151,18 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
   useEffect(() => {
     if (open) {
       form.reset();
-      set_tire_changes([]);
+      set_has_tire_change(false);
+      set_tire_changes(
+        WHEEL_POSITIONS.map((pos) => ({
+          position: pos,
+          tire_size: "",
+          brand: "",
+          tire_model: "",
+          production_week: "",
+          price_per_tire: undefined,
+          is_changed: false,
+        }))
+      );
       set_has_oil_change(false);
       set_oil_data({
         oil_model: "",
@@ -136,6 +174,12 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
       });
       set_has_tire_switch(false);
       set_tire_switch_notes("");
+      set_tire_switch_wheels({
+        FL: false,
+        FR: false,
+        RL: false,
+        RR: false,
+      });
       set_selected_car(null);
       set_car_search_query("");
       set_use_existing_car(true);
@@ -170,9 +214,32 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
       toast({ title: t("toast.created") });
       onOpenChange(false);
       form.reset();
-      set_tire_changes([]);
+      set_has_tire_change(false);
+      set_tire_changes(
+        WHEEL_POSITIONS.map((pos) => ({
+          position: pos,
+          tire_size: "",
+          brand: "",
+          tire_model: "",
+          production_week: "",
+          price_per_tire: undefined,
+          is_changed: false,
+        }))
+      );
       set_has_oil_change(false);
       set_selected_car(null);
+      set_tire_switch_wheels({
+        FL: false,
+        FR: false,
+        RL: false,
+        RR: false,
+      });
+      set_tire_switch_wheels({
+        FL: false,
+        FR: false,
+        RL: false,
+        RR: false,
+      });
       utils.admin.list_visits.invalidate();
       utils.admin.stats.invalidate();
     },
@@ -210,24 +277,6 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
   }
 
   /**
-   * Add a new tire change entry
-   */
-  function add_tire_change() {
-    console.log("[AddServiceDialog] Adding tire change");
-    set_tire_changes([
-      ...tire_changes,
-      {
-        position: "FL",
-        tire_size: "",
-        brand: "",
-        tire_model: "",
-        production_week: "",
-        price_per_tire: undefined,
-      },
-    ]);
-  }
-
-  /**
    * Update tire change data at specified index
    * @param index - Index of tire change to update
    * @param data - Partial data to merge
@@ -239,12 +288,24 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
   }
 
   /**
-   * Remove tire change at specified index
-   * @param index - Index of tire change to remove
+   * Toggle tire change status for a wheel
+   * @param index - Index of tire change to toggle
    */
-  function remove_tire_change(index: number) {
-    console.log("[AddServiceDialog] Removing tire change", { index });
-    set_tire_changes(tire_changes.filter((_, i) => i !== index));
+  function toggle_tire_change(index: number) {
+    const updated = [...tire_changes];
+    updated[index] = { ...updated[index], is_changed: !updated[index].is_changed };
+    set_tire_changes(updated);
+  }
+
+  /**
+   * Toggle tire switch wheel status
+   * @param position - Wheel position to toggle
+   */
+  function toggle_tire_switch_wheel(position: MainWheelPosition) {
+    set_tire_switch_wheels((prev) => ({
+      ...prev,
+      [position]: !prev[position],
+    }));
   }
 
   /**
@@ -254,12 +315,31 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
   function on_submit(data: FormData) {
     console.log("[AddServiceDialog] Submitting", data);
 
+    // Filter tire changes to only include wheels that are marked as changed
+    const changed_tires = tire_changes.filter((tc) => tc.is_changed);
+
+    // Generate tire switches only for wheels that are checked
+    const switch_positions = Object.entries(tire_switch_wheels)
+      .filter(([_, is_checked]) => is_checked)
+      .map(([pos]) => pos as TirePosition);
+
+    // For each checked wheel, create a tire switch entry
+    // Use a simple pattern: if wheel is checked, record it as changed
+    const tire_switches =
+      has_tire_switch && switch_positions.length > 0
+        ? switch_positions.map((position) => ({
+            from_position: position,
+            to_position: position, // Same position = rotation at this position
+            notes: tire_switch_notes || t("tire_switch.default_notes"),
+          }))
+        : undefined;
+
     create_mutation.mutate({
       ...data,
       visit_date: new Date(data.visit_date),
       tire_changes:
-        tire_changes.length > 0
-          ? tire_changes.map((tc) => ({
+        has_tire_change && changed_tires.length > 0
+          ? changed_tires.map((tc) => ({
               position: tc.position,
               tire_size: tc.tire_size || undefined,
               brand: tc.brand || undefined,
@@ -278,15 +358,7 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
             price: oil_data.price,
           }
         : undefined,
-      tire_switches: has_tire_switch
-        ? [
-            {
-              from_position: "FL" as const,
-              to_position: "RR" as const,
-              notes: tire_switch_notes || t("tire_switch.default_notes"),
-            },
-          ]
-        : undefined,
+      tire_switches,
     });
   }
 
@@ -492,109 +564,107 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
 
           {/* Tire changes */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label className="text-base font-semibold">{t("tire.title")}</Label>
-              <Button type="button" variant="outline" size="sm" onClick={add_tire_change}>
-                <Plus className="h-4 w-4 mr-1" />
-                {t("tire.add_tire")}
-              </Button>
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="has_tire_change"
+                checked={has_tire_change}
+                onChange={(e) => set_has_tire_change(e.target.checked)}
+                className="h-4 w-4"
+              />
+              <Label htmlFor="has_tire_change" className="text-base font-semibold">
+                {t("tire.title")}
+              </Label>
             </div>
-            {tire_changes.map((tc, index) => (
-              <div key={index} className="p-4 border rounded-lg space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">{t("tire.tire_num", { num: index + 1 })}</span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => remove_tire_change(index)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div>
-                    <Label className="text-xs">{t("tire.position")}</Label>
-                    <Select
-                      value={tc.position}
-                      onValueChange={(v) =>
-                        update_tire_change(index, { position: v as TirePosition })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {(Object.keys(TIRE_POSITION_LABELS) as TirePosition[]).map(
-                          (pos) => (
-                            <SelectItem key={pos} value={pos}>
-                              {TIRE_POSITION_LABELS[pos].en}
-                            </SelectItem>
-                          )
-                        )}
-                      </SelectContent>
-                    </Select>
+            {has_tire_change && (
+              <div className="p-4 border rounded-lg space-y-4">
+                <p className="text-sm text-muted-foreground">{t("tire_switch.select_wheels")}</p>
+                {tire_changes.map((tc, index) => (
+                  <div key={tc.position} className="p-3 border rounded-md space-y-3 bg-muted/30">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id={`tire_change_${tc.position}`}
+                          checked={tc.is_changed}
+                          onChange={() => toggle_tire_change(index)}
+                          className="h-4 w-4"
+                        />
+                        <Label htmlFor={`tire_change_${tc.position}`} className="font-medium">
+                          {t(`tire.position_${tc.position.toLowerCase()}`)}
+                        </Label>
+                      </div>
+                      {tc.is_changed && (
+                        <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded">
+                          {t("tire.change")}
+                        </span>
+                      )}
+                    </div>
+                    {tc.is_changed && (
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                          <Label className="text-xs">{t("tire.size")}</Label>
+                          <Input
+                            placeholder={t("tire.size_placeholder")}
+                            value={tc.tire_size}
+                            onChange={(e) =>
+                              update_tire_change(index, { tire_size: e.target.value })
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs">{t("tire.brand")}</Label>
+                          <Input
+                            placeholder={t("tire.brand_placeholder")}
+                            value={tc.brand}
+                            onChange={(e) =>
+                              update_tire_change(index, { brand: e.target.value })
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs">{t("tire.model")}</Label>
+                          <Input
+                            placeholder={t("tire.model_placeholder")}
+                            value={tc.tire_model}
+                            onChange={(e) =>
+                              update_tire_change(index, { tire_model: e.target.value })
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs">{t("tire.production_week")}</Label>
+                          <Input
+                            placeholder={t("tire.production_week_placeholder")}
+                            value={tc.production_week}
+                            onChange={(e) =>
+                              update_tire_change(index, {
+                                production_week: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs">{t("tire.price")}</Label>
+                          <Input
+                            type="number"
+                            placeholder={t("tire.price_placeholder")}
+                            value={tc.price_per_tire || ""}
+                            onChange={(e) =>
+                              update_tire_change(index, {
+                                price_per_tire: e.target.value
+                                  ? Number(e.target.value)
+                                  : undefined,
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div>
-                    <Label className="text-xs">{t("tire.size")}</Label>
-                    <Input
-                      placeholder={t("tire.size_placeholder")}
-                      value={tc.tire_size}
-                      onChange={(e) =>
-                        update_tire_change(index, { tire_size: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs">{t("tire.brand")}</Label>
-                    <Input
-                      placeholder={t("tire.brand_placeholder")}
-                      value={tc.brand}
-                      onChange={(e) =>
-                        update_tire_change(index, { brand: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs">{t("tire.model")}</Label>
-                    <Input
-                      placeholder={t("tire.model_placeholder")}
-                      value={tc.tire_model}
-                      onChange={(e) =>
-                        update_tire_change(index, { tire_model: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs">{t("tire.production_week")}</Label>
-                    <Input
-                      placeholder={t("tire.production_week_placeholder")}
-                      value={tc.production_week}
-                      onChange={(e) =>
-                        update_tire_change(index, {
-                          production_week: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs">{t("tire.price")}</Label>
-                    <Input
-                      type="number"
-                      placeholder={t("tire.price_placeholder")}
-                      value={tc.price_per_tire || ""}
-                      onChange={(e) =>
-                        update_tire_change(index, {
-                          price_per_tire: e.target.value
-                            ? Number(e.target.value)
-                            : undefined,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
 
           {/* Oil change */}
@@ -723,8 +793,32 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
               </Label>
             </div>
             {has_tire_switch && (
-              <div className="p-4 border rounded-lg space-y-3">
-                <p className="text-sm text-muted-foreground">{t("tire_switch.description")}</p>
+              <div className="p-4 border rounded-lg space-y-4">
+                <p className="text-sm text-muted-foreground">{t("tire_switch.select_wheels")}</p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {WHEEL_POSITIONS.map((position) => (
+                    <button
+                      key={position}
+                      type="button"
+                      onClick={() => toggle_tire_switch_wheel(position)}
+                      className={cn(
+                        "p-3 border rounded-md flex flex-col items-center gap-2 transition-colors",
+                        tire_switch_wheels[position]
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background hover:bg-muted"
+                      )}
+                    >
+                      <span className="font-medium text-sm">
+                        {t(`tire_switch.position_${position.toLowerCase()}`)}
+                      </span>
+                      {tire_switch_wheels[position] ? (
+                        <Check className="h-4 w-4" />
+                      ) : (
+                        <Square className="h-4 w-4 opacity-50" />
+                      )}
+                    </button>
+                  ))}
+                </div>
                 <div>
                   <Label className="text-xs">{t("tire_switch.notes")}</Label>
                   <Input

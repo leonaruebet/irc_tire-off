@@ -419,7 +419,13 @@
         "production_week": "สัปดาห์ผลิต",
         "production_week_placeholder": "เช่น 2423",
         "price": "ราคา/เส้น",
-        "price_placeholder": "เช่น 3500"
+        "price_placeholder": "เช่น 3500",
+        "position_fl": "หน้าซ้าย (FL)",
+        "position_fr": "หน้าขวา (FR)",
+        "position_rl": "หลังซ้าย (RL)",
+        "position_rr": "หลังขวา (RR)",
+        "change": "เปลี่ยน",
+        "no_change": "ไม่เปลี่ยน"
       },
       "oil": {
         "title": "เปลี่ยนน้ำมันเครื่อง",
@@ -448,7 +454,12 @@
         "description": "บันทึกการสลับยาง/ถ่วงล้อ/ตั้งศูนย์ล้อ",
         "notes": "หมายเหตุ",
         "notes_placeholder": "เช่น สลับยาง-ถ่วงล้อ",
-        "default_notes": "สลับยาง-ถ่วงล้อ"
+        "default_notes": "สลับยาง-ถ่วงล้อ",
+        "select_wheels": "เลือกล้อที่สลับ",
+        "position_fl": "หน้าซ้าย",
+        "position_fr": "หน้าขวา",
+        "position_rl": "หลังซ้าย",
+        "position_rr": "หลังขวา"
       },
       "buttons": {
         "cancel": "ยกเลิก",
