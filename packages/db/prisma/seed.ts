@@ -142,7 +142,7 @@ async function main(): Promise<void> {
   if (!branch) {
     branch = await prisma.branch.create({
       data: {
-        name: "TireTrack สาขากรุงเทพ",
+        name: "ทรัพย์ไพศาล สาขากรุงเทพ",
         code: "BKK001",
         address: "123 ถนนสุขุมวิท แขวงคลองเตย เขตคลองเตย กรุงเทพฯ 10110",
         phone: "02-123-4567",

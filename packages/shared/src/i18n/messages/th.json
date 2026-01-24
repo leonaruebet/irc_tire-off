@@ -1,6 +1,6 @@
 {
   "common": {
-    "app_name": "TireOff",
+    "app_name": "ทรัพย์ไพศาล",
     "loading": "กำลังโหลด...",
     "error": "เกิดข้อผิดพลาด",
     "retry": "ลองอีกครั้ง",
@@ -100,11 +100,11 @@
     "search_placeholder": "ค้นหาทะเบียน, เบอร์โทร...",
     "logout": "ออกจากระบบ",
     "loading": "กำลังโหลด...",
-    "tiretrack_admin": "ระบบจัดการ TireTrack",
+    "tiretrack_admin": "ระบบจัดการ ทรัพย์ไพศาล",
 
     "login_page": {
       "admin_portal": "ระบบจัดการ",
-      "sign_in_subtitle": "เข้าสู่ระบบเพื่อจัดการข้อมูล TireOff",
+      "sign_in_subtitle": "เข้าสู่ระบบเพื่อจัดการข้อมูล ทรัพย์ไพศาล",
       "sign_in": "เข้าสู่ระบบ",
       "enter_credentials": "กรอกข้อมูลเข้าสู่ระบบผู้ดูแล",
       "username": "ชื่อผู้ใช้",

@@ -1,6 +1,6 @@
 {
   "common": {
-    "app_name": "TireOff",
+    "app_name": "ทรัพย์ไพศาล",
     "loading": "Loading...",
     "error": "An error occurred",
     "retry": "Retry",
@@ -72,7 +72,8 @@
     "update_success": "Vehicle updated successfully!",
     "update_failed": "Failed to update vehicle",
     "remove_success": "Vehicle removed successfully!",
-    "remove_failed": "Failed to remove vehicle"
+    "remove_failed": "Failed to remove vehicle",
+    "select_to_view": "Select a car to view service history"
   },
   "service": {
     "history": "Service History",
@@ -114,7 +115,17 @@
     "status_good": "Good condition",
     "status_warning": "Showing wear",
     "status_critical": "Should replace",
-    "status_overdue": "Overdue"
+    "status_overdue": "Overdue",
+    "detail_title": "Tire Details",
+    "detail_position": "Position",
+    "detail_brand_model": "Brand and Model",
+    "detail_size": "Tire Size",
+    "detail_production_week": "Production Week",
+    "detail_price_per_tire": "Price per Tire",
+    "detail_installed_date": "Last Changed",
+    "detail_installed_km": "Mileage",
+    "detail_branch": "Branch",
+    "detail_no_data": "No tire data found"
   },
   "next_service": {
     "title": "Next Service (Recommended)",
@@ -190,7 +201,7 @@
     "branches": "Branches",
     "search_placeholder": "Search plate, phone...",
     "loading": "Loading...",
-    "tiretrack_admin": "TireOff Admin",
+    "tiretrack_admin": "ทรัพย์ไพศาล Admin",
     "logout": "Logout",
     "stats": {
       "total_users": "Total Users",

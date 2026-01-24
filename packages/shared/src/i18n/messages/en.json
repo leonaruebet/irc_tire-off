@@ -1,6 +1,6 @@
 {
   "common": {
-    "app_name": "TireOff",
+    "app_name": "ทรัพย์ไพศาล",
     "loading": "Loading...",
     "error": "An error occurred",
     "retry": "Retry",
@@ -100,11 +100,11 @@
     "search_placeholder": "Search plate, phone...",
     "logout": "Logout",
     "loading": "Loading...",
-    "tiretrack_admin": "TireTrack Admin",
+    "tiretrack_admin": "ทรัพย์ไพศาล Admin",
 
     "login_page": {
       "admin_portal": "Admin Portal",
-      "sign_in_subtitle": "Sign in to manage TireOff data",
+      "sign_in_subtitle": "Sign in to manage ทรัพย์ไพศาล data",
       "sign_in": "Sign In",
       "enter_credentials": "Enter your admin credentials",
       "username": "Username",

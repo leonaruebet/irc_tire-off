@@ -25,15 +25,15 @@ export default getRequestConfig(async () => {
   const cookie_store = await cookies();
   const header_list = await headers();
 
+  // Default to Thai - only use English if explicitly set via cookie
   let locale: SupportedLocale = "th";
 
   const cookie_locale = cookie_store.get("locale")?.value;
   if (cookie_locale && cookie_locale in messages_map) {
     locale = cookie_locale as SupportedLocale;
-  } else {
-    const accept_language = header_list.get("accept-language") || "";
-    locale = accept_language.includes("en") ? "en" : "th";
   }
+  // Note: Accept-language header is ignored - Thai is always default
+  // Users can switch language via the UI which sets the locale cookie
 
   console.log("[i18n] Locale resolved", { locale });
 

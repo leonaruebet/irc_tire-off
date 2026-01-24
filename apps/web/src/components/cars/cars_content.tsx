@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { PlateList } from "./plate_list";
 import { PlateListSkeleton } from "./plate_list_skeleton";
 import { useCars } from "./cars_provider";
@@ -23,6 +24,7 @@ interface CarsContentProps {
  */
 export function CarsContent({ title, description, service_content }: CarsContentProps) {
   const { cars, is_loading, selected_car, select_car } = useCars();
+  const t = useTranslations();
   console.log("[CarsContent] Rendering", { title, has_selected_car: !!selected_car });
 
   // When a car is selected, show the service content for that car
@@ -49,15 +51,15 @@ export function CarsContent({ title, description, service_content }: CarsContent
       {/* Header with add button */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">My Cars</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("car.title")}</h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Select a car to view service history
+            {t("car.select_to_view")}
           </p>
         </div>
         <Link href="/add-plate">
           <Button size="sm" className="gap-1.5">
             <Plus className="h-4 w-4" />
-            Add
+            {t("common.add")}
           </Button>
         </Link>
       </div>

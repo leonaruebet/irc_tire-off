@@ -17,7 +17,7 @@ export function MobileHeader() {
         <div className="flex items-center gap-2">
           <Circle className="h-7 w-7 text-primary fill-primary/20" />
           <span className="text-xl font-bold text-primary">
-            TireTrack
+            ทรัพย์ไพศาล
           </span>
         </div>
       </div>

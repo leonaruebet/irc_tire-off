@@ -4,7 +4,6 @@ import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
-import { format_date, format_number } from "@tireoff/shared";
 
 /**
  * Tire data interface for display
@@ -58,6 +57,8 @@ function get_position_label(position: string, t: (key: string) => string): strin
 
 /**
  * Individual tire info card component
+ * Shows position header, tire size, and view details button
+ * All other details (brand, price, install date, odometer, branch) are shown in the detail dialog
  *
  * @param props - Tire info data
  * @returns Styled tire info card
@@ -86,56 +87,16 @@ function TireInfoCard({
     );
   }
 
-  // Format tire brand and model with production week
-  const tire_name_parts = [tire.tire.brand, tire.tire.tire_model].filter(Boolean);
-  const tire_name = tire_name_parts.join(" ") || "-";
-  const production_info = tire.tire.production_week
-    ? ` (${t("production_week")}: ${tire.tire.production_week})`
-    : "";
-
   return (
     <Card className="border border-gray-200">
       <CardContent className="p-4">
         {/* Position header */}
         <h3 className="font-semibold text-base uppercase mb-3">{position_label}</h3>
 
-        {/* Tire brand/model with production week */}
-        <p className="text-sm font-medium text-foreground mb-2">
-          {tire_name}{production_info}
-        </p>
-
-        {/* Tire size */}
+        {/* Tire size - only show this on the card */}
         {tire.tire.tire_size && (
-          <p className="text-sm text-muted-foreground mb-1">
-            ขนาดยาง : {tire.tire.tire_size}
-          </p>
-        )}
-
-        {/* Price per tire */}
-        {tire.tire.price_per_tire && (
-          <p className="text-sm text-muted-foreground mb-1">
-            {t("price_per_tire")}: {format_number(tire.tire.price_per_tire)} บาท
-          </p>
-        )}
-
-        {/* Install date */}
-        {tire.install_date && (
-          <p className="text-sm text-muted-foreground mb-1">
-            {t("installed_date")}: {format_date(tire.install_date)}
-          </p>
-        )}
-
-        {/* Install odometer */}
-        {tire.install_odometer_km !== undefined && (
-          <p className="text-sm text-muted-foreground mb-1">
-            {t("installed_km")}: {format_number(tire.install_odometer_km)}
-          </p>
-        )}
-
-        {/* Branch */}
-        {tire.branch_name && (
           <p className="text-sm text-muted-foreground mb-3">
-            {t("branch")}: {tire.branch_name}
+            ขนาดยาง : {tire.tire.tire_size}
           </p>
         )}
 
@@ -157,7 +118,8 @@ function TireInfoCard({
 /**
  * Tire info list component
  * Shows all 4 tire positions in a vertical list format
- * Each card displays: position, brand/model, size, install date, odometer
+ * Each card displays: position, tire size
+ * All other details are shown in the detail dialog when clicking "ดูรายละเอียด"
  *
  * @param props - Array of tire infos and callback handlers
  * @returns Vertical list of tire info cards

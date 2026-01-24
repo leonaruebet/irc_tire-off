@@ -4,6 +4,111 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-24 - Default Language Changed to Thai & i18n Fixes
+
+#### Changed
+- **i18n Default Locale**: Thai (th) is now the true default language
+  - Removed accept-language header detection that was overriding the default
+  - Previously, browsers with "en" in accept-language would see English
+  - Now Thai is always the default unless user explicitly switches via UI
+  - Users can still change language in settings, which sets a cookie
+
+#### Fixed
+- **CarsContent Component**: Replaced hardcoded strings with i18n translations
+  - "My Cars" → `car.title`
+  - "Select a car to view service history" → `car.select_to_view`
+  - "Add" → `common.add`
+
+#### i18n Translations Added
+- `car.select_to_view`: "เลือกรถเพื่อดูประวัติการบริการ" (TH) / "Select a car to view service history" (EN)
+
+#### Files Modified
+- `apps/web/src/i18n/request.ts` - Removed accept-language fallback logic
+- `apps/web/src/components/cars/cars_content.tsx` - Added i18n support
+- `apps/web/src/i18n/messages/th.json` - Added car.select_to_view
+- `apps/web/src/i18n/messages/en.json` - Added car.select_to_view
+
+---
+
+### 2026-01-24 - Tire Detail Dialog Feature
+
+#### Added
+- **TireDetailDialog Component**: New modal dialog for viewing detailed tire information
+  - Shows position badge (หน้าซ้าย FL, หน้าขวา FR, หลังซ้าย RL, หลังขวา RR)
+  - Shows tire brand, model, and size (e.g., 235/50R18)
+  - Shows production week (สัปดาห์ผลิต: 1225)
+  - Shows price per tire (ราคาต่อเส้น: 2,760 บาท)
+  - Shows last changed date (เปลี่ยนล่าสุด: 25 มกราคม 2567)
+  - Shows days ago in year/month/day format (e.g., "2 ปี 1 เดือน" or "3 year 2 month")
+  - Shows odometer at install (เลขไมล์: 22,773)
+  - Shows branch name (สาขา: TireTrack สาขากรุงเทพ)
+  - Skeleton loading state while fetching data
+  - Uses i18n translations for Thai/English support
+  - Icons for visual clarity (Disc3, Calendar, Gauge, MapPin, CircleDollarSign)
+
+#### Changed
+- **TireStatusOverview Component**: Added dialog state management
+  - Added `detail_position` state for controlling which tire detail to show
+  - Added `set_detail_position` function for opening dialog
+  - Passes `on_view_details` callback to TireInfoList to open dialog
+  - Includes TireDetailDialog component in render
+
+- **TireInfoList Component**: Simplified card display - only shows tire size by default
+  - Card now shows ONLY: position header and tire size (ขนาดยาง : 205/55R16)
+  - Removed from card: brand, price, install date, odometer, branch
+  - All details now shown in the detail dialog when clicking "[ ดูรายละเอียด ]"
+  - Cleaner, more focused card design
+
+#### i18n Translations Added
+- `tire.detail_title`: "รายละเอียดยาง" (Tire Details)
+- `tire.detail_position`: "ตำแหน่ง" (Position)
+- `tire.detail_brand_model`: "ยี่ห้อและรุ่นยาง" (Brand and Model)
+- `tire.detail_size`: "ขนาดยาง" (Tire Size)
+- `tire.detail_production_week`: "สัปดาห์ผลิต" (Production Week)
+- `tire.detail_price_per_tire`: "ราคาต่อเส้น" (Price Per Tire)
+- `tire.detail_installed_date`: "เปลี่ยนล่าสุด" (Last Changed)
+- `tire.detail_installed_km`: "เลขไมล์" (Odometer)
+- `tire.detail_branch`: "สาขา" (Branch)
+- `tire.detail_no_data`: "ไม่พบข้อมูลยาง" (No tire data found)
+
+#### Files Created
+- `apps/web/src/components/service/tire_detail_dialog.tsx` - Tire detail modal component
+
+#### Files Modified
+- `apps/web/src/components/service/tire_status_overview.tsx` - Added dialog state management
+- `apps/web/src/i18n/messages/th.json` - Added tire detail translations
+- `apps/web/src/i18n/messages/en.json` - Added tire detail translations
+
+---
+
+### 2026-01-24 - App Name Changed to ทรัพย์ไพศาล
+
+#### Changed
+- **App Branding**: Changed app name from "TireTrack/TireOff" to "ทรัพย์ไพศาล" throughout the application
+  - Updated page metadata title and apple web app title in `layout.tsx`
+  - Updated mobile header text in `mobile_header.tsx`
+  - Updated user header text in `user_header.tsx`
+  - Updated login page title and footer in `login/page.tsx`
+  - Updated i18n `common.app_name` in all locale files (TH/EN)
+  - Updated i18n `admin.tiretrack_admin` in all locale files
+  - Updated i18n `admin.login_page.sign_in_subtitle` in all locale files
+  - Updated SMS sender ID in `sms.ts`
+  - Updated `.env.example` SMS_SENDER_ID and NEXT_PUBLIC_APP_NAME
+
+#### Files Modified
+- `apps/web/src/app/layout.tsx` - Updated metadata title
+- `apps/web/src/app/login/page.tsx` - Updated login page branding
+- `apps/web/src/components/layout/mobile_header.tsx` - Updated header text
+- `apps/web/src/components/layout/user_header.tsx` - Updated header text
+- `apps/web/src/i18n/messages/th.json` - Updated app_name and admin translations
+- `apps/web/src/i18n/messages/en.json` - Updated app_name and admin translations
+- `packages/shared/src/i18n/messages/th.json` - Updated app_name and admin translations
+- `packages/shared/src/i18n/messages/en.json` - Updated app_name and admin translations
+- `packages/shared/src/utils/sms.ts` - Updated SMS sender ID
+- `.env.example` - Updated SMS_SENDER_ID and NEXT_PUBLIC_APP_NAME
+
+---
+
 ### 2026-01-24 - OTP Bypass Code (000000) Works in All Environments
 
 #### Changed

@@ -5,7 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TireInfoList } from "./tire_info_list";
 import { TireStatusVisual } from "./tire_status_visual";
+import { TireDetailDialog } from "./tire_detail_dialog";
 import { User, Phone } from "lucide-react";
+import { useState } from "react";
 
 interface TireStatusOverviewProps {
   car_id: string;
@@ -32,6 +34,9 @@ export function TireStatusOverview({
     car_id,
     current_odometer_km,
   });
+
+  // State for tire detail dialog
+  const [detail_position, set_detail_position] = useState<string | null>(null);
 
   console.log("[TireStatusOverview] Render", { car_id, isLoading, has_data: !!data });
 
@@ -115,7 +120,18 @@ export function TireStatusOverview({
         }))}
         on_view_details={(position) => {
           console.log("[TireStatusOverview] View details clicked", { position });
-          // TODO: Navigate to tire detail page or show modal
+          set_detail_position(position);
+        }}
+      />
+
+      {/* Tire Detail Dialog */}
+      <TireDetailDialog
+        tire_info={detail_position ? (data.tires.find((t) => t.position === detail_position) ?? null) : null}
+        open={!!detail_position}
+        onOpenChange={(open) => {
+          if (!open) {
+            set_detail_position(null);
+          }
         }}
       />
     </div>

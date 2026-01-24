@@ -11,15 +11,15 @@ import "./globals.css";
  */
 export const metadata: Metadata = {
   title: {
-    default: "TireTrack - Tire Age Tracking",
-    template: "%s | TireTrack",
+    default: "ทรัพย์ไพศาล - Tire Age Tracking",
+    template: "%s | ทรัพย์ไพศาล",
   },
   description: "Track your tire and oil service history",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "TireTrack",
+    title: "ทรัพย์ไพศาล",
   },
 };
 

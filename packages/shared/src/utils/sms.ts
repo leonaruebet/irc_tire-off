@@ -271,7 +271,7 @@ export async function send_sms(
       body: new URLSearchParams({
         msisdn: normalize_phone_for_sms(phone),
         message: message,
-        sender: "TireOff",
+        sender: "ทรัพย์ไพศาล",
       }),
     });
 

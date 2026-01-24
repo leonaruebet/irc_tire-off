@@ -27,7 +27,7 @@ export default async function LoginPage() {
           <Circle className="h-10 w-10 text-primary fill-primary/20" />
         </div>
         <h1 className="text-4xl font-bold text-primary">
-          TireTrack
+          ทรัพย์ไพศาล
         </h1>
         <p className="mt-3 text-muted-foreground">
           Register and track your vehicle plates
@@ -43,7 +43,7 @@ export default async function LoginPage() {
 
       {/* Footer */}
       <footer className="py-4 text-center text-xs text-muted-foreground">
-        <p>&copy; {new Date().getFullYear()} TireTrack. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} ทรัพย์ไพศาล. All rights reserved.</p>
       </footer>
     </div>
   );

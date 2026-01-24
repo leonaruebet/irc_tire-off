@@ -1,6 +1,6 @@
 {
   "common": {
-    "app_name": "TireOff",
+    "app_name": "ทรัพย์ไพศาล",
     "loading": "กำลังโหลด...",
     "error": "เกิดข้อผิดพลาด",
     "retry": "ลองอีกครั้ง",
@@ -72,7 +72,8 @@
     "update_success": "อัปเดตข้อมูลรถสำเร็จ!",
     "update_failed": "ไม่สามารถอัปเดตข้อมูลรถได้",
     "remove_success": "นำรถออกสำเร็จ!",
-    "remove_failed": "ไม่สามารถนำรถออกได้"
+    "remove_failed": "ไม่สามารถนำรถออกได้",
+    "select_to_view": "เลือกรถเพื่อดูประวัติการบริการ"
   },
   "service": {
     "history": "ประวัติการบริการ",
@@ -114,7 +115,17 @@
     "status_good": "สภาพดี",
     "status_warning": "เริ่มสึก",
     "status_critical": "ควรเปลี่ยน",
-    "status_overdue": "เกินกำหนด"
+    "status_overdue": "เกินกำหนด",
+    "detail_title": "รายละเอียดยาง",
+    "detail_position": "ตำแหน่ง",
+    "detail_brand_model": "ยี่ห้อและรุ่นยาง",
+    "detail_size": "ขนาดยาง",
+    "detail_production_week": "สัปดาห์ผลิต",
+    "detail_price_per_tire": "ราคาต่อเส้น",
+    "detail_installed_date": "เปลี่ยนล่าสุด",
+    "detail_installed_km": "เลขไมล์",
+    "detail_branch": "สาขา",
+    "detail_no_data": "ไม่พบข้อมูลยาง"
   },
   "next_service": {
     "title": "รับบริการครั้งต่อไป (แนะนำ)",
@@ -191,7 +202,7 @@
     "branches": "สาขา",
     "search_placeholder": "ค้นหาทะเบียน, เบอร์โทร...",
     "loading": "กำลังโหลด...",
-    "tiretrack_admin": "TireOff Admin",
+    "tiretrack_admin": "ทรัพย์ไพศาล Admin",
     "logout": "ออกจากระบบ",
     "stats": {
       "total_users": "ผู้ใช้ทั้งหมด",
