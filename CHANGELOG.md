@@ -4,6 +4,39 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-24 - Admin Service Detail Modal
+
+#### Added
+- **ServiceDetailDialog Component**: New modal dialog for viewing service visit details
+  - Shows car info (license plate, model, owner phone/name)
+  - Shows visit info (date, branch, odometer, total price, notes)
+  - Shows tire changes with position badges, brand, model, size, production week, price
+  - Shows tire switches with from/to position badges and notes
+  - Shows oil changes with model, viscosity, oil type, engine type, interval, price
+  - Skeleton loading state while fetching data
+  - Uses i18n translations for Thai/English support
+
+#### Changed
+- **Admin Services Page**: Eye icon now opens detail modal instead of navigating to `/admin/services/[id]`
+  - Removed unused router import
+  - Added `detail_visit_id` state for controlling modal
+  - Added `ServiceDetailDialog` component
+
+#### i18n Translations Added
+- `admin.service_detail.*` namespace with all detail dialog translations
+- Thai: title, car_info, visit_info, tire_changes, tire_switches, oil_changes, etc.
+- English: corresponding translations
+
+#### Files Created
+- `apps/web/src/components/admin/service_detail_dialog.tsx` - Service detail modal component
+
+#### Files Modified
+- `apps/web/src/app/admin/services/page.tsx` - Use modal instead of navigation
+- `apps/web/src/i18n/messages/th.json` - Added admin.service_detail namespace
+- `apps/web/src/i18n/messages/en.json` - Added admin.service_detail namespace
+
+---
+
 ### 2026-01-24 - Excel Data Parity: Admin UI & User Display Enhancements
 
 #### Added

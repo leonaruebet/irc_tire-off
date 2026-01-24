@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Combobox } from "@/components/ui/combobox";
 import { toast } from "@/hooks/use_toast";
 import { TIRE_POSITION_LABELS, type TirePosition } from "@tireoff/shared";
 import { cn } from "@/lib/utils";
@@ -59,6 +60,10 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
 
   const utils = trpc.useUtils();
   const t = useTranslations("admin.add_service");
+
+  // Fetch oil models and viscosities for suggestions
+  const { data: oil_models = [] } = trpc.admin.get_oil_models.useQuery();
+  const { data: oil_viscosities = [] } = trpc.admin.get_oil_viscosities.useQuery();
 
   const form_schema = z.object({
     car_id: z.string().optional(),
@@ -610,22 +615,24 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
               <div className="p-4 border rounded-lg grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <Label className="text-xs">{t("oil.model")}</Label>
-                  <Input
-                    placeholder={t("oil.model_placeholder")}
+                  <Combobox
+                    options={oil_models}
                     value={oil_data.oil_model}
-                    onChange={(e) =>
-                      set_oil_data({ ...oil_data, oil_model: e.target.value })
+                    onChange={(value) =>
+                      set_oil_data({ ...oil_data, oil_model: value })
                     }
+                    placeholder={t("oil.model_placeholder")}
                   />
                 </div>
                 <div>
                   <Label className="text-xs">{t("oil.viscosity")}</Label>
-                  <Input
-                    placeholder={t("oil.viscosity_placeholder")}
+                  <Combobox
+                    options={oil_viscosities}
                     value={oil_data.viscosity}
-                    onChange={(e) =>
-                      set_oil_data({ ...oil_data, viscosity: e.target.value })
+                    onChange={(value) =>
+                      set_oil_data({ ...oil_data, viscosity: value })
                     }
+                    placeholder={t("oil.viscosity_placeholder")}
                   />
                 </div>
                 <div>

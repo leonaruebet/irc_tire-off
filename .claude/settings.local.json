@@ -45,7 +45,8 @@
       "Bash(git push)",
       "Bash(git commit:*)",
       "Bash(pip3 install:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(pnpm --filter=@tireoff/web exec tsc --noEmit)"
     ]
   }
 }

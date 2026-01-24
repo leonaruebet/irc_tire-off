@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -30,6 +29,7 @@ import { toast } from "@/hooks/use_toast";
 import { format_date, format_odometer, format_currency } from "@tireoff/shared";
 import { Search, Plus, Eye, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { AddServiceDialog } from "@/components/admin/add_service_dialog";
+import { ServiceDetailDialog } from "@/components/admin/service_detail_dialog";
 
 /**
  * Admin service records page
@@ -39,12 +39,12 @@ import { AddServiceDialog } from "@/components/admin/add_service_dialog";
 export default function AdminServicesPage() {
   console.log("[AdminServicesPage] Rendering");
 
-  const router = useRouter();
   const t = useTranslations("admin.services_page");
   const [search, set_search] = useState("");
   const [page, set_page] = useState(1);
   const [delete_id, set_delete_id] = useState<string | null>(null);
   const [add_dialog_open, set_add_dialog_open] = useState(false);
+  const [detail_visit_id, set_detail_visit_id] = useState<string | null>(null);
 
   const utils = trpc.useUtils();
 
@@ -187,9 +187,7 @@ export default function AdminServicesPage() {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() =>
-                                router.push(`/admin/services/${visit.id}`)
-                              }
+                              onClick={() => set_detail_visit_id(visit.id)}
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -274,6 +272,13 @@ export default function AdminServicesPage() {
       <AddServiceDialog
         open={add_dialog_open}
         onOpenChange={set_add_dialog_open}
+      />
+
+      {/* Service detail dialog */}
+      <ServiceDetailDialog
+        visit_id={detail_visit_id}
+        open={!!detail_visit_id}
+        onOpenChange={(open) => !open && set_detail_visit_id(null)}
       />
     </div>
   );

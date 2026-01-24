@@ -15,6 +15,54 @@ import {
   normalize_plate_for_search,
 } from "@tireoff/shared";
 
+/**
+ * Convert string to Title Case for consistent display
+ * Handles common oil brand names like "Castrol GTX", "Mobil 1", etc.
+ * @param str - Input string to format
+ * @returns Title cased string
+ */
+function to_title_case(str: string): string {
+  if (!str) return "";
+
+  // Special cases for common oil brands/viscosities
+  const special_cases: Record<string, string> = {
+    "castrol": "Castrol",
+    "mobil": "Mobil",
+    "shell": "Shell",
+    "valvoline": "Valvoline",
+    "petronas": "Petronas",
+    "motul": "Motul",
+    "elf": "ELF",
+    "total": "TOTAL",
+    "bp": "BP",
+    "caltex": "Caltex",
+    "gtx": "GTX",
+    "magnatec": "Magnatec",
+    "edge": "EDGE",
+    "helix": "Helix",
+    "ultron": "Ultron",
+    "fs": "FS",
+    "gt": "GT",
+    "w": "W", // For viscosity like 5W-40
+  };
+
+  return str
+    .toLowerCase()
+    .split(/[\s\-]+/)
+    .map((word) => {
+      // Check for special case
+      const lower = word.toLowerCase();
+      if (special_cases[lower]) {
+        return special_cases[lower];
+      }
+      // Default title case
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ")
+    .replace(/\s+/g, " ") // Normalize spaces
+    .trim();
+}
+
 // Hardcoded admin credentials (in production, use proper auth)
 const ADMIN_CREDENTIALS = {
   username: "admin",
@@ -759,6 +807,68 @@ export const admin_router = create_router({
         owner_name: car.owner.name,
       }));
     }),
+
+  /**
+   * Get unique oil models from all oil changes
+   * Returns sorted list with consistent casing
+   */
+  get_oil_models: public_procedure.query(async ({ ctx }) => {
+    console.log("[Admin] Get oil models");
+
+    const oil_changes = await ctx.db.oilChange.findMany({
+      where: {
+        AND: [
+          { oil_model: { not: null } },
+          { oil_model: { not: "" } },
+        ],
+      },
+      select: {
+        oil_model: true,
+      },
+      distinct: ["oil_model"],
+      orderBy: {
+        oil_model: "asc",
+      },
+    });
+
+    // Format to Title Case and remove duplicates
+    const models = oil_changes
+      .map((oc) => to_title_case(oc.oil_model || ""))
+      .filter((m) => m.length > 0);
+
+    return Array.from(new Set(models)).sort();
+  }),
+
+  /**
+   * Get unique oil viscosities from all oil changes
+   * Returns sorted list with consistent casing
+   */
+  get_oil_viscosities: public_procedure.query(async ({ ctx }) => {
+    console.log("[Admin] Get oil viscosities");
+
+    const oil_changes = await ctx.db.oilChange.findMany({
+      where: {
+        AND: [
+          { viscosity: { not: null } },
+          { viscosity: { not: "" } },
+        ],
+      },
+      select: {
+        viscosity: true,
+      },
+      distinct: ["viscosity"],
+      orderBy: {
+        viscosity: "asc",
+      },
+    });
+
+    // Format to Title Case and remove duplicates
+    const viscosities = oil_changes
+      .map((oc) => to_title_case(oc.viscosity || ""))
+      .filter((v) => v.length > 0);
+
+    return Array.from(new Set(viscosities)).sort();
+  }),
 
   /**
    * Bulk import service records with enhanced deduplication

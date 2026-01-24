@@ -457,6 +457,32 @@
         "created": "Service record created successfully",
         "error": "Error creating service record"
       }
+    },
+    "service_detail": {
+      "title": "Service Visit Details",
+      "car_info": "Car Information",
+      "license_plate": "License Plate",
+      "car_model": "Car Model",
+      "visit_info": "Visit Information",
+      "date": "Date",
+      "branch": "Branch",
+      "odometer": "Odometer",
+      "total_price": "Total Price",
+      "notes": "Notes",
+      "tire_changes": "Tire Changes",
+      "tire_size": "Size",
+      "production_week": "Production Week",
+      "price_per_tire": "Price/Tire",
+      "tire_switches": "Tire Switches",
+      "oil_changes": "Oil Changes",
+      "oil_model": "Oil Model",
+      "viscosity": "Viscosity",
+      "oil_type": "Oil Type",
+      "engine_type": "Engine Type",
+      "interval_km": "Interval",
+      "oil_price": "Price",
+      "no_services": "No service data",
+      "not_found": "Service visit not found"
     }
   }
 }
