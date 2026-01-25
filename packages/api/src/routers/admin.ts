@@ -66,7 +66,7 @@ function to_title_case(str: string): string {
 // Hardcoded admin credentials (in production, use proper auth)
 const ADMIN_CREDENTIALS = {
   username: "admin",
-  password: "tireoff2024",
+  password: "tireoff2026",
 };
 
 /**

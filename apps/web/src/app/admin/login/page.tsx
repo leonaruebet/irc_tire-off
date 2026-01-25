@@ -22,7 +22,7 @@ import { toast } from "@/hooks/use_toast";
 
 /**
  * Admin login page
- * Uses hardcoded credentials: admin / tireoff2024
+ * Uses hardcoded credentials: admin / tireoff2026
  * Supports i18n for Thai/English
  */
 export default function AdminLoginPage() {
