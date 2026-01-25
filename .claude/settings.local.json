@@ -47,7 +47,10 @@
       "Bash(pip3 install:*)",
       "Bash(python3:*)",
       "Bash(pnpm --filter=@tireoff/web exec tsc --noEmit)",
-      "Bash(pnpm exec turbo run build:*)"
+      "Bash(pnpm exec turbo run build:*)",
+      "Bash(git push:*)",
+      "Bash(pnpm --filter @tireoff/api exec tsc:*)",
+      "Bash(pnpm --filter @tireoff/web exec tsc:*)"
     ]
   }
 }

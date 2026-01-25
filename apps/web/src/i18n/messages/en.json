@@ -107,6 +107,7 @@
     "installed_date": "Last changed",
     "installed_km": "Mileage",
     "last_changed": "Last changed",
+    "time_ago": "ago",
     "days_ago": "days",
     "no_tire_data": "No tire data yet",
     "show_details": "Show details",
@@ -152,12 +153,17 @@
     "type_semi_synthetic": "Semi-Synthetic",
     "type_conventional": "Conventional",
     "last_change": "Last Changed",
-    "odometer": "Mileage",
+    "odometer": "Mileage at Change",
     "next_service": "Recommended Next Service",
     "approx": "Approx.",
     "or": "or",
     "km": "km",
-    "no_data": "No oil change history yet"
+    "price": "Price",
+    "no_data": "No oil change history yet",
+    "brand_model": "Brand/Model",
+    "view_details": "View oil details",
+    "change_interval": "Change Interval",
+    "recommendation_note": "Recommended every {km} km or 6 months"
   },
   "nav": {
     "home": "Home",

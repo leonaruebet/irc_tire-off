@@ -4,6 +4,55 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-25 - Oil Tab Layout Redesign
+
+#### Changed
+- **OilChangeHistory Component**: Restructured oil tab layout to match new design spec
+  - Title: Brand name + (viscosity) as main heading (e.g., "SHELL HELIX ULTRA (10W-40)")
+  - Type: Shows oil type below title (e.g., "ประเภท: สังเคราะห์แท้")
+  - Last changed date with Thai format (e.g., "เปลี่ยนล่าสุด : 25 มกราคม 2568")
+  - Odometer at change (e.g., "เลขไมล์ตอนเปลี่ยน: 52,300 กม.")
+  - Next service recommendation section with orange header
+  - Collapsible details section with "[ ดูรายละเอียดน้ำมันเครื่อง ]" toggle
+  - Details include: Brand/Model, Viscosity, Engine Type, Change Interval, Price
+
+#### Added
+- **i18n Translations**: Added new oil translation keys
+  - `oil.brand_model`: "ยี่ห้อ/รุ่น" / "Brand/Model"
+  - `oil.view_details`: "ดูรายละเอียดน้ำมันเครื่อง" / "View oil details"
+  - `oil.change_interval`: "ระยะเปลี่ยนถ่าย" / "Change Interval"
+  - `oil.recommendation_note`: "แนะนำตรวจเช็คทุก {km} กม. หรือ 6 เดือน"
+  - Updated `oil.odometer` to "เลขไมล์ตอนเปลี่ยน" for clearer meaning
+  - Updated `oil.engine_type` to "ประเภทเครื่องยนต์" for consistency
+
+#### Files Modified
+- `apps/web/src/components/service/oil_change_history.tsx` - Complete layout restructure
+- `apps/web/src/i18n/messages/th.json` - Added/updated oil translations
+- `apps/web/src/i18n/messages/en.json` - Added/updated oil translations
+
+---
+
+### 2026-01-25 - Show Last Tire Change Info on Tire Cards
+
+#### Changed
+- **TireInfoCard Component**: Now displays last tire change info directly on each tire card (FL, FR, RL, RR)
+  - Shows "เปลี่ยนล่าสุด :" with date in Thai Buddhist calendar format (e.g., "25 มกราคม 2567")
+  - Shows duration since tire change using human-readable format (e.g., "ผ่านมาแล้ว 2 ปี" or "2 years ago")
+  - Shows "เลขไมล์ :" with odometer reading at tire install (e.g., "22,773")
+  - Data displayed in same format as tire size (ขนาดยาง : 205/55R16)
+  - No need to click "ดูรายละเอียด" to see this info
+
+#### Added
+- **i18n Translation**: Added `tire.time_ago` translation ("ผ่านมาแล้ว" / "ago")
+  - Handles word order difference between Thai and English
+
+#### Files Modified
+- `apps/web/src/components/service/tire_info_list.tsx` - Display last changed date and odometer on each tire card
+- `apps/web/src/i18n/messages/th.json` - Added tire.time_ago translation
+- `apps/web/src/i18n/messages/en.json` - Added tire.time_ago translation
+
+---
+
 ### 2026-01-24 - Tire Age Display in Human-Readable Duration Format
 
 #### Changed
