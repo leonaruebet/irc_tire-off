@@ -65,6 +65,23 @@ function get_position_key(position: string): string {
 }
 
 /**
+ * Get English position name for clear display
+ *
+ * @param position - Position code (FL, FR, RL, RR)
+ * @returns English position string e.g. "FRONT LEFT"
+ */
+function get_english_position(position: string): string {
+  const position_map: Record<string, string> = {
+    FL: "FRONT LEFT",
+    FR: "FRONT RIGHT",
+    RL: "REAR LEFT",
+    RR: "REAR RIGHT",
+    SP: "SPARE",
+  };
+  return position_map[position] || position;
+}
+
+/**
  * Get status color classes based on tire usage status
  *
  * @param status - Tire usage status
@@ -582,8 +599,7 @@ function calculate_days_since(from_date: Date): number {
 
 /**
  * Compact tire card for overlay display
- * Shows last change date and duration since changed in human-readable format
- * (e.g., "1 ปี 3 เดือน" or "1 year 3 months")
+ * Shows position, last change date, duration, and odometer
  *
  * @param props - Tire status data
  * @returns Compact styled tire card with date info
@@ -593,13 +609,14 @@ function TireCardCompact({ tire }: { tire: TireStatus }) {
   const locale = useLocale() as "th" | "en";
   console.log("[TireCardCompact] Rendering", { position: tire.position, has_data: tire.has_data });
 
+  const english_position = get_english_position(tire.position);
+
   if (!tire.has_data || !tire.install_date) {
     return (
       <Card className="bg-white/95 backdrop-blur-sm border border-gray-200 p-2.5 rounded-lg shadow-lg">
-        <div className="flex items-center gap-1.5 text-gray-400 mb-1">
-          <Calendar className="h-3 w-3" />
-          <span className="text-[10px]">{t("last_changed")}:</span>
-        </div>
+        {/* Position header */}
+        <div className="text-[10px] font-bold text-primary mb-1">{english_position}</div>
+        <div className="text-[9px] text-muted-foreground mb-1.5">{t(get_position_key(tire.position))}</div>
         <div className="text-sm font-medium text-gray-400">--</div>
       </Card>
     );
@@ -612,24 +629,35 @@ function TireCardCompact({ tire }: { tire: TireStatus }) {
 
   return (
     <Card className="p-2.5 rounded-lg shadow-lg border border-sky-200 bg-white/95 backdrop-blur-sm">
+      {/* Position header */}
+      <div className="text-[10px] font-bold text-primary mb-0.5">{english_position}</div>
+      <div className="text-[9px] text-muted-foreground mb-1.5">{t(get_position_key(tire.position))}</div>
+
       {/* Last changed label with date */}
-      <div className="flex items-center gap-1.5 text-gray-500 mb-1">
-        <Calendar className="h-3 w-3 text-sky-500" />
-        <span className="text-[10px]">{t("last_changed")}:</span>
+      <div className="flex items-center gap-1 text-gray-500 mb-0.5">
+        <Calendar className="h-2.5 w-2.5 text-sky-500" />
+        <span className="text-[9px]">{t("last_changed")}:</span>
       </div>
 
       {/* Date display */}
-      <div className="text-[11px] font-medium text-gray-700 mb-1.5">
+      <div className="text-[10px] font-medium text-gray-700 mb-1">
         {format_date(tire.install_date, locale)}
       </div>
 
       {/* Duration since changed (in year/month format) */}
-      <div className="flex items-center gap-1 text-sky-600">
-        <Clock className="h-3 w-3" />
-        <span className="text-[10px] font-medium">
+      <div className="flex items-center gap-1 text-sky-600 mb-1">
+        <Clock className="h-2.5 w-2.5" />
+        <span className="text-[9px] font-medium">
           {duration_text}
         </span>
       </div>
+
+      {/* Odometer */}
+      {tire.install_odometer_km && (
+        <div className="text-[9px] text-gray-500">
+          {t("installed_km")}: {tire.install_odometer_km.toLocaleString()} {locale === "th" ? "กม." : "km"}
+        </div>
+      )}
     </Card>
   );
 }
