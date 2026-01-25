@@ -37,14 +37,31 @@ interface TireInfoListProps {
 }
 
 /**
- * Get full position name with code
+ * Get English position name for clear display
+ *
+ * @param position - Position code (FL, FR, RL, RR)
+ * @returns English position string e.g. "FRONT LEFT"
+ */
+function get_english_position(position: string): string {
+  const position_map: Record<string, string> = {
+    FL: "FRONT LEFT",
+    FR: "FRONT RIGHT",
+    RL: "REAR LEFT",
+    RR: "REAR RIGHT",
+    SP: "SPARE",
+  };
+  return position_map[position] || position;
+}
+
+/**
+ * Get Thai position name
  *
  * @param position - Position code (FL, FR, RL, RR)
  * @param t - Translation function
- * @returns Formatted position string e.g. "หน้าซ้าย (FL)"
+ * @returns Thai position string e.g. "หน้าซ้าย"
  */
-function get_position_label(position: string, t: (key: string) => string): string {
-  console.log("[get_position_label] Formatting position", { position });
+function get_thai_position(position: string, t: (key: string) => string): string {
+  console.log("[get_thai_position] Formatting position", { position });
   const position_map: Record<string, string> = {
     FL: "position_fl",
     FR: "position_fr",
@@ -53,7 +70,7 @@ function get_position_label(position: string, t: (key: string) => string): strin
     SP: "position_sp",
   };
   const key = position_map[position] || position;
-  return `${t(key)} (${position})`;
+  return t(key);
 }
 
 /**
@@ -74,7 +91,8 @@ function TireInfoCard({
   const locale = useLocale();
   console.log("[TireInfoCard] Rendering", { position: tire.position, has_data: tire.has_data });
 
-  const position_label = get_position_label(tire.position, t);
+  const english_position = get_english_position(tire.position);
+  const thai_position = get_thai_position(tire.position, t);
 
   /**
    * Format date in Thai Buddhist calendar format
@@ -117,7 +135,11 @@ function TireInfoCard({
     return (
       <Card className="border border-gray-200">
         <CardContent className="p-4">
-          <h3 className="font-semibold text-base uppercase mb-2">{position_label}</h3>
+          {/* Position header with English and Thai */}
+          <div className="mb-2">
+            <h3 className="font-bold text-base text-primary">{english_position}</h3>
+            <p className="text-xs text-muted-foreground">{thai_position}</p>
+          </div>
           <p className="text-sm text-muted-foreground">{t("no_tire_data")}</p>
         </CardContent>
       </Card>
@@ -127,8 +149,11 @@ function TireInfoCard({
   return (
     <Card className="border border-gray-200">
       <CardContent className="p-4">
-        {/* Position header */}
-        <h3 className="font-semibold text-base uppercase mb-3">{position_label}</h3>
+        {/* Position header with English and Thai */}
+        <div className="mb-3">
+          <h3 className="font-bold text-base text-primary">{english_position}</h3>
+          <p className="text-xs text-muted-foreground">{thai_position}</p>
+        </div>
 
         {/* Tire size */}
         {tire.tire.tire_size && (
@@ -153,7 +178,7 @@ function TireInfoCard({
         {/* Odometer */}
         {tire.install_odometer_km && (
           <p className="text-sm text-muted-foreground mb-3">
-            {t("installed_km")} : {format_odometer(tire.install_odometer_km)}
+            {t("installed_km")} : {format_odometer(tire.install_odometer_km)} {locale === "th" ? "กม." : "km"}
           </p>
         )}
 

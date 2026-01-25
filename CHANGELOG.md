@@ -36,6 +36,8 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 #### Changed
 - **TireInfoCard Component**: Now displays last tire change info directly on each tire card (FL, FR, RL, RR)
+  - **Clear position labels**: Shows English position prominently (FRONT LEFT, FRONT RIGHT, REAR LEFT, REAR RIGHT)
+  - Thai position name shown below in smaller text (หน้าซ้าย, หน้าขวา, หลังซ้าย, หลังขวา)
   - Shows "เปลี่ยนล่าสุด :" with date in Thai Buddhist calendar format (e.g., "25 มกราคม 2567")
   - Shows duration since tire change using human-readable format (e.g., "ผ่านมาแล้ว 2 ปี" or "2 years ago")
   - Shows "เลขไมล์ :" with odometer reading at tire install (e.g., "22,773")
