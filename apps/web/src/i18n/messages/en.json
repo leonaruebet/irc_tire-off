@@ -395,6 +395,8 @@
         "parse_error": "Parse Error",
         "parse_error_desc": "Failed to parse the file. Please check the format."
       },
+      "download_template": "Download Template",
+      "download_template_desc": "Download a sample file with the correct column headers",
       "columns": {
         "title": "Supported Column Headers",
         "description": "Use these Thai column headers in your Excel file"

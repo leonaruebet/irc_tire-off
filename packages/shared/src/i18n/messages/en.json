@@ -235,6 +235,9 @@
         "errors_list": "Errors:"
       },
 
+      "download_template": "Download Template",
+      "download_template_desc": "Download a sample file with the correct column headers",
+
       "columns": {
         "title": "Supported Column Headers",
         "description": "Your Excel/CSV file should include these Thai column headers"

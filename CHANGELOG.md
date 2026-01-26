@@ -4,6 +4,30 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-26 - Admin Import: Download Template Button
+
+#### Added
+- **Download Template Button**: Admin import page now has a "Download Template" button
+  - Generates an `.xlsx` file client-side with all correct Thai column headers
+  - Headers match `COLUMN_MAP` exactly so imported files parse correctly
+  - Uses deduplicated headers (one per field, general service variants preferred)
+  - Column widths set for readability
+  - Button placed above the drag-and-drop upload area with description text
+  - Uses `Download` icon from lucide-react
+
+#### i18n Translations Added
+- `admin.import_page.download_template`: "ดาวน์โหลดเทมเพลต" / "Download Template"
+- `admin.import_page.download_template_desc`: Description text (TH/EN)
+
+#### Files Modified
+- `apps/web/src/app/admin/import/page.tsx` - Added TEMPLATE_HEADERS, download_template(), Download button UI
+- `apps/web/src/i18n/messages/th.json` - Added download_template translations
+- `apps/web/src/i18n/messages/en.json` - Added download_template translations
+- `packages/shared/src/i18n/messages/th.json` - Added download_template translations
+- `packages/shared/src/i18n/messages/en.json` - Added download_template translations
+
+---
+
 ### 2026-01-26 - Fix ThaiBulkSMS OTP Integration (v2 API Migration)
 
 #### Root Cause

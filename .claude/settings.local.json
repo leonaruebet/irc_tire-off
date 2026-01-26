@@ -57,7 +57,9 @@
       "mcp__plugin_playwright_playwright__browser_type",
       "mcp__plugin_playwright_playwright__browser_click",
       "Bash(npx vercel link:*)",
-      "Bash(npx vercel:*)"
+      "Bash(npx vercel:*)",
+      "mcp__plugin_playwright_playwright__browser_wait_for",
+      "WebFetch(domain:developer.thaibulksms.com)"
     ]
   }
 }

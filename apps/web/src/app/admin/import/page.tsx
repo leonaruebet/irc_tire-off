@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "@/hooks/use_toast";
-import { Upload, FileSpreadsheet, Loader2, CheckCircle, XCircle, AlertTriangle, Copy } from "lucide-react";
+import { Upload, FileSpreadsheet, Loader2, CheckCircle, XCircle, AlertTriangle, Copy, Download } from "lucide-react";
 
 interface ParsedRecord {
   license_plate: string;
@@ -61,6 +61,50 @@ const COLUMN_MAP: Record<string, keyof ParsedRecord> = {
   "ประเภทน้ำมันเครื่อง": "oil_type",
   "ระยะเปลี่ยนถ่าย (กม.)": "oil_interval",
 };
+
+/**
+ * Template headers for the downloadable Excel template.
+ * Uses deduplicated Thai headers from COLUMN_MAP, one per field.
+ * Order: required fields first, then tire fields, then oil fields.
+ */
+const TEMPLATE_HEADERS: string[] = [
+  "ทะเบียนรถ",
+  "เบอร์โทรศัพท์",
+  "รถรุ่น",
+  "สาขาที่เข้ารับบริการ",
+  "วันที่เข้ารับบริการ",
+  "ระยะที่เข้ารับบริการ",
+  "ราคาทั้งหมด",
+  "ไซส์ยาง",
+  "ยี่ห้อ",
+  "รุ่นยาง",
+  "ตำแหน่ง",
+  "สัปดาห์ผลิต",
+  "ราคาเส้นละ",
+  "ชื่อรุ่น",
+  "ความหนืด",
+  "ประเภทน้ำมันเครื่อง",
+  "ระยะเปลี่ยนถ่าย (กม.)",
+];
+
+/**
+ * Generate and download an Excel template file with correct Thai headers.
+ * Creates a .xlsx file client-side using the xlsx library.
+ */
+function download_template(): void {
+  console.log("[AdminImportPage] Generating template file");
+  const workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.aoa_to_sheet([TEMPLATE_HEADERS]);
+
+  // Set column widths for readability
+  worksheet["!cols"] = TEMPLATE_HEADERS.map((header) => ({
+    wch: Math.max(header.length * 2, 16),
+  }));
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Template");
+  XLSX.writeFile(workbook, "import_template.xlsx");
+  console.log("[AdminImportPage] Template file downloaded");
+}
 
 /**
  * Admin import page
@@ -239,7 +283,18 @@ export default function AdminImportPage() {
             {t("upload_description")}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          <Button
+            variant="outline"
+            onClick={download_template}
+            className="gap-2"
+          >
+            <Download className="h-4 w-4" />
+            {t("download_template")}
+          </Button>
+          <p className="text-xs text-muted-foreground">
+            {t("download_template_desc")}
+          </p>
           <div
             {...getRootProps()}
             className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
