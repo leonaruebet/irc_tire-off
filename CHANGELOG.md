@@ -4,6 +4,30 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-27 - Fix Admin Import: Realign Template & Add Missing Column Mappings
+
+#### Root Cause
+- **Template headers mismatch**: The downloadable Excel template did not match the actual column layout used by the business. Missing headers caused data to be silently dropped during parsing.
+- **Missing COLUMN_MAP entries**: Three Thai headers from the real Excel were not mapped:
+  - `"ระยะที่เข้ารับบริการ (กม.)"` (odometer with suffix) — odometer values from service sections were ignored
+  - `"บริการที่เข้ารับ"` (service note) — service type/notes were dropped
+  - `"เครื่องยนต์"` (engine type) — engine type for oil changes was dropped
+- **Missing fields in ParsedRecord & backend schema**: `services_note` and `engine_type` had no frontend interface or backend Zod schema entry, so they could never flow from Excel to database.
+
+#### Fixed
+- **TEMPLATE_HEADERS**: Realigned to match the business Excel layout with correct column order:
+  car info → tire change → service visit (x2) → pricing → oil change
+- **COLUMN_MAP**: Added 3 missing Thai header mappings (`ระยะที่เข้ารับบริการ (กม.)`, `บริการที่เข้ารับ`, `เครื่องยนต์`)
+- **ParsedRecord interface**: Added `services_note` and `engine_type` optional fields
+- **Backend import schema**: Added `services_note` and `engine_type` to Zod validation
+- **Backend import logic**: Now passes `services_note` to ServiceVisit creation and `engine_type` to OilChange creation
+
+#### Files Modified
+- `apps/web/src/app/admin/import/page.tsx` - Template headers, COLUMN_MAP, ParsedRecord
+- `packages/api/src/routers/admin.ts` - Import schema & mutation logic
+
+---
+
 ### 2026-01-26 - Fix Admin Import: Excel Type Coercion for Phone & Odometer
 
 #### Root Cause

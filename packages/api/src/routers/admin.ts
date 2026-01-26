@@ -906,8 +906,10 @@ export const admin_router = create_router({
             tire_position: z.coerce.string().optional(),
             tire_production_week: z.coerce.string().optional(),
             tire_price: z.coerce.number().optional(),
+            services_note: z.coerce.string().optional(),
             oil_model: z.coerce.string().optional(),
             oil_viscosity: z.coerce.string().optional(),
+            engine_type: z.coerce.string().optional(),
             oil_type: z.coerce.string().optional(),
             oil_interval: z.coerce.number().optional(),
           })
@@ -1022,6 +1024,7 @@ export const admin_router = create_router({
                 visit_date: normalize_date(record.visit_date),
                 odometer_km: record.odometer_km,
                 total_price: record.total_price,
+                services_note: record.services_note,
               },
               include: {
                 tire_changes: true,
@@ -1091,6 +1094,7 @@ export const admin_router = create_router({
                   service_visit_id: visit!.id,
                   oil_model: record.oil_model,
                   viscosity: record.oil_viscosity,
+                  engine_type: record.engine_type,
                   oil_type: record.oil_type,
                   interval_km: record.oil_interval,
                 },

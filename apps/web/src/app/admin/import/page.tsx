@@ -26,6 +26,7 @@ interface ParsedRecord {
   visit_date: Date;
   odometer_km?: number;
   total_price?: number;
+  services_note?: string;
   tire_size?: string;
   tire_brand?: string;
   tire_model?: string;
@@ -35,56 +36,82 @@ interface ParsedRecord {
   oil_model?: string;
   oil_viscosity?: string;
   oil_type?: string;
+  engine_type?: string;
   oil_interval?: number;
 }
 
 // Column mapping from Thai headers
+// Supports both tire-change ("เปลื่ยนยาง") and service ("เข้ารับบริการ") header variants
 const COLUMN_MAP: Record<string, keyof ParsedRecord> = {
+  // Core fields
   "ทะเบียนรถ": "license_plate",
   "เบอร์โทรศัพท์": "phone",
   "รถรุ่น": "car_model",
+  // Branch variants
   "สาขาที่เปลื่ยนยาง": "branch_name",
   "สาขาที่เข้ารับบริการ": "branch_name",
+  // Date variants
   "วันที่เปลื่ยนยาง": "visit_date",
   "วันที่เข้ารับบริการ": "visit_date",
+  // Odometer variants (with and without กม. suffix)
   "ระยะที่เปลื่ยนยาง (กม.)": "odometer_km",
   "ระยะที่เข้ารับบริการ": "odometer_km",
+  "ระยะที่เข้ารับบริการ (กม.)": "odometer_km",
+  // Price & service note
   "ราคาทั้งหมด": "total_price",
+  "บริการที่เข้ารับ": "services_note",
+  // Tire fields
   "ไซส์ยาง": "tire_size",
   "ยี่ห้อ": "tire_brand",
   "รุ่นยาง": "tire_model",
   "ตำแหน่ง": "tire_position",
   "สัปดาห์ผลิต": "tire_production_week",
   "ราคาเส้นละ": "tire_price",
+  // Oil fields
   "ชื่อรุ่น": "oil_model",
   "ความหนืด": "oil_viscosity",
+  "เครื่องยนต์": "engine_type",
   "ประเภทน้ำมันเครื่อง": "oil_type",
   "ระยะเปลี่ยนถ่าย (กม.)": "oil_interval",
 };
 
 /**
  * Template headers for the downloadable Excel template.
- * Uses deduplicated Thai headers from COLUMN_MAP, one per field.
- * Order: required fields first, then tire fields, then oil fields.
+ * Matches the standard Excel layout used by the business.
+ * Sections: car info → tire change → service visit (x2) → pricing → oil change
  */
 const TEMPLATE_HEADERS: string[] = [
+  // Car info
   "ทะเบียนรถ",
   "เบอร์โทรศัพท์",
   "รถรุ่น",
-  "สาขาที่เข้ารับบริการ",
-  "วันที่เข้ารับบริการ",
-  "ระยะที่เข้ารับบริการ",
-  "ราคาทั้งหมด",
+  // Tire change section
+  "วันที่เปลื่ยนยาง",
+  "สาขาที่เปลื่ยนยาง",
+  "ระยะที่เปลื่ยนยาง (กม.)",
   "ไซส์ยาง",
   "ยี่ห้อ",
   "รุ่นยาง",
-  "ตำแหน่ง",
   "สัปดาห์ผลิต",
   "ราคาเส้นละ",
+  "ตำแหน่ง",
+  // Service visit section 1
+  "วันที่เข้ารับบริการ",
+  "สาขาที่เข้ารับบริการ",
+  "ระยะที่เข้ารับบริการ (กม.)",
+  "บริการที่เข้ารับ",
+  // Service visit section 2
+  "วันที่เข้ารับบริการ",
+  "สาขาที่เข้ารับบริการ",
+  "ระยะที่เข้ารับบริการ (กม.)",
+  "บริการที่เข้ารับ",
+  // Pricing
+  "ราคาทั้งหมด",
+  // Oil change section
   "ชื่อรุ่น",
   "ความหนืด",
+  "เครื่องยนต์",
   "ประเภทน้ำมันเครื่อง",
-  "ระยะเปลี่ยนถ่าย (กม.)",
 ];
 
 /**
