@@ -4,6 +4,29 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-26 - Fix ThaiBulkSMS OTP Integration (v2 API Migration)
+
+#### Root Cause
+- ThaiBulkSMS OTP API had 3 critical integration bugs causing HTTP 423 "Gateway response send sms fail":
+  1. Wrong API version: code used `/v1/otp/` but API requires `/v2/otp/`
+  2. Wrong Content-Type: code sent `application/json` but API expects `application/x-www-form-urlencoded`
+  3. Missing `+` prefix on phone number: docs require `+66xxxxxxxxx` format
+- Additionally, code was sending `pin` parameter in OTP request, but ThaiBulkSMS generates its own OTP — `pin` is only used at the `/verify` step
+- Verify function referenced undefined `nested_data` variable in error return
+
+#### Fixed
+- **sms.ts**: Migrated from v1 to v2 API endpoints (`https://otp.thaibulksms.com/v2/otp/request` and `/verify`)
+- **sms.ts**: Changed Content-Type from `application/json` to `application/x-www-form-urlencoded` with `URLSearchParams`
+- **sms.ts**: Added `+` prefix to phone number (`+66xxxxxxxxx`)
+- **sms.ts**: Removed `pin` from OTP request body (ThaiBulkSMS generates its own OTP)
+- **sms.ts**: Fixed verify function error return to use computed `error_message` instead of undefined `nested_data`
+- **sms.ts**: Updated response parsing to handle v2 response format
+
+#### Files Modified
+- `packages/shared/src/utils/sms.ts` - Full v2 API migration (request + verify endpoints, format, phone prefix, response parsing)
+
+---
+
 ### 2026-01-26 - Fix Silent OTP SMS Delivery Failure
 
 #### Root Cause

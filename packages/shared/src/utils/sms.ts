@@ -55,10 +55,10 @@ export interface SmsOtpVerifyResult {
  * ThaiBulkSMS OTP API endpoints
  */
 export const THAIBULKSMS_OTP_API = {
-  /** Request OTP endpoint */
-  REQUEST: "https://otp.thaibulksms.com/v1/otp/request",
-  /** Verify OTP endpoint */
-  VERIFY: "https://otp.thaibulksms.com/v1/otp/verify",
+  /** Request OTP endpoint (v2) */
+  REQUEST: "https://otp.thaibulksms.com/v2/otp/request",
+  /** Verify OTP endpoint (v2) */
+  VERIFY: "https://otp.thaibulksms.com/v2/otp/verify",
 } as const;
 
 /**
@@ -103,16 +103,17 @@ export async function request_otp_via_sms(
   try {
     // ThaiBulkSMS OTP API generates its own OTP and sends it to the user.
     // Do NOT send `pin` — the pin is only used at the /verify step.
+    // API requires x-www-form-urlencoded format and +66 phone prefix.
     const response = await fetch(THAIBULKSMS_OTP_API.REQUEST, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
         Accept: "application/json",
       },
-      body: JSON.stringify({
+      body: new URLSearchParams({
         key: api_key,
         secret: api_secret,
-        msisdn,
+        msisdn: `+${msisdn}`,
       }),
     });
 
@@ -194,13 +195,14 @@ export async function verify_otp_via_sms(
   });
 
   try {
+    // ThaiBulkSMS v2 OTP verify expects x-www-form-urlencoded
     const response = await fetch(THAIBULKSMS_OTP_API.VERIFY, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
         Accept: "application/json",
       },
-      body: JSON.stringify({
+      body: new URLSearchParams({
         key: api_key,
         secret: api_secret,
         token: token,
@@ -212,16 +214,14 @@ export async function verify_otp_via_sms(
 
     console.log("[SMS] ThaiBulkSMS verify response", {
       status: response.status,
-      data,
+      data: JSON.stringify(data),
     });
 
-    // ThaiBulkSMS API has two response formats:
-    // Format 1: { code: "000" }
-    // Format 2: { data: { status: "success" } }
-    const nested_data = data.data;
+    // v2 response: { status: "success", message: "..." }
+    // Error:       { errors: [...], code: 400 }
     const is_success =
-      (response.ok && data.code === "000") ||
-      (response.ok && nested_data?.status === "success");
+      (response.ok && data.status === "success") ||
+      (response.ok && data.code === "000");
 
     if (is_success) {
       console.log("[SMS] OTP verification successful");
@@ -231,15 +231,21 @@ export async function verify_otp_via_sms(
       };
     }
 
+    const error_message =
+      data.message ||
+      data.errors?.[0]?.message ||
+      data.description ||
+      "Verification failed";
+
     console.error("[SMS] OTP verification failed", {
-      code: data.code,
-      nested_status: nested_data?.status,
-      description: data.description || nested_data?.description,
+      http_status: response.status,
+      data: JSON.stringify(data),
+      error_message,
     });
 
     return {
       success: false,
-      error: data.description || nested_data?.description || data.message || "Verification failed",
+      error: error_message,
     };
   } catch (error) {
     console.error("[SMS] OTP verification error", error);
