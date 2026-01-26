@@ -51,7 +51,13 @@
       "Bash(git push:*)",
       "Bash(pnpm --filter @tireoff/api exec tsc:*)",
       "Bash(pnpm --filter @tireoff/web exec tsc:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(gh api:*)",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_type",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "Bash(npx vercel link:*)",
+      "Bash(npx vercel:*)"
     ]
   }
 }

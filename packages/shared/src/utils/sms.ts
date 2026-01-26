@@ -95,13 +95,14 @@ export function normalize_phone_for_sms(phone: string): string {
 export async function request_otp_via_sms(
   params: SmsOtpRequestParams
 ): Promise<SmsOtpRequestResult> {
-  const { phone, code, api_key, api_secret } = params;
+  const { phone, api_key, api_secret } = params;
 
-  console.log("[SMS] Requesting OTP via ThaiBulkSMS", {
-    phone: normalize_phone_for_sms(phone),
-  });
+  const msisdn = normalize_phone_for_sms(phone);
+  console.log("[SMS] Requesting OTP via ThaiBulkSMS", { msisdn });
 
   try {
+    // ThaiBulkSMS OTP API generates its own OTP and sends it to the user.
+    // Do NOT send `pin` — the pin is only used at the /verify step.
     const response = await fetch(THAIBULKSMS_OTP_API.REQUEST, {
       method: "POST",
       headers: {
@@ -111,8 +112,7 @@ export async function request_otp_via_sms(
       body: JSON.stringify({
         key: api_key,
         secret: api_secret,
-        msisdn: normalize_phone_for_sms(phone),
-        pin: code,
+        msisdn,
       }),
     });
 
@@ -120,13 +120,15 @@ export async function request_otp_via_sms(
 
     console.log("[SMS] ThaiBulkSMS response", {
       status: response.status,
-      data,
+      data: JSON.stringify(data),
     });
 
-    // ThaiBulkSMS API has two response formats:
-    // Format 1: { code: "000", token: "...", transaction_id: "..." }
-    // Format 2: { data: { status: "success", token: "..." } }
+    // ThaiBulkSMS API has multiple response formats:
+    // Success format 1: { code: "000", token: "...", transaction_id: "..." }
+    // Success format 2: { data: { status: "success", token: "..." } }
+    // Error format:     { error: { code: 400, message: "..." } }
     const nested_data = data.data;
+    const error_data = data.error;
     const is_success =
       (response.ok && data.code === "000") ||
       (response.ok && nested_data?.status === "success");
@@ -146,15 +148,25 @@ export async function request_otp_via_sms(
       };
     }
 
+    // Extract error message from all possible response shapes
+    const error_message =
+      error_data?.message ||
+      data.description ||
+      nested_data?.description ||
+      data.message ||
+      "SMS request failed";
+
     console.error("[SMS] OTP request failed", {
+      http_status: response.status,
       code: data.code,
+      error_data,
       nested_status: nested_data?.status,
-      description: data.description || nested_data?.description,
+      error_message,
     });
 
     return {
       success: false,
-      error: data.description || nested_data?.description || data.message || "SMS request failed",
+      error: error_message,
     };
   } catch (error) {
     console.error("[SMS] OTP request error", error);
