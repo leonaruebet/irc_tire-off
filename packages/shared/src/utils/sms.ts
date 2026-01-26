@@ -124,50 +124,47 @@ export async function request_otp_via_sms(
       data: JSON.stringify(data),
     });
 
-    // ThaiBulkSMS API has multiple response formats:
-    // Success format 1: { code: "000", token: "...", transaction_id: "..." }
-    // Success format 2: { data: { status: "success", token: "..." } }
-    // Error format:     { error: { code: 400, message: "..." } }
-    const nested_data = data.data;
-    const error_data = data.error;
+    // ThaiBulkSMS v2 response formats:
+    // Success: { status: "success", token: "...", ... }
+    // Error:   { errors: [{ detail: "...", message: "..." }], code: 400 }
+    // Legacy:  { code: "000", token: "..." }
     const is_success =
-      (response.ok && data.code === "000") ||
-      (response.ok && nested_data?.status === "success");
-    const token = data.token || nested_data?.token;
-    const transaction_id = data.transaction_id || nested_data?.transaction_id;
+      (response.ok && data.status === "success") ||
+      (response.ok && data.code === "000");
+    const token = data.token;
 
     if (is_success && token) {
       console.log("[SMS] OTP request successful", {
         token: token.substring(0, 10) + "...",
-        transaction_id,
       });
 
       return {
         success: true,
         token,
-        transaction_id,
       };
     }
 
-    // Extract error message from all possible response shapes
+    // Extract error message from v2 error format: { errors: [{ detail, message }] }
+    const error_detail = data.errors?.[0]?.detail || "";
     const error_message =
-      error_data?.message ||
-      data.description ||
-      nested_data?.description ||
+      data.errors?.[0]?.message ||
       data.message ||
+      data.description ||
       "SMS request failed";
 
     console.error("[SMS] OTP request failed", {
       http_status: response.status,
-      code: data.code,
-      error_data,
-      nested_status: nested_data?.status,
+      response_code: data.code,
+      error_detail,
       error_message,
+      raw: JSON.stringify(data),
     });
 
     return {
       success: false,
-      error: error_message,
+      error: error_detail
+        ? `${error_message} (${error_detail})`
+        : error_message,
     };
   } catch (error) {
     console.error("[SMS] OTP request error", error);
