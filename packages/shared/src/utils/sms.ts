@@ -352,6 +352,8 @@ export async function send_otp(
 
   switch (config.provider) {
     case "thaibulksms":
+      // Use ThaiBulkSMS OTP API (requires Corporate SMS credits).
+      // ThaiBulkSMS generates and sends its own OTP — verification via their API.
       return await request_otp_via_sms({
         phone,
         code,
