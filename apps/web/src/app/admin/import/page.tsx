@@ -24,7 +24,7 @@ interface ParsedRecord {
   car_model?: string;
   branch_name: string;
   visit_date: Date;
-  odometer_km: number;
+  odometer_km?: number;
   total_price?: number;
   tire_size?: string;
   tire_brand?: string;
@@ -192,6 +192,15 @@ export default function AdminImportPage() {
             if (field_name && row[col_index] !== undefined && row[col_index] !== "") {
               let value = row[col_index];
 
+              // Handle phone: Excel stores as number, coerce to string with leading zero
+              if (field_name === "phone") {
+                value = String(value).trim();
+                // Thai phones start with 0; Excel drops leading zero from numbers
+                if (/^\d{9}$/.test(value)) {
+                  value = "0" + value;
+                }
+              }
+
               // Handle date conversion
               if (field_name === "visit_date") {
                 if (typeof value === "number") {
@@ -210,6 +219,14 @@ export default function AdminImportPage() {
                 )
               ) {
                 value = Number(value) || 0;
+              }
+
+              // Handle string coercion for fields that may come as numbers
+              if (
+                ["license_plate", "tire_production_week", "tire_size"].includes(field_name) &&
+                typeof value === "number"
+              ) {
+                value = String(value);
               }
 
               record[field_name] = value;

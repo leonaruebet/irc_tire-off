@@ -888,23 +888,28 @@ export const admin_router = create_router({
       z.object({
         records: z.array(
           z.object({
-            license_plate: z.string(),
-            phone: z.string(),
-            car_model: z.string().optional(),
-            branch_name: z.string(),
+            license_plate: z.coerce.string(),
+            phone: z.coerce.string().transform((v) => {
+              const trimmed = v.trim();
+              // Thai phones: Excel drops leading zero from numbers (812345678 → 0812345678)
+              if (/^\d{9}$/.test(trimmed)) return "0" + trimmed;
+              return trimmed;
+            }),
+            car_model: z.coerce.string().optional(),
+            branch_name: z.coerce.string(),
             visit_date: z.coerce.date(),
-            odometer_km: z.number(),
-            total_price: z.number().optional(),
-            tire_size: z.string().optional(),
-            tire_brand: z.string().optional(),
-            tire_model: z.string().optional(),
-            tire_position: z.string().optional(),
-            tire_production_week: z.string().optional(),
-            tire_price: z.number().optional(),
-            oil_model: z.string().optional(),
-            oil_viscosity: z.string().optional(),
-            oil_type: z.string().optional(),
-            oil_interval: z.number().optional(),
+            odometer_km: z.coerce.number().optional().default(0),
+            total_price: z.coerce.number().optional(),
+            tire_size: z.coerce.string().optional(),
+            tire_brand: z.coerce.string().optional(),
+            tire_model: z.coerce.string().optional(),
+            tire_position: z.coerce.string().optional(),
+            tire_production_week: z.coerce.string().optional(),
+            tire_price: z.coerce.number().optional(),
+            oil_model: z.coerce.string().optional(),
+            oil_viscosity: z.coerce.string().optional(),
+            oil_type: z.coerce.string().optional(),
+            oil_interval: z.coerce.number().optional(),
           })
         ),
       })

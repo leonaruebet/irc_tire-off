@@ -4,6 +4,30 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-26 - Fix Admin Import: Excel Type Coercion for Phone & Odometer
+
+#### Root Cause
+- **Phone field**: Excel stores phone numbers as numeric values, stripping the leading zero (e.g., `0812345678` → `812345678`). The Zod schema expected `z.string()` but received a number, causing `invalid_type` errors for every record.
+- **odometer_km field**: When the Excel cell is empty, the field is never set on the parsed record. The Zod schema required `z.number()` (not optional), causing `Required` validation errors.
+
+#### Fixed
+- **Frontend parsing (page.tsx)**: Added phone-to-string coercion during Excel row parsing
+  - Converts numeric phone values to strings via `String(value)`
+  - Restores leading zero for 9-digit Thai phone numbers (`/^\d{9}$/` → `"0" + value`)
+  - Also coerces `license_plate`, `tire_production_week`, `tire_size` from number to string
+- **Backend schema (admin.ts)**: Made all import fields defensively coercible
+  - `phone`: Changed from `z.string()` to `z.coerce.string().transform()` with leading zero restoration
+  - `odometer_km`: Changed from `z.number()` to `z.coerce.number().optional().default(0)`
+  - All string fields: Changed from `z.string()` to `z.coerce.string()` for Excel numeric safety
+  - All number fields: Changed from `z.number()` to `z.coerce.number()` for string-to-number safety
+- **ParsedRecord interface**: Made `odometer_km` optional to match rows with empty odometer cells
+
+#### Files Modified
+- `apps/web/src/app/admin/import/page.tsx` - Phone coercion, string coercion, optional odometer_km
+- `packages/api/src/routers/admin.ts` - Defensive z.coerce for all import_records schema fields
+
+---
+
 ### 2026-01-26 - Admin Import: Download Template Button
 
 #### Added
