@@ -4,6 +4,20 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-26 - Enforce Real OTP in Production
+
+#### Changed
+- **OTP Verification**: Bypass code "000000" now only works in non-production environments
+  - Re-added `NODE_ENV !== "production"` guard to bypass code check
+  - In production, users must enter the real OTP sent via ThaiBulkSMS SMS
+  - Development/local environments still allow "000000" for testing convenience
+  - Updated log message to include environment context
+
+#### Files Modified
+- `packages/api/src/routers/auth.ts` - Added production guard to bypass code logic
+
+---
+
 ### 2026-01-25 - Oil Tab Layout Redesign
 
 #### Changed

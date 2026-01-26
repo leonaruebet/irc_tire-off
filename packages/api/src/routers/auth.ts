@@ -155,8 +155,9 @@ export const auth_router = create_router({
       const { db, ip_address } = ctx;
       const { phone, code } = input;
 
-      // Check for bypass code (000000 always works for testing/support)
-      const is_bypass_code = code === OTP_CONFIG.DEV_BYPASS_CODE;
+      // Check for bypass code (000000 only works in non-production for testing)
+      const is_production = process.env.NODE_ENV === "production";
+      const is_bypass_code = !is_production && code === OTP_CONFIG.DEV_BYPASS_CODE;
 
       // Find user (create if dev bypass and not exists)
       let user = await db.user.findUnique({
@@ -217,7 +218,7 @@ export const auth_router = create_router({
       }
 
       if (is_bypass_code) {
-        console.log("[Auth] Bypass code (000000) used", { phone });
+        console.log("[Auth] DEV bypass code (000000) used", { phone, env: process.env.NODE_ENV });
       }
 
       // Verify code (allow dev bypass)
