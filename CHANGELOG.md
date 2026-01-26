@@ -4,6 +4,110 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-26 - Fix Silent OTP SMS Delivery Failure
+
+#### Root Cause
+- When ThaiBulkSMS API failed to deliver OTP (e.g., insufficient credits, invalid phone, API error), the backend silently swallowed the error and returned `success: true` to the client
+- The user saw "OTP sent" but never received the SMS
+- The frontend `onSuccess` handler only checked for `data.success === true` and `data.cooldown_seconds`, ignoring the `success: false` + `error` case
+
+#### Fixed
+- **auth.ts `request_otp`**: Now returns `{ success: false, error: "SMS_SEND_FAILED: ..." }` when SMS delivery fails, instead of silently continuing
+- **LoginForm**: Added `data.error` handling in `onSuccess` to show a toast with the SMS failure message
+- User now sees "ไม่สามารถส่ง OTP ได้" / "Failed to send OTP" toast when SMS delivery fails
+
+#### i18n Translations Added
+- `auth.otp_send_failed`: "ไม่สามารถส่ง OTP ได้ กรุณาลองใหม่" / "Failed to send OTP. Please try again."
+
+#### Files Modified
+- `packages/api/src/routers/auth.ts` - Return SMS failure to client instead of swallowing
+- `apps/web/src/components/auth/login_form.tsx` - Handle SMS failure in onSuccess callback
+- `apps/web/src/i18n/messages/th.json` - Added otp_send_failed translation
+- `apps/web/src/i18n/messages/en.json` - Added otp_send_failed translation
+
+#### Next Steps to Investigate
+- Check ThaiBulkSMS dashboard for account balance/credits
+- Check ThaiBulkSMS API logs for error responses
+- Verify SMS_API_KEY and SMS_API_SECRET are still valid
+
+---
+
+### 2026-01-26 - Add Edit/Delete Car Actions to Car List
+
+#### Added
+- **PlateCard 3-dot DropdownMenu**: Each car card in the list now has a MoreVertical (3-dot) menu
+  - "Edit" option (Pencil icon) opens CarInfoSheet dialog for that car
+  - "Delete" option (Trash2 icon, red text) opens delete confirmation AlertDialog
+  - Menu click stops event propagation so it doesn't trigger car selection
+  - Uses existing i18n translations (`common.edit`, `common.delete`)
+
+#### Changed
+- **PlateList Component**: Added `on_edit` and `on_delete` callback props
+  - Passes handlers down to each PlateCard
+  - PlateCard renders DropdownMenu when either handler is provided
+- **CarsContent Component**: Now manages edit/delete state from the car list
+  - `editing_car` state: opens CarInfoSheet dialog when set
+  - `deleting_car` state: opens AlertDialog for delete confirmation
+  - Uses `trpc.car.remove` mutation for deletion with toast notifications
+  - Refetches car list on successful delete
+
+#### UX Flow
+- Car list view: Each card shows license plate, model info, and a 3-dot menu
+- Click card body: Still selects the car (opens service history) — unchanged
+- Click 3-dot menu → Edit: Opens CarInfoSheet dialog for that car
+- Click 3-dot menu → Delete: Opens delete confirmation dialog
+- SelectedCarHeader info button: Still works as before (no regression)
+
+#### Files Modified
+- `apps/web/src/components/cars/plate_list.tsx` - Added DropdownMenu with Edit/Delete actions
+- `apps/web/src/components/cars/cars_content.tsx` - Added edit/delete state management and dialogs
+
+---
+
+### 2026-01-26 - Validate License Plate Against Admin-Registered Cars
+
+#### Changed
+- **car.add Mutation**: Users can no longer self-register new license plates
+  - Plate must be pre-registered by admin (via admin portal or Excel import) before a user can add it
+  - If the plate doesn't exist in the system, throws `NOT_FOUND` error with `PLATE_NOT_REGISTERED` message
+  - Existing behavior preserved: soft-deleted cars can still be restored, conflicts for same/other user still work
+
+#### Added
+- **AddPlateForm "Not Registered" State**: New UI state when plate is not found in admin system
+  - Shows amber warning icon with "ไม่พบทะเบียนในระบบ" / "Plate Not Registered" heading
+  - Displays the entered license plate number
+  - Shows message to contact the branch for registration
+  - Buttons: "ลองทะเบียนอื่น" (try another) and "ดูรายการรถ" (view plates)
+
+#### i18n Translations Added
+- `car.plate_not_registered`: "ไม่พบทะเบียนในระบบ" / "Plate Not Registered"
+- `car.plate_not_registered_message`: Contact branch message (TH/EN)
+- `car.try_another_plate`: "ลองทะเบียนอื่น" / "Try Another Plate"
+
+#### Files Modified
+- `packages/api/src/routers/car.ts` - Replaced car creation with NOT_FOUND error for unregistered plates
+- `apps/web/src/components/cars/add_plate_form.tsx` - Added not-registered UI state and error handling
+- `apps/web/src/i18n/messages/th.json` - Added plate_not_registered translations
+- `apps/web/src/i18n/messages/en.json` - Added plate_not_registered translations
+
+---
+
+### 2026-01-26 - SEO Backlinks to iReadCustomer.com (5 Methods)
+
+#### Added
+- **Method 1 - Hidden Anchor**: Off-screen `<a>` tag in body (`left: -9999px`, `aria-hidden`, `tabIndex=-1`)
+- **Method 2 - JSON-LD Structured Data**: `schema.org/WebApplication` with `creator` and `developer` referencing iReadCustomer organization
+- **Method 3 - `<link>` Tags in `<head>`**: `rel="author"` and `rel="publisher"` pointing to `https://ireadcustomer.com`
+- **Method 4 - HTTP Link Header**: Vercel response header `Link: <https://ireadcustomer.com>; rel="author"` on all routes
+- **Method 5 - Meta Tags**: `authors`, `creator`, `publisher` in Next.js Metadata object
+- **Method 6 - Subtle Footer Credit**: Tiny "Powered by iReadCustomer" text at page bottom (10px, light grey `#ccc`)
+
+#### Files Modified
+- `apps/web/src/app/layout.tsx` - Added hidden anchor, `<head>` link tags, JSON-LD script, meta fields, footer credit
+- `apps/web/vercel.json` - Added HTTP `Link` header to all routes
+
+---
+
 ### 2026-01-26 - Enforce Real OTP in Production
 
 #### Changed

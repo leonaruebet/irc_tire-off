@@ -107,12 +107,17 @@ export const auth_router = create_router({
       const sms_result = await send_otp(phone, otp_code);
 
       if (!sms_result.success) {
-        console.error("[Auth] Failed to send OTP", {
+        console.error("[Auth] Failed to send OTP via SMS", {
+          phone,
+          provider: sms_config.provider,
           error: sms_result.error,
         });
 
-        // Still return success to avoid revealing SMS issues to client
-        // Log the error for monitoring
+        // Surface the SMS delivery failure to the user
+        return {
+          success: false,
+          error: `SMS_SEND_FAILED: ${sms_result.error || "Unknown error"}`,
+        };
       }
 
       // Store SMS token for ThaiBulkSMS verification

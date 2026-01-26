@@ -1,7 +1,14 @@
 "use client";
 
-import { Car, ChevronRight } from "lucide-react";
+import { Car, ChevronRight, MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown_menu";
 
 interface Plate {
   id: string;
@@ -22,6 +29,8 @@ interface PlateListProps {
   plates: Plate[];
   selected_plate_id?: string | null;
   on_select?: (plate: Plate) => void;
+  on_edit?: (plate: Plate) => void;
+  on_delete?: (plate: Plate) => void;
 }
 
 /**
@@ -30,7 +39,7 @@ interface PlateListProps {
  * @param props - List of plates, selected plate ID, and selection handler
  * @returns Plate list component
  */
-export function PlateList({ plates, selected_plate_id, on_select }: PlateListProps) {
+export function PlateList({ plates, selected_plate_id, on_select, on_edit, on_delete }: PlateListProps) {
   console.log("[PlateList] Rendering", { count: plates.length, selected_plate_id });
 
   if (plates.length === 0) {
@@ -59,6 +68,8 @@ export function PlateList({ plates, selected_plate_id, on_select }: PlateListPro
           plate={plate}
           is_selected={selected_plate_id === plate.id}
           on_click={on_select ? () => on_select(plate) : undefined}
+          on_edit={on_edit ? () => on_edit(plate) : undefined}
+          on_delete={on_delete ? () => on_delete(plate) : undefined}
         />
       ))}
     </div>
@@ -69,16 +80,21 @@ interface PlateCardProps {
   plate: Plate;
   is_selected?: boolean;
   on_click?: () => void;
+  on_edit?: () => void;
+  on_delete?: () => void;
 }
 
 /**
  * Individual plate card with clean design
  * Clickable for selection, highlights when selected
- * @param props - Plate data, selection state, and click handler
+ * Includes 3-dot menu for edit/delete actions
+ * @param props - Plate data, selection state, click handler, edit/delete handlers
  * @returns Plate card
  */
-function PlateCard({ plate, is_selected, on_click }: PlateCardProps) {
+function PlateCard({ plate, is_selected, on_click, on_edit, on_delete }: PlateCardProps) {
   const is_clickable = !!on_click;
+  const has_actions = !!on_edit || !!on_delete;
+  const t_common = useTranslations("common");
 
   /**
    * Build subtitle from available car details
@@ -119,6 +135,38 @@ function PlateCard({ plate, is_selected, on_click }: PlateCardProps) {
             <p className="text-sm text-muted-foreground truncate">{subtitle}</p>
           )}
         </div>
+        {has_actions && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="p-2 rounded-lg hover:bg-muted/50 transition-colors shrink-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+                aria-label="Car actions"
+              >
+                <MoreVertical className="h-5 w-5 text-muted-foreground" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+              {on_edit && (
+                <DropdownMenuItem onClick={on_edit}>
+                  <Pencil className="h-4 w-4 mr-2" />
+                  {t_common("edit")}
+                </DropdownMenuItem>
+              )}
+              {on_delete && (
+                <DropdownMenuItem
+                  onClick={on_delete}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {t_common("delete")}
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
         {is_clickable && (
           <ChevronRight
             className={cn(

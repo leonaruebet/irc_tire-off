@@ -34,7 +34,8 @@
     "verify": "Verify",
     "back": "Back",
     "logout": "Logout",
-    "logout_confirm": "Are you sure you want to logout?"
+    "logout_confirm": "Are you sure you want to logout?",
+    "otp_send_failed": "Failed to send OTP. Please try again."
   },
   "car": {
     "title": "My Cars",
@@ -73,7 +74,10 @@
     "update_failed": "Failed to update vehicle",
     "remove_success": "Vehicle removed successfully!",
     "remove_failed": "Failed to remove vehicle",
-    "select_to_view": "Select a car to view service history"
+    "select_to_view": "Select a car to view service history",
+    "plate_not_registered": "Plate Not Registered",
+    "plate_not_registered_message": "This license plate is not registered in the system. Please contact the branch to register first.",
+    "try_another_plate": "Try Another Plate"
   },
   "service": {
     "history": "Service History",

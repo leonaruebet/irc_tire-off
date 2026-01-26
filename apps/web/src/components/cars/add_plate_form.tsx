@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Car, Loader2, CheckCircle } from "lucide-react";
+import { Car, Loader2, CheckCircle, AlertTriangle } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,6 +39,7 @@ export function AddPlateForm() {
   const t = useTranslations("car");
   const router = useRouter();
   const [submitted, set_submitted] = useState(false);
+  const [not_registered_plate, set_not_registered_plate] = useState<string | null>(null);
 
   const form = useForm<AddPlateFormData>({
     resolver: zodResolver(add_plate_schema),
@@ -61,6 +62,14 @@ export function AddPlateForm() {
     },
     onError: (error) => {
       console.error("[AddPlateForm] Error adding plate", error);
+
+      // Handle plate not registered in admin system
+      if (error.message === "PLATE_NOT_REGISTERED") {
+        console.log("[AddPlateForm] Plate not registered in admin system");
+        set_not_registered_plate(form.getValues("license_plate"));
+        return;
+      }
+
       toast({
         title: t("register_failed"),
         description: error.message,
@@ -99,6 +108,43 @@ export function AddPlateForm() {
   function handle_view_plates() {
     console.log("[AddPlateForm] Navigating to plates list");
     router.push(APP_ROUTES.CARS);
+  }
+
+  /**
+   * Reset not registered state and clear form for retry
+   */
+  function handle_retry_plate() {
+    console.log("[AddPlateForm] Retrying with different plate");
+    set_not_registered_plate(null);
+    form.reset();
+  }
+
+  // Show "not registered" state when plate is not found in admin system
+  if (not_registered_plate) {
+    return (
+      <div className="bg-white rounded-2xl border border-border p-8">
+        <div className="flex flex-col items-center">
+          <div className="p-4 rounded-full bg-amber-100 mb-4">
+            <AlertTriangle className="h-10 w-10 text-amber-600" />
+          </div>
+          <h2 className="text-xl font-bold mb-2">{t("plate_not_registered")}</h2>
+          <p className="text-lg font-semibold text-foreground mb-1">
+            {not_registered_plate}
+          </p>
+          <p className="text-muted-foreground text-center mb-6">
+            {t("plate_not_registered_message")}
+          </p>
+          <div className="flex gap-3 w-full">
+            <Button variant="outline" className="flex-1" onClick={handle_retry_plate}>
+              {t("try_another_plate")}
+            </Button>
+            <Button className="flex-1" onClick={handle_view_plates}>
+              {t("view_plates")}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // Show success state

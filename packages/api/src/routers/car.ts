@@ -321,26 +321,16 @@ export const car_router = create_router({
         });
       }
 
-      // Create new car
-      const car = await ctx.db.car.create({
-        data: {
-          license_plate: normalized_plate,
-          car_model: input.car_model,
-          car_year: input.car_year,
-          car_color: input.car_color,
-          car_vin: input.car_vin,
-          owner_id: ctx.user.id,
-        },
+      // Plate not found in system — must be pre-registered by admin
+      console.log("[Car] Plate not registered in system", {
+        plate: normalized_plate,
+        user_id: ctx.user.id,
       });
 
-      console.log("[Car] Add car completed", { car_id: car.id });
-
-      return {
-        id: car.id,
-        license_plate: car.license_plate,
-        car_model: car.car_model,
-        restored: false,
-      };
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "PLATE_NOT_REGISTERED",
+      });
     }),
 
   /**

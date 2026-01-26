@@ -66,7 +66,7 @@ export function LoginForm() {
   // Request OTP mutation
   const request_otp = trpc.auth.request_otp.useMutation({
     onSuccess: (data) => {
-      console.log("[LoginForm] OTP request success", data);
+      console.log("[LoginForm] OTP request result", data);
 
       if (data.success) {
         set_step("otp");
@@ -78,6 +78,14 @@ export function LoginForm() {
         start_cooldown_timer(data.cooldown_seconds);
         toast({
           title: t("otp_resend_wait", { seconds: data.cooldown_seconds }),
+          variant: "destructive",
+        });
+      } else if (data.error) {
+        // SMS delivery failed — surface the error to user
+        console.error("[LoginForm] SMS delivery failed", { error: data.error });
+        toast({
+          title: t("otp_send_failed"),
+          description: data.error,
           variant: "destructive",
         });
       }

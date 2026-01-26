@@ -50,7 +50,8 @@
       "Bash(pnpm exec turbo run build:*)",
       "Bash(git push:*)",
       "Bash(pnpm --filter @tireoff/api exec tsc:*)",
-      "Bash(pnpm --filter @tireoff/web exec tsc:*)"
+      "Bash(pnpm --filter @tireoff/web exec tsc:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }
