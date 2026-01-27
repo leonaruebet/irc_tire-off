@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
 import { useTranslations } from "next-intl";
 import * as XLSX from "xlsx";
@@ -58,6 +58,8 @@ const COLUMN_MAP: Record<string, keyof ParsedRecord> = {
   "วันที่เปลี่ยนน้ำมันเครื่อง": "visit_date",
   "วันที่เปลี่ยนน้ำมัน": "visit_date",
   "วันที่เปลี่ยนถ่าย": "visit_date",
+  "วันที่ถ่ายน้ำมันเครื่อง": "visit_date",
+  "วันที่ถ่ายน้ำมัน": "visit_date",
 
   // --- Branch variants ---
   "สาขาที่เปลื่ยนยาง": "branch_name",
@@ -66,6 +68,8 @@ const COLUMN_MAP: Record<string, keyof ParsedRecord> = {
   "สาขาที่เปลี่ยนน้ำมันเครื่อง": "branch_name",
   "สาขาที่เปลี่ยนน้ำมัน": "branch_name",
   "สาขาที่เปลี่ยนถ่าย": "branch_name",
+  "สาขาที่ถ่ายน้ำมันเครื่อง": "branch_name",
+  "สาขาที่ถ่ายน้ำมัน": "branch_name",
 
   // --- Odometer variants (with and without กม. suffix) ---
   "ระยะที่เปลื่ยนยาง (กม.)": "odometer_km",
@@ -81,6 +85,12 @@ const COLUMN_MAP: Record<string, keyof ParsedRecord> = {
   "ระยะที่เปลี่ยนน้ำมันเครื่อง (กม.)": "odometer_km",
   "ระยะเปลี่ยนน้ำมัน": "odometer_km",
   "ระยะเปลี่ยนน้ำมัน (กม.)": "odometer_km",
+  "ระยะถ่ายน้ำมันเครื่อง": "odometer_km",
+  "ระยะถ่ายน้ำมันเครื่อง (กม.)": "odometer_km",
+  "ระยะที่ถ่ายน้ำมันเครื่อง": "odometer_km",
+  "ระยะที่ถ่ายน้ำมันเครื่อง (กม.)": "odometer_km",
+  "ระยะถ่ายน้ำมัน": "odometer_km",
+  "ระยะถ่ายน้ำมัน (กม.)": "odometer_km",
 
   // Price & service note
   "ราคาทั้งหมด": "total_price",
@@ -101,6 +111,62 @@ const COLUMN_MAP: Record<string, keyof ParsedRecord> = {
   "ประเภทน้ำมันเครื่อง": "oil_type",
   "ระยะเปลี่ยนถ่าย (กม.)": "oil_interval",
 };
+
+/**
+ * Service type categories used for preview filtering.
+ * Detected post-parse based on which fields are populated.
+ */
+type ServiceType = "tire_change" | "tire_switch" | "oil_change";
+
+/**
+ * Preview filter options: show all or a specific service type.
+ */
+type PreviewFilter = "all" | ServiceType;
+
+/**
+ * Detect which service type(s) a parsed row belongs to.
+ * Based on which section-specific fields are populated (non-empty).
+ * @param record - A parsed Excel row
+ * @returns Array of detected service types (may contain multiple for combined rows)
+ */
+function detect_service_types(record: ParsedRecord): ServiceType[] {
+  const types: ServiceType[] = [];
+
+  // Tire change: has tire-specific fields
+  if (record.tire_size || record.tire_brand || record.tire_model) {
+    types.push("tire_change");
+  }
+
+  // Oil change: has oil-specific fields
+  if (record.oil_model || record.oil_viscosity || record.oil_type) {
+    types.push("oil_change");
+  }
+
+  // Tire switch / service visit: has services_note but no tire or oil data
+  if (record.services_note && types.length === 0) {
+    types.push("tire_switch");
+  }
+
+  return types;
+}
+
+/**
+ * Map service type to display color classes for preview badges.
+ * @param type - The service type
+ * @returns Tailwind CSS class string for badge styling
+ */
+function service_type_badge_classes(type: ServiceType): string {
+  switch (type) {
+    case "tire_change":
+      return "bg-blue-100 text-blue-700";
+    case "oil_change":
+      return "bg-amber-100 text-amber-700";
+    case "tire_switch":
+      return "bg-green-100 text-green-700";
+    default:
+      return "bg-gray-100 text-gray-700";
+  }
+}
 
 /**
  * Template headers for the downloadable Excel template.
@@ -224,6 +290,8 @@ export default function AdminImportPage() {
     errors: string[];
   } | null>(null);
 
+  const [preview_filter, set_preview_filter] = useState<PreviewFilter>("all");
+
   const import_mutation = trpc.admin.import_records.useMutation({
     onSuccess: (result) => {
       console.log("[AdminImportPage] Import success", result);
@@ -245,6 +313,33 @@ export default function AdminImportPage() {
       });
     },
   });
+
+  /**
+   * Count records by service type for filter tab badges.
+   * Memoized to avoid recalculating on every render.
+   */
+  const type_counts = useMemo(() => {
+    console.log("[AdminImportPage] Computing type counts");
+    const counts = { tire_change: 0, tire_switch: 0, oil_change: 0 };
+    parsed_data.forEach((record) => {
+      const types = detect_service_types(record);
+      types.forEach((st) => { counts[st]++; });
+    });
+    return counts;
+  }, [parsed_data]);
+
+  /**
+   * Filtered records based on current preview filter selection.
+   * When filter is "all", returns all parsed data.
+   * Otherwise filters to records that include the selected service type.
+   */
+  const filtered_data = useMemo(() => {
+    console.log("[AdminImportPage] Filtering data for:", preview_filter);
+    if (preview_filter === "all") return parsed_data;
+    return parsed_data.filter((record) =>
+      detect_service_types(record).includes(preview_filter)
+    );
+  }, [parsed_data, preview_filter]);
 
   /**
    * Handle file drop
@@ -420,6 +515,7 @@ export default function AdminImportPage() {
     set_parsed_data([]);
     set_file_name("");
     set_import_result(null);
+    set_preview_filter("all");
   }
 
   return (
@@ -495,12 +591,52 @@ export default function AdminImportPage() {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="p-0 sm:p-6">
+          <CardContent className="p-0 sm:p-6 space-y-4">
+            {/* Service type filter tabs */}
+            <div className="flex flex-wrap gap-2 px-4 sm:px-0">
+              <Button
+                size="sm"
+                variant={preview_filter === "all" ? "default" : "outline"}
+                onClick={() => set_preview_filter("all")}
+              >
+                {t("filter.all")} ({parsed_data.length})
+              </Button>
+              <Button
+                size="sm"
+                variant={preview_filter === "tire_change" ? "default" : "outline"}
+                onClick={() => set_preview_filter("tire_change")}
+                className={preview_filter === "tire_change" ? "bg-blue-600 hover:bg-blue-700" : ""}
+              >
+                <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-1.5" />
+                {t("filter.tire_change")} ({type_counts.tire_change})
+              </Button>
+              <Button
+                size="sm"
+                variant={preview_filter === "tire_switch" ? "default" : "outline"}
+                onClick={() => set_preview_filter("tire_switch")}
+                className={preview_filter === "tire_switch" ? "bg-green-600 hover:bg-green-700" : ""}
+              >
+                <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-1.5" />
+                {t("filter.tire_switch")} ({type_counts.tire_switch})
+              </Button>
+              <Button
+                size="sm"
+                variant={preview_filter === "oil_change" ? "default" : "outline"}
+                onClick={() => set_preview_filter("oil_change")}
+                className={preview_filter === "oil_change" ? "bg-amber-600 hover:bg-amber-700" : ""}
+              >
+                <span className="inline-block w-2 h-2 rounded-full bg-amber-500 mr-1.5" />
+                {t("filter.oil_change")} ({type_counts.oil_change})
+              </Button>
+            </div>
+
+            {/* Preview table */}
             <div className="max-h-[400px] overflow-auto">
-              <Table className="min-w-[800px]">
+              <Table className="min-w-[900px]">
                 <TableHeader>
                   <TableRow>
                     <TableHead>{t("table.row_num")}</TableHead>
+                    <TableHead>{t("table.type")}</TableHead>
                     <TableHead>{t("table.license_plate")}</TableHead>
                     <TableHead>{t("table.phone")}</TableHead>
                     <TableHead>{t("table.branch")}</TableHead>
@@ -508,46 +644,81 @@ export default function AdminImportPage() {
                     <TableHead>{t("table.odometer")}</TableHead>
                     <TableHead>{t("table.tire")}</TableHead>
                     <TableHead>{t("table.oil")}</TableHead>
+                    <TableHead>{t("table.note")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {parsed_data.slice(0, 50).map((record, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="text-muted-foreground">{index + 1}</TableCell>
-                      <TableCell className="font-medium">{record.license_plate}</TableCell>
-                      <TableCell>{record.phone}</TableCell>
-                      <TableCell>{record.branch_name}</TableCell>
-                      <TableCell>
-                        {record.visit_date instanceof Date
-                          ? record.visit_date.toLocaleDateString()
-                          : "-"}
-                      </TableCell>
-                      <TableCell>{record.odometer_km?.toLocaleString() || "-"}</TableCell>
-                      <TableCell>
-                        {record.tire_size ? (
-                          <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">
-                            {record.tire_position || "?"}: {record.tire_size}
-                          </span>
-                        ) : (
-                          "-"
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {record.oil_viscosity ? (
-                          <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-700">
-                            {record.oil_viscosity}
-                          </span>
-                        ) : (
-                          "-"
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {filtered_data.slice(0, 50).map((record, index) => {
+                    const types = detect_service_types(record);
+                    return (
+                      <TableRow key={index}>
+                        <TableCell className="text-muted-foreground">{index + 1}</TableCell>
+                        <TableCell>
+                          <div className="flex flex-col gap-1">
+                            {types.map((st) => (
+                              <span
+                                key={st}
+                                className={`text-xs px-1.5 py-0.5 rounded whitespace-nowrap ${service_type_badge_classes(st)}`}
+                              >
+                                {t(`filter.${st}`)}
+                              </span>
+                            ))}
+                            {types.length === 0 && (
+                              <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-500">
+                                -
+                              </span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-medium">{record.license_plate}</TableCell>
+                        <TableCell>{record.phone}</TableCell>
+                        <TableCell>{record.branch_name}</TableCell>
+                        <TableCell>
+                          {record.visit_date instanceof Date
+                            ? record.visit_date.toLocaleDateString()
+                            : "-"}
+                        </TableCell>
+                        <TableCell>{record.odometer_km?.toLocaleString() || "-"}</TableCell>
+                        <TableCell>
+                          {record.tire_size ? (
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">
+                              {record.tire_position || "?"}: {record.tire_size}
+                            </span>
+                          ) : (
+                            "-"
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {record.oil_viscosity ? (
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">
+                              {record.oil_viscosity}
+                            </span>
+                          ) : (
+                            "-"
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {record.services_note ? (
+                            <span className="text-xs text-muted-foreground">
+                              {record.services_note}
+                            </span>
+                          ) : (
+                            "-"
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
-              {parsed_data.length > 50 && (
+              {filtered_data.length > 50 && (
                 <p className="text-center text-sm text-muted-foreground py-4">
-                  {t("showing_first", { count: 50, total: parsed_data.length })}
+                  {t("showing_first", { count: 50, total: filtered_data.length })}
+                </p>
+              )}
+              {filtered_data.length === 0 && preview_filter !== "all" && (
+                <p className="text-center text-sm text-muted-foreground py-8">
+                  {t("filter.no_records")}
                 </p>
               )}
             </div>

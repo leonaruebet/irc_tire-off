@@ -4,6 +4,38 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-28 - Admin Import: Preview Split by Service Type + Missing ถ่ายน้ำมัน Column Mappings
+
+#### Root Cause
+- **Preview table showed all records in a flat list**: No way to distinguish between tire change, tire switch, and oil change rows in the upload preview. Made it hard to verify data before importing.
+- **Missing COLUMN_MAP entries for "ถ่าย" variants**: The real business Excel uses "วันที่ถ่ายน้ำมันเครื่อง" and "สาขาที่ถ่ายน้ำมันเครื่อง" headers (using "ถ่าย" = drain, not "เปลี่ยน" = change). These were not mapped, so oil change rows from some Excel layouts had empty date/branch/odometer.
+
+#### Fixed
+- **Service type detection**: Added `detect_service_types()` utility that classifies each parsed row:
+  - `tire_change`: row has `tire_size` or `tire_brand` or `tire_model`
+  - `oil_change`: row has `oil_model` or `oil_viscosity` or `oil_type`
+  - `tire_switch`: row has `services_note` but no tire/oil specific fields
+  - Combined rows (e.g., tire + oil on same row) show multiple badges
+- **Preview filter tabs**: Added color-coded filter buttons above the preview table:
+  - ทั้งหมด (All) | เปลี่ยนยาง (blue) | สลับยาง (green) | เปลี่ยนน้ำมัน (amber)
+  - Each tab shows count of matching records
+  - Clicking a tab filters the table to only that service type
+- **Type column**: New "ประเภท" (Type) column with colored badges per row
+- **Note column**: New "หมายเหตุ" (Note) column showing `services_note` value
+- **COLUMN_MAP**: Added "ถ่าย" (drain) variants for oil change section:
+  - Date: "วันที่ถ่ายน้ำมันเครื่อง", "วันที่ถ่ายน้ำมัน"
+  - Branch: "สาขาที่ถ่ายน้ำมันเครื่อง", "สาขาที่ถ่ายน้ำมัน"
+  - Odometer: "ระยะถ่ายน้ำมันเครื่อง", "ระยะที่ถ่ายน้ำมันเครื่อง" (with/without กม.)
+
+#### Files Modified
+- `apps/web/src/app/admin/import/page.tsx` - Service type detection, preview filter tabs, type/note columns, COLUMN_MAP expanded
+- `apps/web/src/i18n/messages/th.json` - Added filter.* and table.type/note translations
+- `apps/web/src/i18n/messages/en.json` - Added filter.* and table.type/note translations
+- `packages/shared/src/i18n/messages/th.json` - Added filter.* and table.type/note translations
+- `packages/shared/src/i18n/messages/en.json` - Added filter.* and table.type/note translations
+
+---
+
 ### 2026-01-27 - Fix Admin Import: Add Missing สลับยาง / เปลี่ยนน้ำมัน Column Mappings
 
 #### Root Cause

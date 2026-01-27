@@ -217,13 +217,23 @@
 
       "table": {
         "row_num": "#",
+        "type": "Type",
         "license_plate": "License Plate",
         "phone": "Phone",
         "branch": "Branch",
         "date": "Date",
         "odometer": "Odometer",
         "tire": "Tire",
-        "oil": "Oil"
+        "oil": "Oil",
+        "note": "Note"
+      },
+
+      "filter": {
+        "all": "All",
+        "tire_change": "Tire Change",
+        "tire_switch": "Tire Switch",
+        "oil_change": "Oil Change",
+        "no_records": "No records found for this type"
       },
 
       "results": {

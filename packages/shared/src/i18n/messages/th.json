@@ -217,13 +217,23 @@
 
       "table": {
         "row_num": "#",
+        "type": "ประเภท",
         "license_plate": "ทะเบียนรถ",
         "phone": "เบอร์โทร",
         "branch": "สาขา",
         "date": "วันที่",
         "odometer": "เลขไมล์",
         "tire": "ยาง",
-        "oil": "น้ำมัน"
+        "oil": "น้ำมัน",
+        "note": "หมายเหตุ"
+      },
+
+      "filter": {
+        "all": "ทั้งหมด",
+        "tire_change": "เปลี่ยนยาง",
+        "tire_switch": "สลับยาง",
+        "oil_change": "เปลี่ยนน้ำมัน",
+        "no_records": "ไม่พบรายการในประเภทนี้"
       },
 
       "results": {
