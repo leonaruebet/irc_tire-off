@@ -296,6 +296,12 @@
       "add_record": "Add Record",
       "search_placeholder": "Search by plate, phone, or branch...",
       "search": "Search",
+      "filter": {
+        "all": "All",
+        "tire_change": "Tire Change",
+        "tire_switch": "Tire Switch",
+        "oil_change": "Oil Change"
+      },
       "table": {
         "date": "Date",
         "license_plate": "License Plate",

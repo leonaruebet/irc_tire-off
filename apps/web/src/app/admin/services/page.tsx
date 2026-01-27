@@ -42,6 +42,7 @@ export default function AdminServicesPage() {
   const t = useTranslations("admin.services_page");
   const [search, set_search] = useState("");
   const [page, set_page] = useState(1);
+  const [service_type, set_service_type] = useState<"tire_change" | "tire_switch" | "oil_change" | undefined>(undefined);
   const [delete_id, set_delete_id] = useState<string | null>(null);
   const [add_dialog_open, set_add_dialog_open] = useState(false);
   const [detail_visit_id, set_detail_visit_id] = useState<string | null>(null);
@@ -50,6 +51,7 @@ export default function AdminServicesPage() {
 
   const { data, isLoading, refetch } = trpc.admin.list_visits.useQuery({
     search: search || undefined,
+    service_type,
     page,
     limit: 20,
   });
@@ -101,9 +103,9 @@ export default function AdminServicesPage() {
         </Button>
       </div>
 
-      {/* Search */}
+      {/* Search + service type filter */}
       <Card>
-        <CardContent className="p-4">
+        <CardContent className="p-4 space-y-3">
           <form onSubmit={handle_search} className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -116,6 +118,42 @@ export default function AdminServicesPage() {
             </div>
             <Button type="submit">{t("search")}</Button>
           </form>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              variant={service_type === undefined ? "default" : "outline"}
+              onClick={() => { set_service_type(undefined); set_page(1); }}
+            >
+              {t("filter.all")}
+            </Button>
+            <Button
+              size="sm"
+              variant={service_type === "tire_change" ? "default" : "outline"}
+              className={service_type === "tire_change" ? "bg-blue-600 hover:bg-blue-700" : ""}
+              onClick={() => { set_service_type("tire_change"); set_page(1); }}
+            >
+              <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-1.5" />
+              {t("filter.tire_change")}
+            </Button>
+            <Button
+              size="sm"
+              variant={service_type === "tire_switch" ? "default" : "outline"}
+              className={service_type === "tire_switch" ? "bg-green-600 hover:bg-green-700" : ""}
+              onClick={() => { set_service_type("tire_switch"); set_page(1); }}
+            >
+              <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-1.5" />
+              {t("filter.tire_switch")}
+            </Button>
+            <Button
+              size="sm"
+              variant={service_type === "oil_change" ? "default" : "outline"}
+              className={service_type === "oil_change" ? "bg-amber-600 hover:bg-amber-700" : ""}
+              onClick={() => { set_service_type("oil_change"); set_page(1); }}
+            >
+              <span className="inline-block w-2 h-2 rounded-full bg-amber-500 mr-1.5" />
+              {t("filter.oil_change")}
+            </Button>
+          </div>
         </CardContent>
       </Card>
 

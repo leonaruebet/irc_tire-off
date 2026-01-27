@@ -296,6 +296,12 @@
       "add_record": "เพิ่มประวัติ",
       "search_placeholder": "ค้นหาทะเบียน, เบอร์โทร, หรือสาขา...",
       "search": "ค้นหา",
+      "filter": {
+        "all": "ทั้งหมด",
+        "tire_change": "เปลี่ยนยาง",
+        "tire_switch": "สลับยาง",
+        "oil_change": "เปลี่ยนน้ำมัน"
+      },
       "table": {
         "date": "วันที่",
         "license_plate": "ทะเบียนรถ",

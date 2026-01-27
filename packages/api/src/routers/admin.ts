@@ -221,6 +221,7 @@ export const admin_router = create_router({
       z.object({
         search: z.string().optional(),
         branch_id: z.string().optional(),
+        service_type: z.enum(["tire_change", "tire_switch", "oil_change"]).optional(),
         date_from: z.coerce.date().optional(),
         date_to: z.coerce.date().optional(),
         ...pagination_schema.shape,
@@ -253,6 +254,22 @@ export const admin_router = create_router({
 
       if (input.branch_id) {
         where.branch_id = input.branch_id;
+      }
+
+      // Filter by service type — require at least one related record of the given type
+      if (input.service_type) {
+        console.log("[Admin] Filtering by service_type:", input.service_type);
+        switch (input.service_type) {
+          case "tire_change":
+            where.tire_changes = { some: {} };
+            break;
+          case "tire_switch":
+            where.tire_switches = { some: {} };
+            break;
+          case "oil_change":
+            where.oil_changes = { some: {} };
+            break;
+        }
       }
 
       if (input.date_from || input.date_to) {

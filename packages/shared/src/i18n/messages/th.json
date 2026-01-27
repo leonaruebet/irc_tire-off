@@ -136,6 +136,12 @@
       "add_record": "เพิ่มข้อมูล",
       "search_placeholder": "ค้นหาทะเบียนหรือเบอร์โทร...",
       "search": "ค้นหา",
+      "filter": {
+        "all": "ทั้งหมด",
+        "tire_change": "เปลี่ยนยาง",
+        "tire_switch": "สลับยาง",
+        "oil_change": "เปลี่ยนน้ำมัน"
+      },
       "no_records": "ไม่พบประวัติบริการ",
       "showing": "แสดง {from} ถึง {to} จาก {total} รายการ",
       "page_of": "หน้า {page} จาก {total}",

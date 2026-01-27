@@ -4,6 +4,32 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-28 - Admin Services: Add Service Type Filter (บริการ)
+
+#### Feature
+- **Service type filter on /admin/services**: Added filter buttons to filter service visits by type:
+  - ทั้งหมด (All) — default, no filter
+  - เปลี่ยนยาง (Tire Change, blue) — visits with at least one tire change record
+  - สลับยาง (Tire Switch, green) — visits with at least one tire switch record
+  - เปลี่ยนน้ำมัน (Oil Change, amber) — visits with at least one oil change record
+- Filters combine with existing text search (plate/phone)
+- Selecting a filter resets pagination to page 1
+
+#### Implementation
+- **Backend**: Added `service_type` optional enum param to `list_visits` procedure. Uses Prisma `{ some: {} }` relation filter to check for related records.
+- **Frontend**: Added color-coded filter buttons below the search bar. State resets page on filter change.
+- **i18n**: Added `filter.*` translation keys to all 4 i18n files (apps/web + packages/shared, TH + EN).
+
+#### Files Modified
+- `packages/api/src/routers/admin.ts` - Added service_type filter to list_visits
+- `apps/web/src/app/admin/services/page.tsx` - Added service type filter UI
+- `apps/web/src/i18n/messages/th.json` - Added filter translations
+- `apps/web/src/i18n/messages/en.json` - Added filter translations
+- `packages/shared/src/i18n/messages/th.json` - Added filter translations
+- `packages/shared/src/i18n/messages/en.json` - Added filter translations
+
+---
+
 ### 2026-01-28 - Fix Import: Thai Tire Position → TirePosition Enum Mapping
 
 #### Root Cause

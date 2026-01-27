@@ -136,6 +136,12 @@
       "add_record": "Add Record",
       "search_placeholder": "Search by plate or phone...",
       "search": "Search",
+      "filter": {
+        "all": "All",
+        "tire_change": "Tire Change",
+        "tire_switch": "Tire Switch",
+        "oil_change": "Oil Change"
+      },
       "no_records": "No service records found",
       "showing": "Showing {from} to {to} of {total} results",
       "page_of": "Page {page} of {total}",
