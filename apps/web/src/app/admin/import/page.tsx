@@ -41,25 +41,51 @@ interface ParsedRecord {
 }
 
 // Column mapping from Thai headers
-// Supports both tire-change ("เปลื่ยนยาง") and service ("เข้ารับบริการ") header variants
+// Supports tire-change ("เปลื่ยนยาง"), tire-switch ("สลับยาง"),
+// oil-change ("เปลี่ยนน้ำมัน"), and generic service ("เข้ารับบริการ") header variants.
+// Multiple headers may map to the same field — the last non-empty value wins (left-to-right).
 const COLUMN_MAP: Record<string, keyof ParsedRecord> = {
-  // Core fields
+  // Core car info fields
   "ทะเบียนรถ": "license_plate",
   "เบอร์โทรศัพท์": "phone",
   "รถรุ่น": "car_model",
-  // Branch variants
-  "สาขาที่เปลื่ยนยาง": "branch_name",
-  "สาขาที่เข้ารับบริการ": "branch_name",
-  // Date variants
+  "ยี่ห้อรถ": "car_model",
+
+  // --- Date variants ---
   "วันที่เปลื่ยนยาง": "visit_date",
   "วันที่เข้ารับบริการ": "visit_date",
-  // Odometer variants (with and without กม. suffix)
+  "วันที่สลับยาง": "visit_date",
+  "วันที่เปลี่ยนน้ำมันเครื่อง": "visit_date",
+  "วันที่เปลี่ยนน้ำมัน": "visit_date",
+  "วันที่เปลี่ยนถ่าย": "visit_date",
+
+  // --- Branch variants ---
+  "สาขาที่เปลื่ยนยาง": "branch_name",
+  "สาขาที่เข้ารับบริการ": "branch_name",
+  "สาขาที่สลับยาง": "branch_name",
+  "สาขาที่เปลี่ยนน้ำมันเครื่อง": "branch_name",
+  "สาขาที่เปลี่ยนน้ำมัน": "branch_name",
+  "สาขาที่เปลี่ยนถ่าย": "branch_name",
+
+  // --- Odometer variants (with and without กม. suffix) ---
   "ระยะที่เปลื่ยนยาง (กม.)": "odometer_km",
   "ระยะที่เข้ารับบริการ": "odometer_km",
   "ระยะที่เข้ารับบริการ (กม.)": "odometer_km",
+  "ระยะสลับยาง": "odometer_km",
+  "ระยะสลับยาง (กม.)": "odometer_km",
+  "ระยะที่สลับยาง": "odometer_km",
+  "ระยะที่สลับยาง (กม.)": "odometer_km",
+  "ระยะเปลี่ยนน้ำมันเครื่อง": "odometer_km",
+  "ระยะเปลี่ยนน้ำมันเครื่อง (กม.)": "odometer_km",
+  "ระยะที่เปลี่ยนน้ำมันเครื่อง": "odometer_km",
+  "ระยะที่เปลี่ยนน้ำมันเครื่อง (กม.)": "odometer_km",
+  "ระยะเปลี่ยนน้ำมัน": "odometer_km",
+  "ระยะเปลี่ยนน้ำมัน (กม.)": "odometer_km",
+
   // Price & service note
   "ราคาทั้งหมด": "total_price",
   "บริการที่เข้ารับ": "services_note",
+
   // Tire fields
   "ไซส์ยาง": "tire_size",
   "ยี่ห้อ": "tire_brand",
@@ -67,6 +93,7 @@ const COLUMN_MAP: Record<string, keyof ParsedRecord> = {
   "ตำแหน่ง": "tire_position",
   "สัปดาห์ผลิต": "tire_production_week",
   "ราคาเส้นละ": "tire_price",
+
   // Oil fields
   "ชื่อรุ่น": "oil_model",
   "ความหนืด": "oil_viscosity",

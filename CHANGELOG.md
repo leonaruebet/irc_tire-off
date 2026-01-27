@@ -4,6 +4,28 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-27 - Fix Admin Import: Add Missing สลับยาง / เปลี่ยนน้ำมัน Column Mappings
+
+#### Root Cause
+- **Tire switch and oil change rows dropped from preview**: The business Excel uses distinct Thai header variants for each service type section:
+  - Tire change section: "วันที่เปลื่ยนยาง", "สาขาที่เปลื่ยนยาง", "ระยะที่เปลื่ยนยาง (กม.)"
+  - Tire switch section: "วันที่สลับยาง", "สาขาที่สลับยาง", "ระยะสลับยาง"
+  - Oil change section: "วันที่เปลี่ยนน้ำมันเครื่อง", "สาขาที่เปลี่ยนน้ำมันเครื่อง", etc.
+- The COLUMN_MAP only had entries for "เปลื่ยนยาง" and "เข้ารับบริการ" variants, so date/branch/odometer for switch and oil rows were never mapped → `visit_date` was empty → rows failed required-field validation → silently dropped from preview.
+- Column C in real Excel uses "ยี่ห้อรถ" (car brand), not "รถรุ่น" (car model). Missing mapping also caused car_model to be empty for some Excel layouts.
+
+#### Fixed
+- **COLUMN_MAP**: Added comprehensive header variants for all 4 section types:
+  - Tire switch (สลับยาง): date, branch, odometer variants (with/without กม.)
+  - Oil change (เปลี่ยนน้ำมันเครื่อง / เปลี่ยนน้ำมัน / เปลี่ยนถ่าย): date, branch, odometer variants
+  - Car model variant: "ยี่ห้อรถ" → car_model
+- Multiple headers mapping to same field is safe: left-to-right iteration means last non-empty value wins, which is the correct service-type-specific value for each row.
+
+#### Files Modified
+- `apps/web/src/app/admin/import/page.tsx` - COLUMN_MAP expanded with สลับยาง + เปลี่ยนน้ำมัน variants
+
+---
+
 ### 2026-01-27 - Fix Admin Import: Carry-Forward Car Info & Thai Date Parsing
 
 #### Root Cause

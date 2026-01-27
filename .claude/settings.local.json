@@ -59,7 +59,8 @@
       "Bash(npx vercel link:*)",
       "Bash(npx vercel:*)",
       "mcp__plugin_playwright_playwright__browser_wait_for",
-      "WebFetch(domain:developer.thaibulksms.com)"
+      "WebFetch(domain:developer.thaibulksms.com)",
+      "Bash(grep:*)"
     ]
   }
 }
