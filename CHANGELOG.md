@@ -4,6 +4,23 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-28 - Fix Import: Thai Tire Position → TirePosition Enum Mapping
+
+#### Root Cause
+- **8 out of 15 rows failed on import** with `Invalid value for argument 'position'. Expected TirePosition.`
+- The Excel uses Thai tire position names ("หน้า-ซ้าย", "หน้า-ขวา", "หลัง-ซ้าย", "หลัง-ขวา") but the Prisma schema expects `TirePosition` enum values (`FL`, `FR`, `RL`, `RR`, `SP`).
+- The backend was calling `.toUpperCase()` on Thai text (no effect) then casting `as any` — which Prisma correctly rejected.
+
+#### Fixed
+- **Added `TIRE_POSITION_MAP`**: Comprehensive mapping from Thai names, English names, and codes to enum values. Supports hyphenated ("หน้า-ซ้าย") and non-hyphenated ("หน้าซ้าย") Thai forms.
+- **Added `normalize_tire_position()` helper**: Safely converts raw position string to enum value with fallback to null + warning log.
+- **Updated import_records mutation**: Uses `normalize_tire_position()` instead of raw `.toUpperCase()`. Unknown positions now produce a clear error message instead of a Prisma crash.
+
+#### Files Modified
+- `packages/api/src/routers/admin.ts` - Added TIRE_POSITION_MAP, normalize_tire_position(), updated tire change import logic
+
+---
+
 ### 2026-01-28 - Admin Import: Preview Split by Service Type + Missing ถ่ายน้ำมัน Column Mappings
 
 #### Root Cause

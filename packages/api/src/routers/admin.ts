@@ -63,6 +63,61 @@ function to_title_case(str: string): string {
     .trim();
 }
 
+/**
+ * Mapping from Thai tire position names to TirePosition enum values.
+ * Supports full Thai names, abbreviated forms, and English aliases.
+ * @see prisma/schema.prisma - enum TirePosition { FL, FR, RL, RR, SP }
+ */
+const TIRE_POSITION_MAP: Record<string, string> = {
+  // Thai full names
+  "หน้า-ซ้าย": "FL",
+  "หน้า-ขวา": "FR",
+  "หลัง-ซ้าย": "RL",
+  "หลัง-ขวา": "RR",
+  "อะไหล่": "SP",
+  // Thai without hyphen
+  "หน้าซ้าย": "FL",
+  "หน้าขวา": "FR",
+  "หลังซ้าย": "RL",
+  "หลังขวา": "RR",
+  // English aliases (already uppercase after toUpperCase)
+  "FL": "FL",
+  "FR": "FR",
+  "RL": "RL",
+  "RR": "RR",
+  "SP": "SP",
+  "FRONT-LEFT": "FL",
+  "FRONT-RIGHT": "FR",
+  "REAR-LEFT": "RL",
+  "REAR-RIGHT": "RR",
+  "SPARE": "SP",
+};
+
+/**
+ * Normalize a tire position string to a TirePosition enum value.
+ * Handles Thai names (หน้า-ซ้าย), English names (Front-Left), and codes (FL).
+ * @param raw_position - Raw position string from Excel
+ * @returns TirePosition enum value (FL/FR/RL/RR/SP) or null if unmappable
+ */
+function normalize_tire_position(raw_position: string): string | null {
+  console.log("[normalize_tire_position] Input:", raw_position);
+  const trimmed = raw_position.trim();
+
+  // Direct lookup first (case-sensitive for Thai)
+  if (TIRE_POSITION_MAP[trimmed]) {
+    return TIRE_POSITION_MAP[trimmed];
+  }
+
+  // Uppercase lookup for English
+  const upper = trimmed.toUpperCase();
+  if (TIRE_POSITION_MAP[upper]) {
+    return TIRE_POSITION_MAP[upper];
+  }
+
+  console.warn("[normalize_tire_position] Unknown position:", raw_position);
+  return null;
+}
+
 // Hardcoded admin credentials (in production, use proper auth)
 const ADMIN_CREDENTIALS = {
   username: "admin",
@@ -1044,7 +1099,17 @@ export const admin_router = create_router({
 
           // Handle tire change with deduplication
           if (record.tire_position && record.tire_size) {
-            const normalized_position = record.tire_position.toUpperCase().trim();
+            const normalized_position = normalize_tire_position(record.tire_position);
+
+            if (!normalized_position) {
+              console.warn("[Admin] Unknown tire position, skipping", {
+                raw: record.tire_position,
+                plate: normalized_plate,
+              });
+              errors.push(`Unknown tire position "${record.tire_position}" for ${record.license_plate}`);
+              error_count++;
+              continue;
+            }
 
             // Check if tire change for this position already exists
             const existing_tire = visit!.tire_changes.find(
