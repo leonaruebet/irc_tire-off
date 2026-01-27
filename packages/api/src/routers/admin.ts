@@ -377,8 +377,8 @@ export const admin_router = create_router({
         tire_switches: z
           .array(
             z.object({
-              from_position: z.enum(["FL", "FR", "RL", "RR", "SP"]),
-              to_position: z.enum(["FL", "FR", "RL", "RR", "SP"]),
+              from_position: z.enum(["FL", "FR", "RL", "RR", "SP"]).optional(),
+              to_position: z.enum(["FL", "FR", "RL", "RR", "SP"]).optional(),
               notes: z.string().optional(),
             })
           )
@@ -1080,6 +1080,7 @@ export const admin_router = create_router({
             },
             include: {
               tire_changes: true,
+              tire_switches: true,
               oil_changes: true,
             },
           });
@@ -1100,6 +1101,7 @@ export const admin_router = create_router({
               },
               include: {
                 tire_changes: true,
+                tire_switches: true,
                 oil_changes: true,
               },
             });
@@ -1111,6 +1113,7 @@ export const admin_router = create_router({
 
           // Track if anything was added to this record
           let added_tire = false;
+          let added_switch = false;
           let added_oil = false;
           let was_duplicate = true;
 
@@ -1193,8 +1196,44 @@ export const admin_router = create_router({
             }
           }
 
+          // Handle tire switch with deduplication
+          // Tire switch rows are detected by having services_note but no tire/oil specific fields
+          const is_tire_switch_row =
+            record.services_note &&
+            !record.tire_position &&
+            !record.tire_size &&
+            !record.oil_model &&
+            !record.oil_viscosity;
+
+          if (is_tire_switch_row) {
+            // Check if a tire switch with same notes already exists for this visit
+            const existing_switch = visit!.tire_switches.find(
+              (ts) => ts.notes === record.services_note
+            );
+
+            if (!existing_switch) {
+              await ctx.db.tireSwitch.create({
+                data: {
+                  service_visit_id: visit!.id,
+                  notes: record.services_note,
+                  // from_position and to_position are null for imported data
+                  // (Excel doesn't provide specific swap positions)
+                },
+              });
+              added_switch = true;
+              was_duplicate = false;
+              console.log("[Admin] Added tire switch", {
+                notes: record.services_note,
+              });
+            } else {
+              console.log("[Admin] Skipped duplicate tire switch", {
+                notes: record.services_note,
+              });
+            }
+          }
+
           // Count results
-          if (is_new_visit || added_tire || added_oil) {
+          if (is_new_visit || added_tire || added_oil || added_switch) {
             success_count++;
           } else if (was_duplicate) {
             duplicate_count++;

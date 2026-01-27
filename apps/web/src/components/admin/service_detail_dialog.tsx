@@ -221,13 +221,21 @@ export function ServiceDetailDialog({
                       key={sw.id || index}
                       className="bg-muted/50 rounded-md p-3 text-sm flex items-center gap-2"
                     >
-                      <Badge variant="outline">
-                        {get_position_label(sw.from_position, locale)}
-                      </Badge>
-                      <ArrowLeftRight className="h-4 w-4 text-muted-foreground" />
-                      <Badge variant="outline">
-                        {get_position_label(sw.to_position, locale)}
-                      </Badge>
+                      {sw.from_position && sw.to_position ? (
+                        <>
+                          <Badge variant="outline">
+                            {get_position_label(sw.from_position, locale)}
+                          </Badge>
+                          <ArrowLeftRight className="h-4 w-4 text-muted-foreground" />
+                          <Badge variant="outline">
+                            {get_position_label(sw.to_position, locale)}
+                          </Badge>
+                        </>
+                      ) : (
+                        <Badge variant="outline">
+                          {t("tire_switch_service")}
+                        </Badge>
+                      )}
                       {sw.notes && (
                         <span className="ml-2 text-muted-foreground">{sw.notes}</span>
                       )}

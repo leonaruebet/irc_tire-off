@@ -162,8 +162,8 @@ model TireChange {
 model TireSwitch {
   id               String       @id @default(auto()) @map("_id") @db.ObjectId
   service_visit_id String       @db.ObjectId
-  from_position    TirePosition
-  to_position      TirePosition
+  from_position    TirePosition?
+  to_position      TirePosition?
   notes            String?
   created_at       DateTime     @default(now())
 

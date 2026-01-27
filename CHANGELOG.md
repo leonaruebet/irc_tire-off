@@ -4,6 +4,36 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-28 - Fix: Seamless Data Flow from Excel Import → Prisma → /cars Display
+
+#### Root Cause
+- **TireSwitch records were never created during Excel import**: The `import_records` mutation only created `TireChange` (when tire_position + tire_size exist) and `OilChange` (when oil_model or oil_viscosity exist). For สลับยาง (tire switch) rows, only a `ServiceVisit` with `services_note` was created — no `TireSwitch` DB records. This meant the customer `/cars/switch` tab showed empty for imported data.
+- **Prisma schema required positions**: `TireSwitch.from_position` and `TireSwitch.to_position` were required `TirePosition` enum fields, but the Excel doesn't have from/to position data for tire switches.
+
+#### Fixed
+- **Made TireSwitch positions optional**: Changed `from_position` and `to_position` to `TirePosition?` in Prisma schema. This allows tire switch records without specific position data (from Excel import).
+- **Added TireSwitch creation in import_records**: When a row has `services_note` but no tire/oil specific fields (detected as tire switch), a `TireSwitch` record is now created with the notes. Includes deduplication check against existing tire switches.
+- **Updated dedup query**: Import now includes `tire_switches` in the existing visit query and tracking (`added_switch`).
+- **Updated zod schemas**: `create_visit` now accepts optional `from_position`/`to_position` for tire switches.
+- **Graceful null handling in UI**: Service detail dialog and history list now handle null positions — showing a "Tire Switch" badge + notes when positions are absent, or the from→to arrows when positions are present.
+
+#### Data Flow Summary (Post-Fix)
+| Service Type | Excel → DB | DB → /cars | Status |
+|---|---|---|---|
+| Tire Change | tire_size, brand, model, position → `TireChange` | ✅ All fields returned | ✅ Working |
+| Tire Switch | services_note → `TireSwitch` (notes, no positions) | ✅ Shows in switch tab | ✅ Fixed |
+| Oil Change | oil_model, viscosity, type → `OilChange` | ✅ All fields returned | ✅ Working |
+
+#### Files Modified
+- `packages/db/prisma/schema.prisma` - Made TireSwitch from_position/to_position optional
+- `packages/api/src/routers/admin.ts` - Added tire switch import logic, updated zod schemas, added dedup tracking
+- `apps/web/src/components/admin/service_detail_dialog.tsx` - Handle null positions gracefully
+- `apps/web/src/components/history/history_list.tsx` - Handle null positions, show notes fallback
+- `apps/web/src/i18n/messages/en.json` - Added tire_switch_service key
+- `apps/web/src/i18n/messages/th.json` - Added tire_switch_service key
+
+---
+
 ### 2026-01-28 - Admin Services: Add Service Type Filter (บริการ)
 
 #### Feature

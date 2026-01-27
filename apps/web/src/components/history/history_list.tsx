@@ -42,8 +42,9 @@ interface HistoryEntryDetails {
   position?: string;
   brand?: string;
   tire_model?: string;
-  from_position?: string;
-  to_position?: string;
+  from_position?: string | null;
+  to_position?: string | null;
+  notes?: string | null;
   oil_model?: string;
   viscosity?: string;
 }
@@ -199,15 +200,21 @@ export function HistoryList() {
                 </div>
               )}
 
-              {entry.type === "tire_switch" && entry.details.from_position && entry.details.to_position && (
+              {entry.type === "tire_switch" && (
                 <div className="mt-3 pt-3 border-t text-sm">
-                  <span className="text-muted-foreground">
-                    {t_tire(`position_${entry.details.from_position.toLowerCase()}`)}
-                  </span>
-                  <span className="mx-2">→</span>
-                  <span className="font-medium">
-                    {t_tire(`position_${entry.details.to_position.toLowerCase()}`)}
-                  </span>
+                  {entry.details.from_position && entry.details.to_position ? (
+                    <>
+                      <span className="text-muted-foreground">
+                        {t_tire(`position_${entry.details.from_position.toLowerCase()}`)}
+                      </span>
+                      <span className="mx-2">→</span>
+                      <span className="font-medium">
+                        {t_tire(`position_${entry.details.to_position.toLowerCase()}`)}
+                      </span>
+                    </>
+                  ) : entry.details.notes ? (
+                    <span className="text-muted-foreground">{entry.details.notes}</span>
+                  ) : null}
                 </div>
               )}
 
