@@ -115,6 +115,51 @@ const TEMPLATE_HEADERS: string[] = [
 ];
 
 /**
+ * Parse an Excel date value into a JavaScript Date.
+ * Handles: serial numbers, DD/MM/YYYY strings, Buddhist Era (BE = CE + 543).
+ * @param value - Raw cell value from Excel (number or string)
+ * @returns Parsed Date object, or Invalid Date if unparseable
+ */
+function parse_excel_date(value: unknown): Date {
+  // Excel serial number (most common)
+  if (typeof value === "number") {
+    const parsed = XLSX.SSF.parse_date_code(value);
+    return new Date(parsed.y, parsed.m - 1, parsed.d);
+  }
+
+  // Already a Date object
+  if (value instanceof Date) {
+    return value;
+  }
+
+  const str = String(value).trim();
+
+  // Try DD/MM/YYYY or D/M/YYYY (Thai date format, possibly Buddhist Era)
+  const dmy_match = str.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2,4})$/);
+  if (dmy_match) {
+    const day = parseInt(dmy_match[1], 10);
+    const month = parseInt(dmy_match[2], 10);
+    let year = parseInt(dmy_match[3], 10);
+
+    // Convert Buddhist Era to CE (BE years are > 2400)
+    if (year > 2400) {
+      year -= 543;
+    }
+
+    // Handle 2-digit year
+    if (year < 100) {
+      year += year < 50 ? 2000 : 1900;
+    }
+
+    return new Date(year, month - 1, day);
+  }
+
+  // Fallback: try native Date parsing
+  const fallback = new Date(str);
+  return fallback;
+}
+
+/**
  * Generate and download an Excel template file with correct Thai headers.
  * Creates a .xlsx file client-side using the xlsx library.
  */
@@ -208,15 +253,23 @@ export default function AdminImportPage() {
         const headers = json_data[0] as string[];
         const records: ParsedRecord[] = [];
 
+        // Track previous row's car info for carry-forward
+        // Business Excel often only fills car info on the first row of a group
+        let prev_car_info: { license_plate?: string; phone?: string; car_model?: string } = {};
+
         for (let i = 1; i < json_data.length; i++) {
           const row = json_data[i];
           if (!row || row.length === 0) continue;
+
+          // Skip rows where ALL cells are empty
+          const has_data = row.some((cell) => cell !== undefined && cell !== null && cell !== "");
+          if (!has_data) continue;
 
           const record: any = {};
 
           headers.forEach((header, col_index) => {
             const field_name = COLUMN_MAP[header];
-            if (field_name && row[col_index] !== undefined && row[col_index] !== "") {
+            if (field_name && row[col_index] !== undefined && row[col_index] !== null && row[col_index] !== "") {
               let value = row[col_index];
 
               // Handle phone: Excel stores as number, coerce to string with leading zero
@@ -230,13 +283,7 @@ export default function AdminImportPage() {
 
               // Handle date conversion
               if (field_name === "visit_date") {
-                if (typeof value === "number") {
-                  // Excel date serial number
-                  value = XLSX.SSF.parse_date_code(value);
-                  value = new Date(value.y, value.m - 1, value.d);
-                } else {
-                  value = new Date(value);
-                }
+                value = parse_excel_date(value);
               }
 
               // Handle number conversion
@@ -260,8 +307,41 @@ export default function AdminImportPage() {
             }
           });
 
-          // Validate required fields
-          if (record.license_plate && record.phone && record.branch_name && record.visit_date) {
+          // Carry-forward: inherit car info from previous row if missing
+          if (!record.license_plate && prev_car_info.license_plate) {
+            record.license_plate = prev_car_info.license_plate;
+          }
+          if (!record.phone && prev_car_info.phone) {
+            record.phone = prev_car_info.phone;
+          }
+          if (!record.car_model && prev_car_info.car_model) {
+            record.car_model = prev_car_info.car_model;
+          }
+
+          // Update carry-forward state when car info is present
+          if (record.license_plate) {
+            prev_car_info.license_plate = record.license_plate;
+          }
+          if (record.phone) {
+            prev_car_info.phone = record.phone;
+          }
+          if (record.car_model) {
+            prev_car_info.car_model = record.car_model;
+          }
+
+          // Validate: require car identity + at least one date
+          // Row must have car info and a parseable date to be valid
+          if (
+            record.license_plate &&
+            record.phone &&
+            record.visit_date &&
+            record.visit_date instanceof Date &&
+            !isNaN(record.visit_date.getTime())
+          ) {
+            // If branch_name is missing, use a default placeholder
+            if (!record.branch_name) {
+              record.branch_name = "-";
+            }
             records.push(record as ParsedRecord);
           }
         }

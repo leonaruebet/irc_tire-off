@@ -4,6 +4,24 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-27 - Fix Admin Import: Carry-Forward Car Info & Thai Date Parsing
+
+#### Root Cause
+- **Missing oil/switch rows**: Business Excel only fills car info (plate, phone) on the first row of a group. Subsequent rows for oil changes or tire switches leave those cells empty, causing them to be filtered out by the required-fields validation.
+- **Invalid Date for string dates**: Dates stored as Thai strings (DD/MM/YYYY, Buddhist Era e.g. "1/12/2568") were passed to `new Date()` which can't parse DD/MM/YYYY format, producing Invalid Date.
+
+#### Fixed
+- **Carry-forward logic**: If a row has empty license_plate or phone, values are inherited from the previous successfully parsed row (common grouped Excel pattern)
+- **`parse_excel_date()` helper**: Handles Excel serial numbers, DD/MM/YYYY strings, Buddhist Era conversion (BE > 2400 → CE = BE - 543), and 2-digit year expansion
+- **Stricter date validation**: Rows with Invalid Date are now rejected (previously passed truthy check since Invalid Date is a Date object)
+- **Relaxed branch requirement**: Rows without branch_name get a default placeholder instead of being filtered out
+- **Empty row skip**: Rows where all cells are empty are properly skipped
+
+#### Files Modified
+- `apps/web/src/app/admin/import/page.tsx` - parse_excel_date(), carry-forward, validation
+
+---
+
 ### 2026-01-27 - Fix Admin Import: Realign Template & Add Missing Column Mappings
 
 #### Root Cause
