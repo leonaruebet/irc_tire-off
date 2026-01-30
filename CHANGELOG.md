@@ -4,6 +4,23 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-30 - Fix: Excel Import Template Mismatch & Missing Service Note Mapping
+
+#### Root Cause
+- **TEMPLATE_HEADERS didn't match actual file structure**: The downloadable template had a different column layout than the business Excel file being used. Template had separate sections for "วันที่เปลื่ยนยาง", "สาขาที่เปลื่ยนยาง", "ระยะที่เปลื่ยนยาง (กม.)" but actual file uses shared "วันที่เข้ารับบริการ", "สาขาที่เข้ารับบริการ", "ระยะที่เข้ารับบริการ" for all service types.
+- **Missing "บริการ" column mapping**: Tire switch and other service notes use "บริการ" header, but COLUMN_MAP only had "บริการที่เข้ารับ", causing note data to be lost during parsing.
+- **Result**: Tire switch and oil change rows were being dropped because the validation requires `visit_date`, but the date column for those rows wasn't being mapped correctly.
+
+#### Fixed
+- **Updated TEMPLATE_HEADERS**: Reorganized to match actual business Excel layout with shared service visit columns used by all service types. New structure: car info → service visit (shared) → tire fields → oil fields → service note.
+- **Added "บริการ" mapping**: Added column mapping for "บริการ" → `services_note` to capture tire switch and other service notes correctly.
+- **Template now aligns with COLUMN_MAP**: Downloaded template will produce files that parse correctly with all service types captured.
+
+#### Files Modified
+- `apps/web/src/app/admin/import/page.tsx` - Updated TEMPLATE_HEADERS structure, added "บริการ" column mapping
+
+---
+
 ### 2026-01-28 - Fix: Seamless Data Flow from Excel Import → Prisma → /cars Display
 
 #### Root Cause
