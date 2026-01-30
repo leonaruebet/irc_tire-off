@@ -984,6 +984,7 @@ export const admin_router = create_router({
             engine_type: z.coerce.string().optional(),
             oil_type: z.coerce.string().optional(),
             oil_interval: z.coerce.number().optional(),
+            oil_price: z.coerce.number().optional(),
           })
         ),
       })
@@ -1182,6 +1183,7 @@ export const admin_router = create_router({
                   engine_type: record.engine_type,
                   oil_type: record.oil_type,
                   interval_km: record.oil_interval,
+                  price: record.oil_price,
                 },
               });
               added_oil = true;

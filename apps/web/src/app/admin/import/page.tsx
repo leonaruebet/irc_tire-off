@@ -38,6 +38,7 @@ interface ParsedRecord {
   oil_type?: string;
   engine_type?: string;
   oil_interval?: number;
+  oil_price?: number;
 }
 
 // Column mapping from Thai headers
@@ -111,8 +112,7 @@ const COLUMN_MAP: Record<string, keyof ParsedRecord> = {
   "เครื่องยนต์": "engine_type",
   "ประเภทน้ำมันเครื่อง": "oil_type",
   "ระยะเปลี่ยนถ่าย (กม.)": "oil_interval",
-  // Additional engine type variations
-  "เครื่องยนต์": "engine_type",
+  "ราคาน้ำมัน": "oil_price",
 };
 
 /**
@@ -198,12 +198,13 @@ const TEMPLATE_HEADERS: string[] = [
   "ตำแหน่ง",
   "สัปดาห์ผลิต",
   "ราคาเส้นละ",
-  // Oil change fields (cols 13-16)
+  // Oil change fields (cols 13-17)
   "ชื่อรุ่น",
   "ความหนืด",
   "ประเภทน้ำมันเครื่อง",
-  "ระยะเปลี่ยนถ่าย (กม.)",
-  // Service note - for tire switch or other notes (col 17)
+  "เครื่องยนต์",
+  "ราคาน้ำมัน",
+  // Service note - for tire switch or other notes (col 18)
   "บริการ",
 ];
 
@@ -217,7 +218,16 @@ function parse_excel_date(value: unknown): Date {
   // Excel serial number (most common)
   if (typeof value === "number") {
     const parsed = XLSX.SSF.parse_date_code(value);
-    return new Date(parsed.y, parsed.m - 1, parsed.d);
+    let year = parsed.y;
+
+    // Excel returns Buddhist Era (BE) year for Thai dates (e.g., 2568)
+    // Convert to CE for storage, then format_date will add 543 back for display
+    if (year > 2400) {
+      year -= 543;
+    }
+
+    // Use UTC to avoid timezone issues - creates date at UTC midnight
+    return new Date(Date.UTC(year, parsed.m - 1, parsed.d));
   }
 
   // Already a Date object
@@ -244,7 +254,8 @@ function parse_excel_date(value: unknown): Date {
       year += year < 50 ? 2000 : 1900;
     }
 
-    return new Date(year, month - 1, day);
+    // Use UTC to avoid timezone issues - creates date at UTC midnight
+    return new Date(Date.UTC(year, month - 1, day));
   }
 
   // Fallback: try native Date parsing
