@@ -60,9 +60,11 @@
     "date": "วันที่",
     "branch": "สาขา",
     "odometer": "ระยะทาง (กม.)",
+    "km": "กม.",
     "total_price": "ราคารวม",
     "no_records": "ไม่พบประวัติการบริการ",
-    "detail": "รายละเอียด"
+    "detail": "รายละเอียด",
+    "last_tire_switch": "สลับยางล่าสุด"
   },
   "tire": {
     "position": "ตำแหน่ง",
@@ -85,6 +87,26 @@
     "engine_type": "ประเภทเครื่องยนต์",
     "oil_type": "ประเภทน้ำมัน",
     "interval": "ระยะเปลี่ยนถ่าย (กม.)"
+  },
+  "next_service": {
+    "tire_switch": "สลับยาง",
+    "oil_change": "เปลี่ยนน้ำมันเครื่อง",
+    "title": "ครั้งหน้า",
+    "last_service": "บริการล่าสุด",
+    "date": "วันที่",
+    "odometer": "เลขไมล์",
+    "km": "กม.",
+    "at_km": "ที่เลขไมล์",
+    "by_date": "วันที่",
+    "in_days": "อีก {days} วัน",
+    "in_months": "อีก {months} เดือน",
+    "in_km": "หรือที่ {km} กม.",
+    "or": "หรือ",
+    "overdue": "เกินกำหนด",
+    "recommendation_note": "แนะนำตรวจเช็คทุก {km} กม. หรือ {months} เดือน",
+    "new_tires_installed": "ยางใหม่ ติดตั้งใหม่",
+    "tires_recently_changed": "เปลี่ยนยางเมื่อ {date}",
+    "reset_after_install": "ไม่ต้องสลับยาง เพราะยางยังใหม่"
   },
   "nav": {
     "home": "หน้าแรก",

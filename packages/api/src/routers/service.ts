@@ -437,25 +437,17 @@ export const service_router = create_router({
 
       const tire_status = await Promise.all(tire_status_promises);
 
+      // Find the most recent tire change date across all positions
+      // This is used to determine if tire switch recommendation should be reset
+      const most_recent_tire_change = tire_status
+        .filter((t) => t.has_data)
+        .reduce((latest, current) => {
+          if (!latest) return current;
+          return current.install_date > latest.install_date ? current : latest;
+        }, null as typeof tire_status[0] | null);
+
       // Get latest tire switch for next service recommendation
       const latest_switch = await ctx.db.tireSwitch.findFirst({
-        where: {
-          service_visit: {
-            car_id: input.car_id,
-          },
-        },
-        include: {
-          service_visit: true,
-        },
-        orderBy: {
-          service_visit: {
-            visit_date: "desc",
-          },
-        },
-      });
-
-      // Get latest oil change for next service recommendation
-      const latest_oil = await ctx.db.oilChange.findFirst({
         where: {
           service_visit: {
             car_id: input.car_id,
@@ -480,8 +472,15 @@ export const service_router = create_router({
       const current_km = input.current_odometer_km ?? latest_visit?.odometer_km ?? 0;
 
       // Calculate next tire switch recommendation
+      // IF tires were changed AFTER the latest tire switch, reset the recommendation
+      // (because new tires don't need to be switched)
       let next_tire_switch = null;
-      if (latest_switch) {
+      const should_reset_tire_switch =
+        most_recent_tire_change &&
+        latest_switch &&
+        most_recent_tire_change.install_date > latest_switch.service_visit.visit_date;
+
+      if (latest_switch && !should_reset_tire_switch) {
         const recommendation = calculate_next_tire_switch(
           latest_switch.service_visit.odometer_km,
           latest_switch.service_visit.visit_date,

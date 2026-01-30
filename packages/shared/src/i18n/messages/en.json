@@ -60,9 +60,11 @@
     "date": "Date",
     "branch": "Branch",
     "odometer": "Odometer (km)",
+    "km": "km",
     "total_price": "Total Price",
     "no_records": "No service records found",
-    "detail": "Details"
+    "detail": "Details",
+    "last_tire_switch": "Latest tire switch"
   },
   "tire": {
     "position": "Position",
@@ -85,6 +87,26 @@
     "engine_type": "Engine Type",
     "oil_type": "Oil Type",
     "interval": "Change Interval (km)"
+  },
+  "next_service": {
+    "tire_switch": "Tire Switch",
+    "oil_change": "Oil Change",
+    "title": "Next Service",
+    "last_service": "Last service",
+    "date": "Date",
+    "odometer": "Odometer",
+    "km": "km",
+    "at_km": "At {km} km",
+    "by_date": "by {date}",
+    "in_days": "{days} days left",
+    "in_months": "{months} months left",
+    "in_km": "or {km} km",
+    "or": "or",
+    "overdue": "Overdue",
+    "recommendation_note": "Recommended every {km} km or {months} months",
+    "new_tires_installed": "New Tires Installed",
+    "tires_recently_changed": "Tires changed on {date}",
+    "reset_after_install": "No tire switch needed - tires are new"
   },
   "nav": {
     "home": "Home",
