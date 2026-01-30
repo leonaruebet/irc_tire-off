@@ -34,50 +34,23 @@
     "verify": "ยืนยัน",
     "back": "กลับ",
     "logout": "ออกจากระบบ",
-    "logout_confirm": "คุณต้องการออกจากระบบหรือไม่?",
-    "otp_send_failed": "ไม่สามารถส่ง OTP ได้ กรุณาลองใหม่"
+    "logout_confirm": "คุณต้องการออกจากระบบหรือไม่?"
   },
   "car": {
     "title": "รถของฉัน",
     "add_car": "เพิ่มรถ",
     "license_plate": "ทะเบียนรถ",
-    "license_plate_placeholder": "เช่น กข 1234 หรือ 1กก 1234",
-    "license_plate_invalid": "กรุณากรอกทะเบียนรถที่ถูกต้อง",
-    "license_plate_format": "รูปแบบ: ตัวอักษรภาษาไทยตามด้วยตัวเลข (เช่น กข 1234)",
+    "license_plate_placeholder": "เช่น กข 1234",
+    "license_plate_invalid": "รูปแบบทะเบียนรถไม่ถูกต้อง",
     "car_model": "รุ่นรถ",
-    "car_model_placeholder": "เช่น Toyota Camry 2023",
-    "car_year": "ปีรถ",
-    "car_year_placeholder": "เช่น 2023",
-    "car_color": "สีรถ",
-    "car_color_placeholder": "เช่น ขาว, ดำ, เงิน",
-    "car_vin": "หมายเลขตัวถัง (VIN)",
-    "car_vin_placeholder": "เช่น JTDKN3DU5A0000001",
+    "car_model_placeholder": "เช่น Toyota Camry",
     "no_cars": "ยังไม่มีรถในระบบ",
     "add_first_car": "เพิ่มรถคันแรกของคุณ",
     "remove_car": "นำรถออก",
     "remove_car_confirm": "คุณต้องการนำรถ {plate} ออกจากบัญชีหรือไม่?",
     "last_service": "เข้ารับบริการล่าสุด",
     "last_tire_change": "เปลี่ยนยางล่าสุด",
-    "last_oil_change": "เปลี่ยนน้ำมันเครื่องล่าสุด",
-    "vehicle_info": "ข้อมูลรถยนต์",
-    "vehicle_info_subtitle": "กรอกทะเบียนรถของคุณ",
-    "required": "จำเป็น",
-    "optional": "ไม่บังคับ",
-    "register_plate": "ลงทะเบียนรถ",
-    "plate_registered": "ลงทะเบียนสำเร็จ!",
-    "plate_registered_message": "ทะเบียนรถของคุณถูกเพิ่มเรียบร้อยแล้ว",
-    "add_another": "เพิ่มรถอีกคัน",
-    "view_plates": "ดูรายการรถ",
-    "register_success": "ลงทะเบียนรถสำเร็จ!",
-    "register_failed": "ไม่สามารถเพิ่มรถได้",
-    "update_success": "อัปเดตข้อมูลรถสำเร็จ!",
-    "update_failed": "ไม่สามารถอัปเดตข้อมูลรถได้",
-    "remove_success": "นำรถออกสำเร็จ!",
-    "remove_failed": "ไม่สามารถนำรถออกได้",
-    "select_to_view": "เลือกรถเพื่อดูประวัติการบริการ",
-    "plate_not_registered": "ไม่พบทะเบียนในระบบ",
-    "plate_not_registered_message": "ทะเบียนรถนี้ยังไม่ได้ลงทะเบียนในระบบ กรุณาติดต่อสาขาเพื่อลงทะเบียนก่อนใช้งาน",
-    "try_another_plate": "ลองทะเบียนอื่น"
+    "last_oil_change": "เปลี่ยนน้ำมันเครื่องล่าสุด"
   },
   "service": {
     "history": "ประวัติการบริการ",
@@ -87,9 +60,11 @@
     "date": "วันที่",
     "branch": "สาขา",
     "odometer": "ระยะทาง (กม.)",
+    "km": "กม.",
     "total_price": "ราคารวม",
     "no_records": "ไม่พบประวัติการบริการ",
-    "detail": "รายละเอียด"
+    "detail": "รายละเอียด",
+    "last_tire_switch": "สลับยางล่าสุด"
   },
   "tire": {
     "position": "ตำแหน่ง",
@@ -104,197 +79,86 @@
     "production_week": "สัปดาห์ผลิต",
     "price_per_tire": "ราคาต่อเส้น",
     "switch_from": "จาก",
-    "switch_to": "ไป",
-    "status_title": "สถานะยางรายล้อ",
-    "usage_percent": "ใช้งานแล้ว {percent}%",
-    "remaining_km": "เหลืออีก {km} กม.",
-    "installed_date": "เปลี่ยนล่าสุด",
-    "installed_km": "เลขไมล์",
-    "last_changed": "เปลี่ยนล่าสุด",
-    "time_ago": "ผ่านมาแล้ว",
-    "days_ago": "วัน",
-    "no_tire_data": "ยังไม่มีข้อมูลยาง",
-    "show_details": "ดูรายละเอียด",
-    "hide_details": "ซ่อนรายละเอียด",
-    "branch": "สาขา",
-    "status_good": "สภาพดี",
-    "status_warning": "เริ่มสึก",
-    "status_critical": "ควรเปลี่ยน",
-    "status_overdue": "เกินกำหนด",
-    "detail_title": "รายละเอียดยาง",
-    "detail_position": "ตำแหน่ง",
-    "detail_brand_model": "ยี่ห้อและรุ่นยาง",
-    "detail_size": "ขนาดยาง",
-    "detail_production_week": "สัปดาห์ผลิต",
-    "detail_price_per_tire": "ราคาต่อเส้น",
-    "detail_installed_date": "เปลี่ยนล่าสุด",
-    "detail_installed_km": "เลขไมล์",
-    "detail_branch": "สาขา",
-    "detail_no_data": "ไม่พบข้อมูลยาง"
-  },
-  "next_service": {
-    "title": "รับบริการครั้งต่อไป (แนะนำ)",
-    "tire_switch": "สลับยาง",
-    "oil_change": "เปลี่ยนน้ำมันเครื่อง",
-    "at_km": "เลขไมล์: {km} กม.",
-    "by_date": "ภายใน {date}",
-    "in_days": "อีก {days} วัน",
-    "in_months": "อีก {months} เดือน",
-    "in_km": "อีก {km} กม.",
-    "or": "หรือ",
-    "overdue": "เกินกำหนด",
-    "last_service": "รับบริการล่าสุด",
-    "recommendation_note": "แนะนำตรวจเช็คทุก {km} กม. หรือ {months} เดือน"
+    "switch_to": "ไป"
   },
   "oil": {
-    "title": "น้ำมันเครื่อง",
     "model": "รุ่นน้ำมันเครื่อง",
     "viscosity": "ความหนืด",
     "engine_type": "ประเภทเครื่องยนต์",
-    "oil_type": "ประเภท",
-    "interval": "ระยะเปลี่ยนถ่าย (กม.)",
-    "type_synthetic": "สังเคราะห์แท้",
-    "type_semi_synthetic": "กึ่งสังเคราะห์",
-    "type_conventional": "ธรรมดา",
-    "last_change": "เปลี่ยนล่าสุด",
-    "odometer": "เลขไมล์ตอนเปลี่ยน",
-    "next_service": "แนะนำบริการครั้งถัดไป",
-    "approx": "ประมาณ",
-    "or": "หรือ",
+    "oil_type": "ประเภทน้ำมัน",
+    "interval": "ระยะเปลี่ยนถ่าย (กม.)"
+  },
+  "next_service": {
+    "tire_switch": "สลับยาง",
+    "oil_change": "เปลี่ยนน้ำมันเครื่อง",
+    "title": "ครั้งหน้า",
+    "last_service": "บริการล่าสุด",
+    "date": "วันที่",
+    "odometer": "เลขไมล์",
     "km": "กม.",
-    "price": "ราคา",
-    "no_data": "ยังไม่มีประวัติเปลี่ยนน้ำมันเครื่อง",
-    "brand_model": "ยี่ห้อ/รุ่น",
-    "view_details": "ดูรายละเอียดน้ำมันเครื่อง",
-    "change_interval": "ระยะเปลี่ยนถ่าย",
-    "recommendation_note": "แนะนำตรวจเช็คทุก {km} กม. หรือ 6 เดือน"
+    "at_km": "ที่เลขไมล์",
+    "by_date": "วันที่",
+    "in_days": "อีก {days} วัน",
+    "in_months": "อีก {months} เดือน",
+    "in_km": "หรือที่ {km} กม.",
+    "or": "หรือ",
+    "overdue": "เกินกำหนด",
+    "recommendation_note": "แนะนำตรวจเช็คทุก {km} กม. หรือ {months} เดือน",
+    "new_tires_installed": "ยางใหม่ ติดตั้งใหม่",
+    "tires_recently_changed": "เปลี่ยนยางเมื่อ {date}",
+    "reset_after_install": "ไม่ต้องสลับยาง เพราะยางยังใหม่"
   },
   "nav": {
     "home": "หน้าแรก",
-    "cars": "รถ",
-    "user": "ผู้ใช้",
-    "profile": "โปรไฟล์",
-    "tire": "ยาง",
-    "switch": "สลับยาง",
-    "oil": "น้ำมัน",
-    "history": "ประวัติ"
-  },
-  "history": {
-    "title": "ประวัติการบริการทั้งหมด",
-    "no_records": "ยังไม่มีประวัติการบริการ",
-    "tire_change": "เปลี่ยนยาง",
-    "tire_switch": "สลับยาง",
-    "oil_change": "เปลี่ยนน้ำมันเครื่อง",
-    "at_branch": "สาขา",
-    "odometer": "เลขไมล์",
-    "km": "กม.",
-    "positions": "ตำแหน่ง",
-    "all_cars": "รถทุกคัน"
-  },
-  "profile": {
-    "title": "บัญชีของฉัน",
-    "account_info": "ข้อมูลบัญชี",
-    "phone_number": "เบอร์โทรศัพท์",
-    "registered_plates": "ทะเบียนรถที่ลงทะเบียน",
-    "plates_count": "{count} คัน",
-    "settings": "ตั้งค่า",
-    "language": "ภาษา",
-    "actions": "การดำเนินการ",
-    "logout_success": "ออกจากระบบสำเร็จ"
+    "cars": "รถของฉัน",
+    "profile": "โปรไฟล์"
   },
   "admin": {
     "title": "ระบบจัดการ",
     "dashboard": "แดชบอร์ด",
-    "cars": "รถยนต์",
     "services": "ประวัติบริการ",
     "import": "นำเข้าข้อมูล",
     "branches": "สาขา",
+    "cars": "รถ",
+    "users": "ผู้ใช้",
     "search_placeholder": "ค้นหาทะเบียน, เบอร์โทร...",
-    "loading": "กำลังโหลด...",
-    "tiretrack_admin": "ทรัพย์ไพศาล Admin",
     "logout": "ออกจากระบบ",
-    "stats": {
-      "total_users": "ผู้ใช้ทั้งหมด",
-      "total_cars": "รถยนต์ทั้งหมด",
-      "service_visits": "เข้ารับบริการ",
-      "branches_count": "สาขา"
-    },
-    "recent_visits": {
-      "title": "เข้ารับบริการล่าสุด",
-      "no_visits": "ไม่มีประวัติการเข้ารับบริการ"
-    },
+    "loading": "กำลังโหลด...",
+    "tiretrack_admin": "ระบบจัดการ ทรัพย์ไพศาล",
+
     "login_page": {
-      "admin_portal": "ระบบจัดการผู้ดูแล",
-      "sign_in_subtitle": "เข้าสู่ระบบเพื่อเข้าถึงแผงควบคุมผู้ดูแล",
+      "admin_portal": "ระบบจัดการ",
+      "sign_in_subtitle": "เข้าสู่ระบบเพื่อจัดการข้อมูล ทรัพย์ไพศาล",
       "sign_in": "เข้าสู่ระบบ",
-      "enter_credentials": "กรอกข้อมูลผู้ดูแลระบบ",
+      "enter_credentials": "กรอกข้อมูลเข้าสู่ระบบผู้ดูแล",
       "username": "ชื่อผู้ใช้",
-      "username_placeholder": "กรอกชื่อผู้ใช้",
+      "username_placeholder": "admin",
       "username_required": "กรุณากรอกชื่อผู้ใช้",
       "password": "รหัสผ่าน",
-      "password_placeholder": "กรอกรหัสผ่าน",
+      "password_placeholder": "••••••••",
       "password_required": "กรุณากรอกรหัสผ่าน",
       "login_success": "เข้าสู่ระบบสำเร็จ",
-      "login_failed": "เข้าสู่ระบบไม่สำเร็จ",
-      "customer_portal": "ไปที่หน้าเข้าสู่ระบบลูกค้า?",
+      "login_failed": "เข้าสู่ระบบล้มเหลว",
+      "customer_portal": "สำหรับลูกค้า?",
       "login_here": "เข้าสู่ระบบที่นี่"
     },
-    "cars_page": {
-      "title": "จัดการรถยนต์",
-      "add_car": "เพิ่มรถ",
-      "search_placeholder": "ค้นหาทะเบียน, เบอร์โทร, หรือชื่อเจ้าของ...",
-      "search": "ค้นหา",
-      "showing": "แสดง {from} ถึง {to} จาก {total}",
-      "page_of": "หน้า {page} จาก {total}",
-      "no_cars": "ไม่พบรถยนต์",
-      "table": {
-        "license_plate": "ทะเบียนรถ",
-        "owner_phone": "เบอร์โทร",
-        "owner_name": "ชื่อเจ้าของ",
-        "car_model": "รุ่นรถ",
-        "service_count": "บริการ",
-        "actions": "การดำเนินการ"
-      },
-      "dialog": {
-        "add_title": "เพิ่มรถใหม่",
-        "edit_title": "แก้ไขรถ",
-        "license_plate": "ทะเบียนรถ",
-        "license_plate_placeholder": "เช่น กข 1234",
-        "phone": "เบอร์โทรศัพท์",
-        "phone_placeholder": "เช่น 0812345678",
-        "owner_name": "ชื่อเจ้าของ",
-        "owner_name_placeholder": "เช่น สมชาย ใจดี",
-        "car_model": "รุ่นรถ",
-        "car_model_placeholder": "เช่น Toyota Camry",
-        "car_year": "ปีรถ",
-        "car_year_placeholder": "เช่น 2566",
-        "car_color": "สีรถ",
-        "car_color_placeholder": "เช่น ขาว",
-        "car_vin": "หมายเลขตัวถัง",
-        "car_vin_placeholder": "เช่น JTDKN3DU5A0000001",
-        "cancel": "ยกเลิก",
-        "create": "สร้าง",
-        "update": "อัปเดต"
-      },
-      "delete_dialog": {
-        "title": "ลบรถ",
-        "description": "คุณแน่ใจหรือไม่ว่าต้องการลบรถคันนี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้",
-        "cancel": "ยกเลิก",
-        "delete": "ลบ"
-      },
-      "toast": {
-        "created": "สร้างรถสำเร็จ",
-        "restored": "กู้คืนรถสำเร็จ",
-        "updated": "อัปเดตรถสำเร็จ",
-        "deleted": "ลบรถสำเร็จ",
-        "error": "เกิดข้อผิดพลาด",
-        "delete_error": "ไม่สามารถลบรถได้"
-      }
+
+    "stats": {
+      "total_users": "ผู้ใช้ทั้งหมด",
+      "total_cars": "รถทั้งหมด",
+      "service_visits": "การเข้ารับบริการ",
+      "branches_count": "สาขา"
     },
+
+    "recent_visits": {
+      "title": "การเข้ารับบริการล่าสุด",
+      "no_visits": "ยังไม่มีการเข้ารับบริการ"
+    },
+
     "services_page": {
       "title": "ประวัติบริการ",
-      "add_record": "เพิ่มประวัติ",
-      "search_placeholder": "ค้นหาทะเบียน, เบอร์โทร, หรือสาขา...",
+      "add_record": "เพิ่มข้อมูล",
+      "search_placeholder": "ค้นหาทะเบียนหรือเบอร์โทร...",
       "search": "ค้นหา",
       "filter": {
         "all": "ทั้งหมด",
@@ -302,75 +166,199 @@
         "tire_switch": "สลับยาง",
         "oil_change": "เปลี่ยนน้ำมัน"
       },
+      "no_records": "ไม่พบประวัติบริการ",
+      "showing": "แสดง {from} ถึง {to} จาก {total} รายการ",
+      "page_of": "หน้า {page} จาก {total}",
+      "selected": "เลือก {count} รายการ",
+      "batch_delete": "ลบที่เลือก",
+
       "table": {
         "date": "วันที่",
         "license_plate": "ทะเบียนรถ",
         "phone": "เบอร์โทร",
         "branch": "สาขา",
         "odometer": "เลขไมล์",
-        "total": "รวม",
+        "total": "ยอดรวม",
         "services": "บริการ",
-        "actions": "การดำเนินการ"
+        "actions": "จัดการ"
       },
-      "showing": "แสดง {from} ถึง {to} จาก {total}",
-      "page_of": "หน้า {page} จาก {total}",
-      "no_records": "ไม่พบประวัติบริการ",
+
       "delete_dialog": {
-        "title": "ลบประวัติบริการ",
-        "description": "คุณแน่ใจหรือไม่ว่าต้องการลบประวัติบริการนี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้",
+        "title": "ลบประวัติบริการ?",
+        "description": "การกระทำนี้ไม่สามารถยกเลิกได้ ข้อมูลการเข้ารับบริการและข้อมูลที่เกี่ยวข้องทั้งหมดจะถูกลบอย่างถาวร",
         "cancel": "ยกเลิก",
         "delete": "ลบ"
       },
+
+      "batch_delete_dialog": {
+        "title": "ลบ {count} รายการบริการ?",
+        "description": "การกระทำนี้ไม่สามารถยกเลิกได้ ข้อมูลการเข้ารับบริการที่เลือกและข้อมูลที่เกี่ยวข้องทั้งหมดจะถูกลบอย่างถาวร",
+        "cancel": "ยกเลิก",
+        "delete": "ลบทั้งหมด"
+      },
+
       "toast": {
-        "deleted": "ลบประวัติบริการสำเร็จ",
-        "delete_error": "ไม่สามารถลบประวัติบริการได้"
+        "deleted": "ลบประวัติบริการแล้ว",
+        "delete_error": "เกิดข้อผิดพลาดในการลบ",
+        "batch_deleted": "ลบ {count} รายการบริการแล้ว",
+        "batch_delete_error": "เกิดข้อผิดพลาดในการลบ"
       }
     },
-    "branches_page": {
-      "title": "จัดการสาขา",
-      "add_branch": "เพิ่มสาขา",
-      "active": "ใช้งาน",
-      "inactive": "ไม่ใช้งาน",
-      "no_branches": "ไม่พบสาขา",
+
+    "cars_page": {
+      "title": "รถ",
+      "add_car": "เพิ่มรถ",
+      "search_placeholder": "ค้นหาทะเบียน เบอร์โทร หรือชื่อ...",
+      "search": "ค้นหา",
+      "no_cars": "ไม่พบรถ",
+      "showing": "แสดง {from} ถึง {to} จาก {total} รายการ",
+      "page_of": "หน้า {page} จาก {total}",
+      "selected": "เลือก {count} รายการ",
+      "batch_delete": "ลบที่เลือก",
+
       "table": {
-        "name": "ชื่อสาขา",
-        "code": "รหัส",
-        "address": "ที่อยู่",
-        "phone": "เบอร์โทร",
-        "status": "สถานะ",
-        "actions": "การดำเนินการ"
+        "license_plate": "ทะเบียนรถ",
+        "owner_phone": "เบอร์เจ้าของ",
+        "owner_name": "ชื่อเจ้าของ",
+        "car_model": "รุ่นรถ",
+        "service_count": "บริการ",
+        "actions": "จัดการ"
       },
+
       "dialog": {
-        "add_title": "เพิ่มสาขาใหม่",
-        "edit_title": "แก้ไขสาขา",
-        "name_label": "ชื่อสาขา",
-        "name_placeholder": "เช่น สาขาสยาม",
-        "code_label": "รหัสสาขา",
-        "code_placeholder": "เช่น BKK01",
-        "address_label": "ที่อยู่",
-        "address_placeholder": "เช่น 123 ถนนสุขุมวิท",
-        "phone_label": "เบอร์โทรศัพท์",
-        "phone_placeholder": "เช่น 02-123-4567",
+        "add_title": "เพิ่มรถ",
+        "edit_title": "แก้ไขรถ",
+        "license_plate": "ทะเบียนรถ *",
+        "license_plate_placeholder": "กข 1234",
+        "phone": "เบอร์เจ้าของ *",
+        "phone_placeholder": "0812345678",
+        "owner_name": "ชื่อเจ้าของ",
+        "owner_name_placeholder": "ชื่อ นามสกุล",
+        "car_model": "รุ่นรถ",
+        "car_model_placeholder": "Toyota Camry",
+        "car_year": "ปี",
+        "car_year_placeholder": "2023",
+        "car_color": "สี",
+        "car_color_placeholder": "ขาว",
+        "car_vin": "เลขตัวถัง",
+        "car_vin_placeholder": "เลขตัวถัง",
         "cancel": "ยกเลิก",
         "create": "สร้าง",
         "update": "อัปเดต"
       },
+
+      "delete_dialog": {
+        "title": "ลบรถ?",
+        "description": "รถจะถูกนำออกจากระบบ ประวัติบริการจะยังคงอยู่",
+        "cancel": "ยกเลิก",
+        "delete": "ลบ"
+      },
+
+      "batch_delete_dialog": {
+        "title": "ลบ {count} คัน?",
+        "description": "รถที่เลือกทั้งหมดจะถูกนำออกจากระบบ ประวัติบริการจะยังคงอยู่",
+        "cancel": "ยกเลิก",
+        "delete": "ลบทั้งหมด"
+      },
+
       "toast": {
-        "created": "สร้างสาขาสำเร็จ",
-        "updated": "อัปเดตสาขาสำเร็จ",
+        "created": "สร้างรถแล้ว",
+        "restored": "กู้คืนรถแล้ว",
+        "updated": "อัปเดตรถแล้ว",
+        "deleted": "ลบรถแล้ว",
+        "error": "เกิดข้อผิดพลาด",
+        "delete_error": "เกิดข้อผิดพลาดในการลบ",
+        "batch_deleted": "ลบ {count} คันแล้ว",
+        "batch_delete_error": "เกิดข้อผิดพลาดในการลบ"
+      }
+    },
+
+    "users_page": {
+      "title": "ผู้ใช้",
+      "search_placeholder": "ค้นหาเบอร์โทรหรือชื่อ...",
+      "search": "ค้นหา",
+      "no_users": "ไม่พบผู้ใช้",
+      "showing": "แสดง {from} ถึง {to} จาก {total} รายการ",
+      "page_of": "หน้า {page} จาก {total}",
+
+      "table": {
+        "phone": "เบอร์โทร",
+        "name": "ชื่อ",
+        "car_count": "รถ",
+        "service_count": "บริการ",
+        "created_at": "วันที่ลงทะเบียน",
+        "actions": "จัดการ"
+      },
+
+      "reset_dialog": {
+        "title": "รีเซ็ตข้อมูลผู้ใช้?",
+        "description": "คำเตือน: ข้อมูลทั้งหมดของผู้ใช้นี้จะถูกลบอย่างถาวร รวมถึงบัญชี รถทั้งหมด และประวัติบริการทั้งหมด การกระทำนี้ไม่สามารถยกเลิกได้!",
+        "user_info": "ผู้ใช้: {phone}",
+        "data_to_delete": "ข้อมูลที่จะถูกลบ:",
+        "cars": "{count} คัน",
+        "services": "{count} รายการบริการ",
+        "cancel": "ยกเลิก",
+        "reset": "รีเซ็ต & ลบทั้งหมด"
+      },
+
+      "toast": {
+        "reset_success": "รีเซ็ตข้อมูลผู้ใช้สำเร็จ",
+        "reset_details": "ลบ {cars} คัน และ {visits} รายการบริการ",
+        "reset_error": "เกิดข้อผิดพลาดในการรีเซ็ต"
+      }
+    },
+
+    "branches_page": {
+      "title": "สาขา",
+      "add_branch": "เพิ่มสาขา",
+      "no_branches": "ไม่พบสาขา กรุณาเพิ่มสาขาแรกของคุณ",
+      "active": "เปิดใช้งาน",
+      "inactive": "ปิดใช้งาน",
+
+      "table": {
+        "name": "ชื่อ",
+        "code": "รหัส",
+        "address": "ที่อยู่",
+        "phone": "เบอร์โทร",
+        "status": "สถานะ",
+        "actions": "จัดการ"
+      },
+
+      "dialog": {
+        "add_title": "เพิ่มสาขา",
+        "edit_title": "แก้ไขสาขา",
+        "name_label": "ชื่อสาขา *",
+        "name_placeholder": "สาขาสุขุมวิท",
+        "code_label": "รหัสสาขา",
+        "code_placeholder": "SKV01",
+        "address_label": "ที่อยู่",
+        "address_placeholder": "123 ถ.สุขุมวิท กรุงเทพฯ",
+        "phone_label": "เบอร์โทร",
+        "phone_placeholder": "02-123-4567",
+        "cancel": "ยกเลิก",
+        "create": "สร้าง",
+        "update": "อัปเดต"
+      },
+
+      "toast": {
+        "created": "สร้างสาขาแล้ว",
+        "updated": "อัปเดตสาขาแล้ว",
         "error": "เกิดข้อผิดพลาด"
       }
     },
+
     "import_page": {
-      "title": "นำเข้าประวัติบริการ",
-      "upload_title": "อัปโหลดไฟล์",
-      "upload_description": "อัปโหลดไฟล์ Excel หรือ CSV ที่มีประวัติบริการ",
-      "drop_here": "วางไฟล์ที่นี่",
-      "drag_drop": "ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์",
+      "title": "นำเข้าข้อมูล",
+      "upload_title": "อัปโหลดไฟล์ Excel/CSV",
+      "upload_description": "นำเข้าข้อมูลบริการจากไฟล์ Excel หรือ CSV ไฟล์ควรมีหัวคอลัมน์ภาษาไทยตามรูปแบบมาตรฐาน",
+      "drop_here": "วางไฟล์ที่นี่...",
+      "drag_drop": "ลากและวางไฟล์ที่นี่ หรือคลิกเพื่อเลือก",
       "supported_files": "รองรับไฟล์ .xlsx, .xls, .csv",
-      "records_ready": "พบ {count} รายการพร้อมนำเข้า",
+      "records_ready": "{count} รายการพร้อมนำเข้า",
       "clear": "ล้าง",
       "import_records": "นำเข้าข้อมูล",
+      "showing_first": "แสดง {count} จาก {total} รายการแรก",
+
       "table": {
         "row_num": "#",
         "type": "ประเภท",
@@ -383,6 +371,7 @@
         "oil": "น้ำมัน",
         "note": "หมายเหตุ"
       },
+
       "filter": {
         "all": "ทั้งหมด",
         "tire_change": "เปลี่ยนยาง",
@@ -390,149 +379,95 @@
         "oil_change": "เปลี่ยนน้ำมัน",
         "no_records": "ไม่พบรายการในประเภทนี้"
       },
-      "showing_first": "แสดง {count} รายการแรกจากทั้งหมด {total} รายการ",
+
       "results": {
         "title": "ผลการนำเข้า",
         "records_imported": "นำเข้าสำเร็จ",
         "duplicates_skipped": "ข้ามรายการซ้ำ",
-        "duplicates_note": "ข้าม {count} รายการที่ซ้ำกับที่มีอยู่ในระบบ",
+        "duplicates_note": "ตรวจพบ {count} รายการซ้ำและข้ามไป เพื่อป้องกันข้อมูลซ้ำซ้อน",
         "errors": "ข้อผิดพลาด",
-        "errors_list": "รายละเอียดข้อผิดพลาด:"
+        "errors_list": "รายการข้อผิดพลาด:"
       },
-      "toast": {
-        "completed": "นำเข้าข้อมูลสำเร็จ",
-        "completed_desc": "นำเข้า {success} รายการ ผิดพลาด {errors} รายการ",
-        "failed": "นำเข้าข้อมูลไม่สำเร็จ",
-        "invalid_file": "ไฟล์ไม่ถูกต้อง",
-        "invalid_file_desc": "กรุณาอัปโหลดไฟล์ Excel หรือ CSV ที่มีข้อมูล",
-        "parsed": "อ่านไฟล์สำเร็จ",
-        "parsed_desc": "พบ {count} รายการ",
-        "parse_error": "อ่านไฟล์ไม่สำเร็จ",
-        "parse_error_desc": "ไม่สามารถอ่านไฟล์ได้ กรุณาตรวจสอบรูปแบบไฟล์"
-      },
+
       "download_template": "ดาวน์โหลดเทมเพลต",
       "download_template_desc": "ดาวน์โหลดไฟล์ตัวอย่างพร้อมหัวคอลัมน์ที่ถูกต้อง",
+
       "columns": {
         "title": "หัวคอลัมน์ที่รองรับ",
-        "description": "ใช้หัวคอลัมน์ภาษาไทยเหล่านี้ในไฟล์ Excel ของคุณ"
+        "description": "ไฟล์ Excel/CSV ของคุณควรมีหัวคอลัมน์ภาษาไทยเหล่านี้"
+      },
+
+      "toast": {
+        "completed": "นำเข้าข้อมูลเสร็จสิ้น",
+        "completed_desc": "นำเข้า {success} รายการ, {errors} ข้อผิดพลาด",
+        "failed": "นำเข้าข้อมูลล้มเหลว",
+        "parsed": "อ่านไฟล์แล้ว",
+        "parsed_desc": "พบ {count} รายการที่ถูกต้อง",
+        "invalid_file": "ไฟล์ไม่ถูกต้อง",
+        "invalid_file_desc": "ไฟล์ต้องมีหัวคอลัมน์และข้อมูลอย่างน้อย 1 แถว",
+        "parse_error": "ข้อผิดพลาดในการอ่านไฟล์",
+        "parse_error_desc": "ไม่สามารถอ่านไฟล์ได้ กรุณาตรวจสอบรูปแบบ"
       }
     },
+
     "add_service": {
       "title": "เพิ่มประวัติบริการ",
-      "description": "เพิ่มประวัติบริการใหม่สำหรับรถ",
+      "description": "สร้างข้อมูลการเข้ารับบริการใหม่",
+
       "form": {
-        "car_selection": "รถ",
-        "select_existing": "เลือกรถที่มี",
-        "enter_new": "กรอกใหม่",
-        "search_car_placeholder": "ค้นหารถ...",
-        "search_car_input": "ค้นหาทะเบียน, เบอร์โทร, หรือชื่อ...",
-        "no_cars_found": "ไม่พบรถ",
-        "type_to_search": "พิมพ์อย่างน้อย 2 ตัวอักษรเพื่อค้นหา",
-        "license_plate": "ทะเบียนรถ",
-        "license_plate_placeholder": "เช่น กข 1234",
-        "phone": "เบอร์โทรศัพท์",
-        "phone_placeholder": "เช่น 0812345678",
+        "license_plate": "ทะเบียนรถ *",
+        "license_plate_placeholder": "กข 1234",
+        "phone": "เบอร์โทร *",
+        "phone_placeholder": "0812345678",
         "car_model": "รุ่นรถ",
-        "car_model_placeholder": "เช่น Toyota Camry",
-        "branch": "สาขา",
+        "car_model_placeholder": "Toyota Camry",
+        "branch": "สาขา *",
         "branch_placeholder": "เลือกสาขา",
-        "visit_date": "วันที่เข้ารับบริการ",
-        "odometer": "เลขไมล์ (กม.)",
-        "odometer_placeholder": "เช่น 50000",
+        "visit_date": "วันที่เข้ารับบริการ *",
+        "odometer": "เลขไมล์ (กม.) *",
+        "odometer_placeholder": "50000",
         "total_price": "ราคารวม",
-        "total_price_placeholder": "เช่น 5000"
+        "total_price_placeholder": "2500"
       },
+
       "tire": {
         "title": "เปลี่ยนยาง",
         "add_tire": "เพิ่มยาง",
-        "tire_num": "ยาง #{num}",
+        "tire_num": "ยางที่ #{num}",
         "position": "ตำแหน่ง",
         "size": "ขนาด",
-        "size_placeholder": "เช่น 205/55R16",
+        "size_placeholder": "205/55R16",
         "brand": "ยี่ห้อ",
-        "brand_placeholder": "เช่น Michelin",
+        "brand_placeholder": "Michelin",
         "model": "รุ่น",
-        "model_placeholder": "เช่น Primacy 4",
+        "model_placeholder": "Primacy 4",
         "production_week": "สัปดาห์ผลิต",
-        "production_week_placeholder": "เช่น 2423",
-        "price": "ราคา/เส้น",
-        "price_placeholder": "เช่น 3500",
-        "position_fl": "หน้าซ้าย (FL)",
-        "position_fr": "หน้าขวา (FR)",
-        "position_rl": "หลังซ้าย (RL)",
-        "position_rr": "หลังขวา (RR)",
-        "change": "เปลี่ยน",
-        "no_change": "ไม่เปลี่ยน"
+        "production_week_placeholder": "2524",
+        "price": "ราคา",
+        "price_placeholder": "3500"
       },
+
       "oil": {
         "title": "เปลี่ยนน้ำมันเครื่อง",
         "model": "รุ่นน้ำมัน",
-        "model_placeholder": "เช่น Castrol GTX",
+        "model_placeholder": "Castrol Edge",
         "viscosity": "ความหนืด",
-        "viscosity_placeholder": "เช่น 5W-40",
+        "viscosity_placeholder": "5W-30",
         "type": "ประเภท",
-        "type_placeholder": "เลือกประเภท",
-        "type_synthetic": "สังเคราะห์แท้",
-        "type_semi_synthetic": "กึ่งสังเคราะห์",
-        "type_conventional": "ธรรมดา",
-        "engine_type": "ประเภทเครื่องยนต์",
-        "engine_type_placeholder": "เลือกประเภทเครื่องยนต์",
-        "engine_gasoline": "เบนซิน",
-        "engine_diesel": "ดีเซล",
-        "engine_hybrid": "ไฮบริด",
-        "engine_electric": "ไฟฟ้า",
-        "interval": "ระยะเปลี่ยน (กม.)",
-        "interval_placeholder": "เช่น 10000",
-        "price": "ราคา",
-        "price_placeholder": "เช่น 1800"
+        "type_placeholder": "สังเคราะห์แท้",
+        "interval": "ระยะเปลี่ยนถ่าย (กม.)",
+        "interval_placeholder": "10000"
       },
-      "tire_switch": {
-        "title": "สลับยาง-ถ่วงล้อ",
-        "description": "บันทึกการสลับยาง/ถ่วงล้อ/ตั้งศูนย์ล้อ",
-        "notes": "หมายเหตุ",
-        "notes_placeholder": "เช่น สลับยาง-ถ่วงล้อ",
-        "default_notes": "สลับยาง-ถ่วงล้อ",
-        "select_wheels": "เลือกล้อที่สลับ",
-        "position_fl": "หน้าซ้าย",
-        "position_fr": "หน้าขวา",
-        "position_rl": "หลังซ้าย",
-        "position_rr": "หลังขวา"
-      },
+
       "buttons": {
         "cancel": "ยกเลิก",
-        "create": "สร้างประวัติ"
+        "create": "สร้างข้อมูล"
       },
+
       "toast": {
-        "created": "สร้างประวัติบริการสำเร็จ",
-        "error": "เกิดข้อผิดพลาดในการสร้างประวัติบริการ"
+        "created": "สร้างประวัติบริการแล้ว",
+        "error": "เกิดข้อผิดพลาดในการสร้าง"
       }
-    },
-    "service_detail": {
-      "title": "รายละเอียดการเข้ารับบริการ",
-      "car_info": "ข้อมูลรถ",
-      "license_plate": "ทะเบียนรถ",
-      "car_model": "รุ่นรถ",
-      "visit_info": "ข้อมูลการเข้ารับบริการ",
-      "date": "วันที่",
-      "branch": "สาขา",
-      "odometer": "เลขไมล์",
-      "total_price": "ราคารวม",
-      "notes": "หมายเหตุ",
-      "tire_changes": "เปลี่ยนยาง",
-      "tire_size": "ขนาด",
-      "production_week": "สัปดาห์ผลิต",
-      "price_per_tire": "ราคา/เส้น",
-      "tire_switches": "สลับยาง",
-      "tire_switch_service": "สลับยาง",
-      "oil_changes": "เปลี่ยนน้ำมันเครื่อง",
-      "oil_model": "รุ่นน้ำมัน",
-      "viscosity": "ความหนืด",
-      "oil_type": "ประเภทน้ำมัน",
-      "engine_type": "ประเภทเครื่องยนต์",
-      "interval_km": "ระยะเปลี่ยน",
-      "oil_price": "ราคา",
-      "no_services": "ไม่มีข้อมูลบริการ",
-      "not_found": "ไม่พบข้อมูลการเข้ารับบริการ"
     }
   }
 }

@@ -34,50 +34,23 @@
     "verify": "Verify",
     "back": "Back",
     "logout": "Logout",
-    "logout_confirm": "Are you sure you want to logout?",
-    "otp_send_failed": "Failed to send OTP. Please try again."
+    "logout_confirm": "Are you sure you want to logout?"
   },
   "car": {
     "title": "My Cars",
     "add_car": "Add Car",
     "license_plate": "License Plate",
-    "license_plate_placeholder": "e.g., กข 1234 or 1กก 1234",
-    "license_plate_invalid": "Please enter a valid Thai license plate",
-    "license_plate_format": "Format: Thai characters followed by numbers (e.g., กข 1234)",
-    "car_model": "Vehicle Model",
-    "car_model_placeholder": "e.g., Toyota Camry 2023",
-    "car_year": "Vehicle Year",
-    "car_year_placeholder": "e.g., 2023",
-    "car_color": "Vehicle Color",
-    "car_color_placeholder": "e.g., White, Black, Silver",
-    "car_vin": "VIN Number",
-    "car_vin_placeholder": "e.g., JTDKN3DU5A0000001",
+    "license_plate_placeholder": "e.g., กข 1234",
+    "license_plate_invalid": "Invalid license plate format",
+    "car_model": "Car Model",
+    "car_model_placeholder": "e.g., Toyota Camry",
     "no_cars": "No cars registered yet",
     "add_first_car": "Add your first car",
     "remove_car": "Remove Car",
     "remove_car_confirm": "Are you sure you want to remove {plate} from your account?",
     "last_service": "Last Service",
     "last_tire_change": "Last Tire Change",
-    "last_oil_change": "Last Oil Change",
-    "vehicle_info": "Vehicle Information",
-    "vehicle_info_subtitle": "Enter your Thai license plate number",
-    "required": "Required",
-    "optional": "Optional",
-    "register_plate": "Register Plate",
-    "plate_registered": "Plate Registered!",
-    "plate_registered_message": "Your license plate has been added successfully.",
-    "add_another": "Add Another",
-    "view_plates": "View Plates",
-    "register_success": "Plate registered successfully!",
-    "register_failed": "Failed to add plate",
-    "update_success": "Vehicle updated successfully!",
-    "update_failed": "Failed to update vehicle",
-    "remove_success": "Vehicle removed successfully!",
-    "remove_failed": "Failed to remove vehicle",
-    "select_to_view": "Select a car to view service history",
-    "plate_not_registered": "Plate Not Registered",
-    "plate_not_registered_message": "This license plate is not registered in the system. Please contact the branch to register first.",
-    "try_another_plate": "Try Another Plate"
+    "last_oil_change": "Last Oil Change"
   },
   "service": {
     "history": "Service History",
@@ -87,9 +60,11 @@
     "date": "Date",
     "branch": "Branch",
     "odometer": "Odometer (km)",
+    "km": "km",
     "total_price": "Total Price",
     "no_records": "No service records found",
-    "detail": "Details"
+    "detail": "Details",
+    "last_tire_switch": "Latest tire switch"
   },
   "tire": {
     "position": "Position",
@@ -104,197 +79,86 @@
     "production_week": "Production Week",
     "price_per_tire": "Price per Tire",
     "switch_from": "From",
-    "switch_to": "To",
-    "status_title": "Tire Status by Position",
-    "usage_percent": "{percent}% used",
-    "remaining_km": "{km} km remaining",
-    "installed_date": "Last changed",
-    "installed_km": "Mileage",
-    "last_changed": "Last changed",
-    "time_ago": "ago",
-    "days_ago": "days",
-    "no_tire_data": "No tire data yet",
-    "show_details": "Show details",
-    "hide_details": "Hide details",
-    "branch": "Branch",
-    "status_good": "Good condition",
-    "status_warning": "Showing wear",
-    "status_critical": "Should replace",
-    "status_overdue": "Overdue",
-    "detail_title": "Tire Details",
-    "detail_position": "Position",
-    "detail_brand_model": "Brand and Model",
-    "detail_size": "Tire Size",
-    "detail_production_week": "Production Week",
-    "detail_price_per_tire": "Price per Tire",
-    "detail_installed_date": "Last Changed",
-    "detail_installed_km": "Mileage",
-    "detail_branch": "Branch",
-    "detail_no_data": "No tire data found"
-  },
-  "next_service": {
-    "title": "Next Service (Recommended)",
-    "tire_switch": "Tire Rotation",
-    "oil_change": "Oil Change",
-    "at_km": "At: {km} km",
-    "by_date": "By {date}",
-    "in_days": "In {days} days",
-    "in_months": "In {months} months",
-    "in_km": "In {km} km",
-    "or": "or",
-    "overdue": "Overdue",
-    "last_service": "Last service",
-    "recommendation_note": "Recommended every {km} km or {months} months"
+    "switch_to": "To"
   },
   "oil": {
-    "title": "Engine Oil",
     "model": "Oil Model",
     "viscosity": "Viscosity",
     "engine_type": "Engine Type",
-    "oil_type": "Type",
-    "interval": "Change Interval (km)",
-    "type_synthetic": "Full Synthetic",
-    "type_semi_synthetic": "Semi-Synthetic",
-    "type_conventional": "Conventional",
-    "last_change": "Last Changed",
-    "odometer": "Mileage at Change",
-    "next_service": "Recommended Next Service",
-    "approx": "Approx.",
-    "or": "or",
+    "oil_type": "Oil Type",
+    "interval": "Change Interval (km)"
+  },
+  "next_service": {
+    "tire_switch": "Tire Switch",
+    "oil_change": "Oil Change",
+    "title": "Next Service",
+    "last_service": "Last service",
+    "date": "Date",
+    "odometer": "Odometer",
     "km": "km",
-    "price": "Price",
-    "no_data": "No oil change history yet",
-    "brand_model": "Brand/Model",
-    "view_details": "View oil details",
-    "change_interval": "Change Interval",
-    "recommendation_note": "Recommended every {km} km or 6 months"
+    "at_km": "At {km} km",
+    "by_date": "by {date}",
+    "in_days": "{days} days left",
+    "in_months": "{months} months left",
+    "in_km": "or {km} km",
+    "or": "or",
+    "overdue": "Overdue",
+    "recommendation_note": "Recommended every {km} km or {months} months",
+    "new_tires_installed": "New Tires Installed",
+    "tires_recently_changed": "Tires changed on {date}",
+    "reset_after_install": "No tire switch needed - tires are new"
   },
   "nav": {
     "home": "Home",
-    "cars": "CARS",
-    "user": "USER",
-    "profile": "Profile",
-    "tire": "Tire",
-    "switch": "Switch",
-    "oil": "Oil",
-    "history": "HISTORY"
-  },
-  "history": {
-    "title": "All Service History",
-    "no_records": "No service history yet",
-    "tire_change": "Tire Change",
-    "tire_switch": "Tire Switch",
-    "oil_change": "Oil Change",
-    "at_branch": "Branch",
-    "odometer": "Mileage",
-    "km": "km",
-    "positions": "Positions",
-    "all_cars": "All Cars"
-  },
-  "profile": {
-    "title": "My Account",
-    "account_info": "Account Information",
-    "phone_number": "Phone Number",
-    "registered_plates": "Registered Plates",
-    "plates_count": "{count} plate(s)",
-    "settings": "Settings",
-    "language": "Language",
-    "actions": "Actions",
-    "logout_success": "Logged out successfully"
+    "cars": "My Cars",
+    "profile": "Profile"
   },
   "admin": {
     "title": "Admin Panel",
     "dashboard": "Dashboard",
-    "cars": "Cars",
     "services": "Service Records",
     "import": "Import Data",
     "branches": "Branches",
+    "cars": "Cars",
+    "users": "Users",
     "search_placeholder": "Search plate, phone...",
+    "logout": "Logout",
     "loading": "Loading...",
     "tiretrack_admin": "ทรัพย์ไพศาล Admin",
-    "logout": "Logout",
+
+    "login_page": {
+      "admin_portal": "Admin Portal",
+      "sign_in_subtitle": "Sign in to manage ทรัพย์ไพศาล data",
+      "sign_in": "Sign In",
+      "enter_credentials": "Enter your admin credentials",
+      "username": "Username",
+      "username_placeholder": "admin",
+      "username_required": "Username is required",
+      "password": "Password",
+      "password_placeholder": "••••••••",
+      "password_required": "Password is required",
+      "login_success": "Login successful",
+      "login_failed": "Login failed",
+      "customer_portal": "Customer portal?",
+      "login_here": "Login here"
+    },
+
     "stats": {
       "total_users": "Total Users",
       "total_cars": "Total Cars",
       "service_visits": "Service Visits",
       "branches_count": "Branches"
     },
+
     "recent_visits": {
       "title": "Recent Service Visits",
-      "no_visits": "No recent service visits"
+      "no_visits": "No service visits yet"
     },
-    "login_page": {
-      "admin_portal": "Admin Portal",
-      "sign_in_subtitle": "Sign in to access the admin panel",
-      "sign_in": "Sign In",
-      "enter_credentials": "Enter your admin credentials",
-      "username": "Username",
-      "username_placeholder": "Enter username",
-      "username_required": "Username is required",
-      "password": "Password",
-      "password_placeholder": "Enter password",
-      "password_required": "Password is required",
-      "login_success": "Login successful",
-      "login_failed": "Login failed",
-      "customer_portal": "Looking for customer portal?",
-      "login_here": "Login here"
-    },
-    "cars_page": {
-      "title": "Car Management",
-      "add_car": "Add Car",
-      "search_placeholder": "Search by plate, phone, or owner name...",
-      "search": "Search",
-      "showing": "Showing {from} to {to} of {total}",
-      "page_of": "Page {page} of {total}",
-      "no_cars": "No cars found",
-      "table": {
-        "license_plate": "License Plate",
-        "owner_phone": "Phone",
-        "owner_name": "Owner Name",
-        "car_model": "Model",
-        "service_count": "Services",
-        "actions": "Actions"
-      },
-      "dialog": {
-        "add_title": "Add New Car",
-        "edit_title": "Edit Car",
-        "license_plate": "License Plate",
-        "license_plate_placeholder": "e.g., กข 1234",
-        "phone": "Phone Number",
-        "phone_placeholder": "e.g., 0812345678",
-        "owner_name": "Owner Name",
-        "owner_name_placeholder": "e.g., John Smith",
-        "car_model": "Car Model",
-        "car_model_placeholder": "e.g., Toyota Camry",
-        "car_year": "Car Year",
-        "car_year_placeholder": "e.g., 2023",
-        "car_color": "Car Color",
-        "car_color_placeholder": "e.g., White",
-        "car_vin": "VIN Number",
-        "car_vin_placeholder": "e.g., JTDKN3DU5A0000001",
-        "cancel": "Cancel",
-        "create": "Create",
-        "update": "Update"
-      },
-      "delete_dialog": {
-        "title": "Delete Car",
-        "description": "Are you sure you want to delete this car? This action cannot be undone.",
-        "cancel": "Cancel",
-        "delete": "Delete"
-      },
-      "toast": {
-        "created": "Car created successfully",
-        "restored": "Car restored successfully",
-        "updated": "Car updated successfully",
-        "deleted": "Car deleted successfully",
-        "error": "Error",
-        "delete_error": "Failed to delete car"
-      }
-    },
+
     "services_page": {
       "title": "Service Records",
       "add_record": "Add Record",
-      "search_placeholder": "Search by plate, phone, or branch...",
+      "search_placeholder": "Search by plate or phone...",
       "search": "Search",
       "filter": {
         "all": "All",
@@ -302,6 +166,12 @@
         "tire_switch": "Tire Switch",
         "oil_change": "Oil Change"
       },
+      "no_records": "No service records found",
+      "showing": "Showing {from} to {to} of {total} results",
+      "page_of": "Page {page} of {total}",
+      "selected": "{count} selected",
+      "batch_delete": "Delete Selected",
+
       "table": {
         "date": "Date",
         "license_plate": "License Plate",
@@ -312,26 +182,139 @@
         "services": "Services",
         "actions": "Actions"
       },
-      "showing": "Showing {from} to {to} of {total}",
-      "page_of": "Page {page} of {total}",
-      "no_records": "No service records found",
+
       "delete_dialog": {
-        "title": "Delete Service Record",
-        "description": "Are you sure you want to delete this service record? This action cannot be undone.",
+        "title": "Delete Service Visit?",
+        "description": "This action cannot be undone. This will permanently delete the service visit and all related records.",
         "cancel": "Cancel",
         "delete": "Delete"
       },
+
+      "batch_delete_dialog": {
+        "title": "Delete {count} Service Records?",
+        "description": "This action cannot be undone. This will permanently delete all selected service records and their related data.",
+        "cancel": "Cancel",
+        "delete": "Delete All"
+      },
+
       "toast": {
-        "deleted": "Service record deleted successfully",
-        "delete_error": "Failed to delete service record"
+        "deleted": "Service visit deleted",
+        "delete_error": "Error deleting visit",
+        "batch_deleted": "{count} service records deleted",
+        "batch_delete_error": "Error deleting records"
       }
     },
+
+    "cars_page": {
+      "title": "Cars",
+      "add_car": "Add Car",
+      "search_placeholder": "Search by plate, phone or name...",
+      "search": "Search",
+      "no_cars": "No cars found",
+      "showing": "Showing {from} to {to} of {total} results",
+      "page_of": "Page {page} of {total}",
+      "selected": "{count} selected",
+      "batch_delete": "Delete Selected",
+
+      "table": {
+        "license_plate": "License Plate",
+        "owner_phone": "Owner Phone",
+        "owner_name": "Owner Name",
+        "car_model": "Car Model",
+        "service_count": "Services",
+        "actions": "Actions"
+      },
+
+      "dialog": {
+        "add_title": "Add Car",
+        "edit_title": "Edit Car",
+        "license_plate": "License Plate *",
+        "license_plate_placeholder": "กข 1234",
+        "phone": "Owner Phone *",
+        "phone_placeholder": "0812345678",
+        "owner_name": "Owner Name",
+        "owner_name_placeholder": "John Doe",
+        "car_model": "Car Model",
+        "car_model_placeholder": "Toyota Camry",
+        "car_year": "Year",
+        "car_year_placeholder": "2023",
+        "car_color": "Color",
+        "car_color_placeholder": "White",
+        "car_vin": "VIN",
+        "car_vin_placeholder": "VIN number",
+        "cancel": "Cancel",
+        "create": "Create",
+        "update": "Update"
+      },
+
+      "delete_dialog": {
+        "title": "Delete Car?",
+        "description": "This will remove the car from the system. Service history will be preserved.",
+        "cancel": "Cancel",
+        "delete": "Delete"
+      },
+
+      "batch_delete_dialog": {
+        "title": "Delete {count} Cars?",
+        "description": "This will remove all selected cars from the system. Service history will be preserved.",
+        "cancel": "Cancel",
+        "delete": "Delete All"
+      },
+
+      "toast": {
+        "created": "Car created",
+        "restored": "Car restored",
+        "updated": "Car updated",
+        "deleted": "Car deleted",
+        "error": "Error",
+        "delete_error": "Error deleting car",
+        "batch_deleted": "{count} cars deleted",
+        "batch_delete_error": "Error deleting cars"
+      }
+    },
+
+    "users_page": {
+      "title": "Users",
+      "search_placeholder": "Search by phone or name...",
+      "search": "Search",
+      "no_users": "No users found",
+      "showing": "Showing {from} to {to} of {total} results",
+      "page_of": "Page {page} of {total}",
+
+      "table": {
+        "phone": "Phone",
+        "name": "Name",
+        "car_count": "Cars",
+        "service_count": "Services",
+        "created_at": "Registered",
+        "actions": "Actions"
+      },
+
+      "reset_dialog": {
+        "title": "Reset User Data?",
+        "description": "WARNING: This will PERMANENTLY DELETE all data for this user including their account, all cars, and all service history. This action CANNOT be undone!",
+        "user_info": "User: {phone}",
+        "data_to_delete": "Data to be deleted:",
+        "cars": "{count} car(s)",
+        "services": "{count} service record(s)",
+        "cancel": "Cancel",
+        "reset": "Reset & Delete All"
+      },
+
+      "toast": {
+        "reset_success": "User data reset complete",
+        "reset_details": "Deleted {cars} cars and {visits} service records",
+        "reset_error": "Error resetting user"
+      }
+    },
+
     "branches_page": {
-      "title": "Branch Management",
+      "title": "Branches",
       "add_branch": "Add Branch",
+      "no_branches": "No branches found. Add your first branch.",
       "active": "Active",
       "inactive": "Inactive",
-      "no_branches": "No branches found",
+
       "table": {
         "name": "Name",
         "code": "Code",
@@ -340,37 +323,42 @@
         "status": "Status",
         "actions": "Actions"
       },
+
       "dialog": {
-        "add_title": "Add New Branch",
+        "add_title": "Add Branch",
         "edit_title": "Edit Branch",
-        "name_label": "Branch Name",
-        "name_placeholder": "e.g., Bangkok Main",
+        "name_label": "Branch Name *",
+        "name_placeholder": "สาขาสุขุมวิท",
         "code_label": "Branch Code",
-        "code_placeholder": "e.g., BKK01",
+        "code_placeholder": "SKV01",
         "address_label": "Address",
-        "address_placeholder": "e.g., 123 Main Street",
+        "address_placeholder": "123 Sukhumvit Rd, Bangkok",
         "phone_label": "Phone",
-        "phone_placeholder": "e.g., 02-123-4567",
+        "phone_placeholder": "02-123-4567",
         "cancel": "Cancel",
         "create": "Create",
         "update": "Update"
       },
+
       "toast": {
-        "created": "Branch created successfully",
-        "updated": "Branch updated successfully",
+        "created": "Branch created",
+        "updated": "Branch updated",
         "error": "Error"
       }
     },
+
     "import_page": {
-      "title": "Import Service Records",
-      "upload_title": "Upload File",
-      "upload_description": "Upload Excel or CSV file with service records",
-      "drop_here": "Drop file here",
-      "drag_drop": "Drag and drop file here, or click to browse",
-      "supported_files": "Supports .xlsx, .xls, .csv",
+      "title": "Import Data",
+      "upload_title": "Upload Excel/CSV File",
+      "upload_description": "Import service records from Excel or CSV files. The file should have Thai column headers matching the standard format.",
+      "drop_here": "Drop the file here...",
+      "drag_drop": "Drag & drop a file here, or click to select",
+      "supported_files": "Supports .xlsx, .xls, .csv files",
       "records_ready": "{count} records ready to import",
       "clear": "Clear",
       "import_records": "Import Records",
+      "showing_first": "Showing first {count} of {total} records",
+
       "table": {
         "row_num": "#",
         "type": "Type",
@@ -383,6 +371,7 @@
         "oil": "Oil",
         "note": "Note"
       },
+
       "filter": {
         "all": "All",
         "tire_change": "Tire Change",
@@ -390,149 +379,95 @@
         "oil_change": "Oil Change",
         "no_records": "No records found for this type"
       },
-      "showing_first": "Showing first {count} of {total} records",
+
       "results": {
         "title": "Import Results",
-        "records_imported": "Records Imported",
-        "duplicates_skipped": "Duplicates Skipped",
-        "duplicates_note": "{count} duplicate records were skipped. These records already exist in the system.",
+        "records_imported": "Records imported",
+        "duplicates_skipped": "Duplicates skipped",
+        "duplicates_note": "{count} duplicate records were detected and skipped to prevent data duplication.",
         "errors": "Errors",
-        "errors_list": "Error Details:"
+        "errors_list": "Errors:"
       },
-      "toast": {
-        "completed": "Import Completed",
-        "completed_desc": "{success} records imported, {errors} errors",
-        "failed": "Import Failed",
-        "invalid_file": "Invalid File",
-        "invalid_file_desc": "Please upload a valid Excel or CSV file with data",
-        "parsed": "File Parsed Successfully",
-        "parsed_desc": "{count} records found",
-        "parse_error": "Parse Error",
-        "parse_error_desc": "Failed to parse the file. Please check the format."
-      },
+
       "download_template": "Download Template",
       "download_template_desc": "Download a sample file with the correct column headers",
+
       "columns": {
         "title": "Supported Column Headers",
-        "description": "Use these Thai column headers in your Excel file"
+        "description": "Your Excel/CSV file should include these Thai column headers"
+      },
+
+      "toast": {
+        "completed": "Import completed",
+        "completed_desc": "{success} records imported, {errors} errors",
+        "failed": "Import failed",
+        "parsed": "File parsed",
+        "parsed_desc": "Found {count} valid records",
+        "invalid_file": "Invalid file",
+        "invalid_file_desc": "File must have headers and at least one row of data",
+        "parse_error": "Parse error",
+        "parse_error_desc": "Failed to parse file. Please check the format."
       }
     },
+
     "add_service": {
       "title": "Add Service Record",
-      "description": "Add a new service record for a car",
+      "description": "Create a new service visit record",
+
       "form": {
-        "car_selection": "Car",
-        "select_existing": "Select Existing",
-        "enter_new": "Enter New",
-        "search_car_placeholder": "Search for a car...",
-        "search_car_input": "Search by plate, phone, or name...",
-        "no_cars_found": "No cars found",
-        "type_to_search": "Type at least 2 characters to search",
-        "license_plate": "License Plate",
-        "license_plate_placeholder": "e.g., กข 1234",
-        "phone": "Phone Number",
-        "phone_placeholder": "e.g., 0812345678",
+        "license_plate": "License Plate *",
+        "license_plate_placeholder": "กข 1234",
+        "phone": "Phone *",
+        "phone_placeholder": "0812345678",
         "car_model": "Car Model",
-        "car_model_placeholder": "e.g., Toyota Camry",
-        "branch": "Branch",
+        "car_model_placeholder": "Toyota Camry",
+        "branch": "Branch *",
         "branch_placeholder": "Select branch",
-        "visit_date": "Visit Date",
-        "odometer": "Odometer (km)",
-        "odometer_placeholder": "e.g., 50000",
+        "visit_date": "Visit Date *",
+        "odometer": "Odometer (km) *",
+        "odometer_placeholder": "50000",
         "total_price": "Total Price",
-        "total_price_placeholder": "e.g., 5000"
+        "total_price_placeholder": "2500"
       },
+
       "tire": {
         "title": "Tire Changes",
         "add_tire": "Add Tire",
         "tire_num": "Tire #{num}",
         "position": "Position",
         "size": "Size",
-        "size_placeholder": "e.g., 205/55R16",
+        "size_placeholder": "205/55R16",
         "brand": "Brand",
-        "brand_placeholder": "e.g., Michelin",
+        "brand_placeholder": "Michelin",
         "model": "Model",
-        "model_placeholder": "e.g., Primacy 4",
+        "model_placeholder": "Primacy 4",
         "production_week": "Production Week",
-        "production_week_placeholder": "e.g., 2423",
-        "price": "Price/Tire",
-        "price_placeholder": "e.g., 3500",
-        "position_fl": "Front Left (FL)",
-        "position_fr": "Front Right (FR)",
-        "position_rl": "Rear Left (RL)",
-        "position_rr": "Rear Right (RR)",
-        "change": "Change",
-        "no_change": "No Change"
+        "production_week_placeholder": "2524",
+        "price": "Price",
+        "price_placeholder": "3500"
       },
+
       "oil": {
         "title": "Oil Change",
         "model": "Oil Model",
-        "model_placeholder": "e.g., Castrol GTX",
+        "model_placeholder": "Castrol Edge",
         "viscosity": "Viscosity",
-        "viscosity_placeholder": "e.g., 5W-40",
+        "viscosity_placeholder": "5W-30",
         "type": "Oil Type",
-        "type_placeholder": "Select type",
-        "type_synthetic": "Full Synthetic",
-        "type_semi_synthetic": "Semi-Synthetic",
-        "type_conventional": "Conventional",
-        "engine_type": "Engine Type",
-        "engine_type_placeholder": "Select engine type",
-        "engine_gasoline": "Gasoline",
-        "engine_diesel": "Diesel",
-        "engine_hybrid": "Hybrid",
-        "engine_electric": "Electric",
+        "type_placeholder": "Synthetic",
         "interval": "Interval (km)",
-        "interval_placeholder": "e.g., 10000",
-        "price": "Price",
-        "price_placeholder": "e.g., 1800"
+        "interval_placeholder": "10000"
       },
-      "tire_switch": {
-        "title": "Tire Rotation/Balance",
-        "description": "Record tire rotation/balancing/alignment service",
-        "notes": "Notes",
-        "notes_placeholder": "e.g., Tire rotation and balance",
-        "default_notes": "Tire rotation and balance",
-        "select_wheels": "Select wheels to rotate",
-        "position_fl": "Front Left",
-        "position_fr": "Front Right",
-        "position_rl": "Rear Left",
-        "position_rr": "Rear Right"
-      },
+
       "buttons": {
         "cancel": "Cancel",
         "create": "Create Record"
       },
+
       "toast": {
-        "created": "Service record created successfully",
-        "error": "Error creating service record"
+        "created": "Service record created",
+        "error": "Error creating record"
       }
-    },
-    "service_detail": {
-      "title": "Service Visit Details",
-      "car_info": "Car Information",
-      "license_plate": "License Plate",
-      "car_model": "Car Model",
-      "visit_info": "Visit Information",
-      "date": "Date",
-      "branch": "Branch",
-      "odometer": "Odometer",
-      "total_price": "Total Price",
-      "notes": "Notes",
-      "tire_changes": "Tire Changes",
-      "tire_size": "Size",
-      "production_week": "Production Week",
-      "price_per_tire": "Price/Tire",
-      "tire_switches": "Tire Switches",
-      "tire_switch_service": "Tire Switch",
-      "oil_changes": "Oil Changes",
-      "oil_model": "Oil Model",
-      "viscosity": "Viscosity",
-      "oil_type": "Oil Type",
-      "engine_type": "Engine Type",
-      "interval_km": "Interval",
-      "oil_price": "Price",
-      "no_services": "No service data",
-      "not_found": "Service visit not found"
     }
   }
 }
