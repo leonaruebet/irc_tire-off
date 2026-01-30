@@ -942,6 +942,240 @@ export const admin_router = create_router({
     return Array.from(new Set(viscosities)).sort();
   }),
 
+  // ============================================
+  // BATCH DELETE OPERATIONS
+  // ============================================
+
+  /**
+   * Batch delete multiple cars (soft delete)
+   * @param ids - Array of car IDs to delete
+   * @returns Count of deleted cars
+   */
+  batch_delete_cars: public_procedure
+    .input(z.object({ ids: z.array(z.string()).min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      console.log("[Admin] Batch delete cars", { count: input.ids.length });
+
+      const result = await ctx.db.car.updateMany({
+        where: { id: { in: input.ids } },
+        data: { is_deleted: true },
+      });
+
+      console.log("[Admin] Batch deleted cars", { deleted: result.count });
+      return { success: true, deleted_count: result.count };
+    }),
+
+  /**
+   * Batch delete multiple service visits (hard delete)
+   * Deletes visit and all related tire/oil records
+   * @param ids - Array of service visit IDs to delete
+   * @returns Count of deleted visits
+   */
+  batch_delete_visits: public_procedure
+    .input(z.object({ ids: z.array(z.string()).min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      console.log("[Admin] Batch delete visits", { count: input.ids.length });
+
+      // Delete related records first
+      await ctx.db.tireChange.deleteMany({
+        where: { service_visit_id: { in: input.ids } },
+      });
+      await ctx.db.tireSwitch.deleteMany({
+        where: { service_visit_id: { in: input.ids } },
+      });
+      await ctx.db.oilChange.deleteMany({
+        where: { service_visit_id: { in: input.ids } },
+      });
+
+      // Delete the visits
+      const result = await ctx.db.serviceVisit.deleteMany({
+        where: { id: { in: input.ids } },
+      });
+
+      console.log("[Admin] Batch deleted visits", { deleted: result.count });
+      return { success: true, deleted_count: result.count };
+    }),
+
+  // ============================================
+  // USER MANAGEMENT (Admin)
+  // ============================================
+
+  /**
+   * List all users with car count and service count
+   * Supports search by phone or name
+   */
+  list_users: public_procedure
+    .input(
+      z.object({
+        search: z.string().optional(),
+        page: z.number().default(1),
+        limit: z.number().default(20),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      console.log("[Admin] List users", input);
+
+      const where: any = {};
+
+      if (input.search) {
+        where.OR = [
+          { phone: { contains: input.search } },
+          { name: { contains: input.search, mode: "insensitive" } },
+        ];
+      }
+
+      const [users, total] = await Promise.all([
+        ctx.db.user.findMany({
+          where,
+          include: {
+            _count: {
+              select: {
+                cars: { where: { is_deleted: false } },
+              },
+            },
+          },
+          orderBy: { created_at: "desc" },
+          skip: calculate_skip(input.page, input.limit),
+          take: input.limit,
+        }),
+        ctx.db.user.count({ where }),
+      ]);
+
+      // Get service counts for each user
+      const user_ids = users.map((u) => u.id);
+      const car_ids_by_user = await ctx.db.car.findMany({
+        where: { owner_id: { in: user_ids }, is_deleted: false },
+        select: { id: true, owner_id: true },
+      });
+
+      // Group car ids by user
+      const cars_map = new Map<string, string[]>();
+      for (const car of car_ids_by_user) {
+        const current = cars_map.get(car.owner_id) || [];
+        current.push(car.id);
+        cars_map.set(car.owner_id, current);
+      }
+
+      // Get service counts
+      const all_car_ids = car_ids_by_user.map((c) => c.id);
+      const service_counts = await ctx.db.serviceVisit.groupBy({
+        by: ["car_id"],
+        where: { car_id: { in: all_car_ids } },
+        _count: true,
+      });
+
+      // Map service counts to cars
+      const service_count_map = new Map<string, number>();
+      for (const sc of service_counts) {
+        service_count_map.set(sc.car_id, sc._count);
+      }
+
+      const data = users.map((user) => {
+        const user_car_ids = cars_map.get(user.id) || [];
+        const service_count = user_car_ids.reduce(
+          (sum, car_id) => sum + (service_count_map.get(car_id) || 0),
+          0
+        );
+
+        return {
+          id: user.id,
+          phone: user.phone,
+          phone_masked: user.phone_masked,
+          name: user.name,
+          car_count: user._count.cars,
+          service_count,
+          created_at: user.created_at,
+        };
+      });
+
+      return paginate(data, total, input);
+    }),
+
+  /**
+   * Reset user - HARD DELETE all user data
+   * Deletes: all service visits (and related records), all cars, then the user
+   * This is destructive and cannot be undone!
+   * @param id - User ID to reset/delete
+   */
+  reset_user: public_procedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      console.log("[Admin] Reset user (hard delete)", { id: input.id });
+
+      // Find user
+      const user = await ctx.db.user.findUnique({
+        where: { id: input.id },
+        include: {
+          cars: {
+            select: { id: true },
+          },
+        },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      const car_ids = user.cars.map((c) => c.id);
+      console.log("[Admin] Deleting data for user", {
+        phone: user.phone,
+        car_count: car_ids.length,
+      });
+
+      // Delete all service visit related records
+      const visits = await ctx.db.serviceVisit.findMany({
+        where: { car_id: { in: car_ids } },
+        select: { id: true },
+      });
+      const visit_ids = visits.map((v) => v.id);
+
+      if (visit_ids.length > 0) {
+        await ctx.db.tireChange.deleteMany({
+          where: { service_visit_id: { in: visit_ids } },
+        });
+        await ctx.db.tireSwitch.deleteMany({
+          where: { service_visit_id: { in: visit_ids } },
+        });
+        await ctx.db.oilChange.deleteMany({
+          where: { service_visit_id: { in: visit_ids } },
+        });
+        await ctx.db.serviceVisit.deleteMany({
+          where: { id: { in: visit_ids } },
+        });
+      }
+
+      // Delete all cars
+      await ctx.db.car.deleteMany({
+        where: { owner_id: input.id },
+      });
+
+      // Delete OTP tokens
+      await ctx.db.oTPToken.deleteMany({
+        where: { user_id: input.id },
+      });
+
+      // Delete user
+      await ctx.db.user.delete({
+        where: { id: input.id },
+      });
+
+      console.log("[Admin] User reset complete", {
+        visits_deleted: visit_ids.length,
+        cars_deleted: car_ids.length,
+      });
+
+      return {
+        success: true,
+        deleted: {
+          visits: visit_ids.length,
+          cars: car_ids.length,
+        },
+      };
+    }),
+
   /**
    * Bulk import service records with enhanced deduplication
    * Handles cases where users export Excel with historical data that was already imported
@@ -1110,6 +1344,24 @@ export const admin_router = create_router({
             console.log("[Admin] Created new visit", { id: visit.id });
           } else {
             console.log("[Admin] Found existing visit", { id: existing_visit.id });
+
+            // Update odometer if current row has a higher value (odometer only increases)
+            // This handles Excel rows with inconsistent odometer values for same date
+            if (record.odometer_km && record.odometer_km > existing_visit.odometer_km) {
+              console.log("[Admin] Updating visit odometer", {
+                old: existing_visit.odometer_km,
+                new: record.odometer_km,
+              });
+              visit = await ctx.db.serviceVisit.update({
+                where: { id: existing_visit.id },
+                data: { odometer_km: record.odometer_km },
+                include: {
+                  tire_changes: true,
+                  tire_switches: true,
+                  oil_changes: true,
+                },
+              });
+            }
           }
 
           // Track if anything was added to this record

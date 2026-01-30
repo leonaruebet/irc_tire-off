@@ -1,5 +1,17 @@
 # TireTrack - Tire Age Tracking System Implementation
 
+## Admin Batch Delete & User Reset Feature
+### Done
+- [x] Add batch delete API endpoints (batch_delete_cars, batch_delete_visits) ~0.5d #admin 2026-01-30
+- [x] Add user management API endpoints (list_users, reset_user) ~0.5d #admin 2026-01-30
+- [x] Update admin/cars page with checkbox selection and batch delete ~0.5d #admin 2026-01-30
+- [x] Update admin/services page with checkbox selection and batch delete ~0.5d #admin 2026-01-30
+- [x] Create admin/users page with reset functionality ~0.5d #admin 2026-01-30
+- [x] Add i18n translations (EN/TH) for new features ~0.25d #admin 2026-01-30
+- [x] Add users link to admin sidebar ~0.1d #admin 2026-01-30
+
+---
+
 ## Project Setup
 ### Done
 - [x] Initialize Next.js 16 with App Router

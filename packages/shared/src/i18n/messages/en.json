@@ -119,6 +119,8 @@
     "services": "Service Records",
     "import": "Import Data",
     "branches": "Branches",
+    "cars": "Cars",
+    "users": "Users",
     "search_placeholder": "Search plate, phone...",
     "logout": "Logout",
     "loading": "Loading...",
@@ -167,6 +169,8 @@
       "no_records": "No service records found",
       "showing": "Showing {from} to {to} of {total} results",
       "page_of": "Page {page} of {total}",
+      "selected": "{count} selected",
+      "batch_delete": "Delete Selected",
 
       "table": {
         "date": "Date",
@@ -186,9 +190,121 @@
         "delete": "Delete"
       },
 
+      "batch_delete_dialog": {
+        "title": "Delete {count} Service Records?",
+        "description": "This action cannot be undone. This will permanently delete all selected service records and their related data.",
+        "cancel": "Cancel",
+        "delete": "Delete All"
+      },
+
       "toast": {
         "deleted": "Service visit deleted",
-        "delete_error": "Error deleting visit"
+        "delete_error": "Error deleting visit",
+        "batch_deleted": "{count} service records deleted",
+        "batch_delete_error": "Error deleting records"
+      }
+    },
+
+    "cars_page": {
+      "title": "Cars",
+      "add_car": "Add Car",
+      "search_placeholder": "Search by plate, phone or name...",
+      "search": "Search",
+      "no_cars": "No cars found",
+      "showing": "Showing {from} to {to} of {total} results",
+      "page_of": "Page {page} of {total}",
+      "selected": "{count} selected",
+      "batch_delete": "Delete Selected",
+
+      "table": {
+        "license_plate": "License Plate",
+        "owner_phone": "Owner Phone",
+        "owner_name": "Owner Name",
+        "car_model": "Car Model",
+        "service_count": "Services",
+        "actions": "Actions"
+      },
+
+      "dialog": {
+        "add_title": "Add Car",
+        "edit_title": "Edit Car",
+        "license_plate": "License Plate *",
+        "license_plate_placeholder": "กข 1234",
+        "phone": "Owner Phone *",
+        "phone_placeholder": "0812345678",
+        "owner_name": "Owner Name",
+        "owner_name_placeholder": "John Doe",
+        "car_model": "Car Model",
+        "car_model_placeholder": "Toyota Camry",
+        "car_year": "Year",
+        "car_year_placeholder": "2023",
+        "car_color": "Color",
+        "car_color_placeholder": "White",
+        "car_vin": "VIN",
+        "car_vin_placeholder": "VIN number",
+        "cancel": "Cancel",
+        "create": "Create",
+        "update": "Update"
+      },
+
+      "delete_dialog": {
+        "title": "Delete Car?",
+        "description": "This will remove the car from the system. Service history will be preserved.",
+        "cancel": "Cancel",
+        "delete": "Delete"
+      },
+
+      "batch_delete_dialog": {
+        "title": "Delete {count} Cars?",
+        "description": "This will remove all selected cars from the system. Service history will be preserved.",
+        "cancel": "Cancel",
+        "delete": "Delete All"
+      },
+
+      "toast": {
+        "created": "Car created",
+        "restored": "Car restored",
+        "updated": "Car updated",
+        "deleted": "Car deleted",
+        "error": "Error",
+        "delete_error": "Error deleting car",
+        "batch_deleted": "{count} cars deleted",
+        "batch_delete_error": "Error deleting cars"
+      }
+    },
+
+    "users_page": {
+      "title": "Users",
+      "search_placeholder": "Search by phone or name...",
+      "search": "Search",
+      "no_users": "No users found",
+      "showing": "Showing {from} to {to} of {total} results",
+      "page_of": "Page {page} of {total}",
+
+      "table": {
+        "phone": "Phone",
+        "name": "Name",
+        "car_count": "Cars",
+        "service_count": "Services",
+        "created_at": "Registered",
+        "actions": "Actions"
+      },
+
+      "reset_dialog": {
+        "title": "Reset User Data?",
+        "description": "WARNING: This will PERMANENTLY DELETE all data for this user including their account, all cars, and all service history. This action CANNOT be undone!",
+        "user_info": "User: {phone}",
+        "data_to_delete": "Data to be deleted:",
+        "cars": "{count} car(s)",
+        "services": "{count} service record(s)",
+        "cancel": "Cancel",
+        "reset": "Reset & Delete All"
+      },
+
+      "toast": {
+        "reset_success": "User data reset complete",
+        "reset_details": "Deleted {cars} cars and {visits} service records",
+        "reset_error": "Error resetting user"
       }
     },
 

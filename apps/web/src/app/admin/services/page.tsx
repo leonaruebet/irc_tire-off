@@ -27,7 +27,8 @@ import {
 } from "@/components/ui/alert_dialog";
 import { toast } from "@/hooks/use_toast";
 import { format_date, format_odometer, format_currency } from "@tireoff/shared";
-import { Search, Plus, Eye, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Search, Plus, Eye, Trash2, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { AddServiceDialog } from "@/components/admin/add_service_dialog";
 import { ServiceDetailDialog } from "@/components/admin/service_detail_dialog";
 
@@ -46,6 +47,8 @@ export default function AdminServicesPage() {
   const [delete_id, set_delete_id] = useState<string | null>(null);
   const [add_dialog_open, set_add_dialog_open] = useState(false);
   const [detail_visit_id, set_detail_visit_id] = useState<string | null>(null);
+  const [selected_ids, set_selected_ids] = useState<Set<string>>(new Set());
+  const [batch_delete_open, set_batch_delete_open] = useState(false);
 
   const utils = trpc.useUtils();
 
@@ -72,6 +75,65 @@ export default function AdminServicesPage() {
     },
   });
 
+  const batch_delete_mutation = trpc.admin.batch_delete_visits.useMutation({
+    onSuccess: (result) => {
+      console.log("[AdminServicesPage] Batch delete success", result);
+      toast({
+        title: t("toast.batch_deleted", { count: result.deleted_count }),
+      });
+      set_batch_delete_open(false);
+      set_selected_ids(new Set());
+      utils.admin.list_visits.invalidate();
+      utils.admin.stats.invalidate();
+    },
+    onError: (error) => {
+      console.error("[AdminServicesPage] Batch delete error", error);
+      toast({
+        title: t("toast.batch_delete_error"),
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  /**
+   * Toggle selection of a single visit
+   * @param id - Visit ID to toggle
+   */
+  function toggle_selection(id: string) {
+    console.log("[AdminServicesPage] Toggle selection", { id });
+    const new_set = new Set(selected_ids);
+    if (new_set.has(id)) {
+      new_set.delete(id);
+    } else {
+      new_set.add(id);
+    }
+    set_selected_ids(new_set);
+  }
+
+  /**
+   * Toggle all visible visits selection
+   */
+  function toggle_all() {
+    console.log("[AdminServicesPage] Toggle all");
+    if (!data?.data) return;
+    const all_ids = data.data.map((visit) => visit.id);
+    const all_selected = all_ids.every((id) => selected_ids.has(id));
+    if (all_selected) {
+      set_selected_ids(new Set());
+    } else {
+      set_selected_ids(new Set(all_ids));
+    }
+  }
+
+  /**
+   * Handle batch delete confirmation
+   */
+  function handle_batch_delete() {
+    console.log("[AdminServicesPage] Batch deleting", { count: selected_ids.size });
+    batch_delete_mutation.mutate({ ids: Array.from(selected_ids) });
+  }
+
   /**
    * Handle search form submission
    * Resets page to 1 and refetches data
@@ -93,14 +155,36 @@ export default function AdminServicesPage() {
     delete_mutation.mutate({ id });
   }
 
+  const all_selected =
+    data?.data && data.data.length > 0 && data.data.every((visit) => selected_ids.has(visit.id));
+  const some_selected = selected_ids.size > 0;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <Button onClick={() => set_add_dialog_open(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          {t("add_record")}
-        </Button>
+        <div className="flex items-center gap-4">
+          <h1 className="text-2xl font-bold">{t("title")}</h1>
+          {some_selected && (
+            <span className="text-sm text-muted-foreground">
+              {t("selected", { count: selected_ids.size })}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {some_selected && (
+            <Button
+              variant="destructive"
+              onClick={() => set_batch_delete_open(true)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {t("batch_delete")}
+            </Button>
+          )}
+          <Button onClick={() => set_add_dialog_open(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            {t("add_record")}
+          </Button>
+        </div>
       </div>
 
       {/* Search + service type filter */}
@@ -172,6 +256,13 @@ export default function AdminServicesPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-12">
+                        <Checkbox
+                          checked={all_selected}
+                          onCheckedChange={toggle_all}
+                          aria-label="Select all"
+                        />
+                      </TableHead>
                       <TableHead>{t("table.date")}</TableHead>
                       <TableHead>{t("table.license_plate")}</TableHead>
                       <TableHead>{t("table.phone")}</TableHead>
@@ -184,7 +275,17 @@ export default function AdminServicesPage() {
                   </TableHeader>
                   <TableBody>
                     {data.data.map((visit) => (
-                      <TableRow key={visit.id}>
+                      <TableRow
+                        key={visit.id}
+                        className={selected_ids.has(visit.id) ? "bg-muted/50" : ""}
+                      >
+                        <TableCell>
+                          <Checkbox
+                            checked={selected_ids.has(visit.id)}
+                            onCheckedChange={() => toggle_selection(visit.id)}
+                            aria-label={`Select ${visit.car.license_plate}`}
+                          />
+                        </TableCell>
                         <TableCell>{format_date(visit.visit_date)}</TableCell>
                         <TableCell className="font-medium">
                           {visit.car.license_plate}
@@ -318,6 +419,38 @@ export default function AdminServicesPage() {
         open={!!detail_visit_id}
         onOpenChange={(open) => !open && set_detail_visit_id(null)}
       />
+
+      {/* Batch delete confirmation dialog */}
+      <AlertDialog
+        open={batch_delete_open}
+        onOpenChange={set_batch_delete_open}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {t("batch_delete_dialog.title", { count: selected_ids.size })}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("batch_delete_dialog.description")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={batch_delete_mutation.isPending}>
+              {t("batch_delete_dialog.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handle_batch_delete}
+              disabled={batch_delete_mutation.isPending}
+            >
+              {batch_delete_mutation.isPending && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {t("batch_delete_dialog.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

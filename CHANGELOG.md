@@ -4,6 +4,57 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-01-30 - Fix: Excel Import Inconsistent Odometer Values
+
+#### Root Cause
+- **Excel rows with different odometer values for same car+date**: When importing 4 tire rows for the same car on the same date, only the FIRST row's odometer was used. Subsequent rows with different (potentially correct) odometer values were ignored.
+- Example: If FL tire row had 22,000 km but FR/RL/RR rows had 22,773 km, all 4 tires would show 22,000 km because the ServiceVisit was created from the first row.
+
+#### Fixed
+- **Update odometer to maximum value**: When an existing ServiceVisit is found during import, the odometer is now updated to the higher value if the current row has a larger odometer reading.
+- This handles Excel files where tire rows have inconsistent odometer values for the same service date.
+- Odometer only increases, so taking the max value is the correct behavior.
+
+#### Files Modified
+- `packages/api/src/routers/admin.ts` - Added odometer update logic when finding existing visit
+
+#### Note
+- This fix applies to **future imports only**
+- For existing incorrect data, re-import the Excel or manually fix via admin portal
+
+---
+
+### 2026-01-30 - Feature: Admin Batch Delete & User Reset
+
+#### Added
+- **Batch delete for cars**: Admin can select multiple cars using checkboxes and delete them all at once (soft delete)
+- **Batch delete for services**: Admin can select multiple service records and delete them all at once (hard delete)
+- **Users admin page**: New admin section to manage users with phone, name, car count, service count display
+- **User reset (hard delete)**: Admin can reset a user which permanently deletes the user account, all their cars, and all service history - with clear warning dialog
+- **Checkbox UI component**: Added Radix UI based checkbox component for table selections
+
+#### API Endpoints Added
+- `admin.batch_delete_cars` - Batch soft delete multiple cars
+- `admin.batch_delete_visits` - Batch hard delete multiple service visits and related records
+- `admin.list_users` - List all users with car/service counts, pagination, search
+- `admin.reset_user` - Hard delete user and all associated data
+
+#### Files Modified
+- `packages/api/src/routers/admin.ts` - Added batch delete and user management endpoints
+- `apps/web/src/app/admin/layout.tsx` - Added Users nav link
+- `apps/web/src/app/admin/users/page.tsx` - New users management page (created)
+- `apps/web/src/app/admin/cars/page.tsx` - Added checkbox selection and batch delete
+- `apps/web/src/app/admin/services/page.tsx` - Added checkbox selection and batch delete
+- `apps/web/src/components/ui/checkbox.tsx` - New Checkbox component (created)
+- `packages/shared/src/i18n/messages/en.json` - Added translations for batch delete, users page
+- `packages/shared/src/i18n/messages/th.json` - Added Thai translations for batch delete, users page
+
+#### Bug Fixes (Pre-existing TypeScript issues)
+- `apps/web/src/components/service/tire_switch_history.tsx` - Fixed JSX syntax error (missing closing div), fixed TypeScript null checks for optional `install_date` field
+- `packages/api/src/routers/service.ts` - Fixed TypeScript null checks for optional `install_date` field in tire change comparison
+
+---
+
 ### 2026-01-30 - Fix: Excel Import Template Mismatch & Missing Service Note Mapping
 
 #### Root Cause

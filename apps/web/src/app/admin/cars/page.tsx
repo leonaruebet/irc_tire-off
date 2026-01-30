@@ -36,6 +36,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert_dialog";
 import { toast } from "@/hooks/use_toast";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Search,
   Plus,
@@ -72,6 +73,8 @@ export default function AdminCarsPage() {
   const [edit_car, set_edit_car] = useState<any>(null);
   const [dialog_open, set_dialog_open] = useState(false);
   const [delete_id, set_delete_id] = useState<string | null>(null);
+  const [selected_ids, set_selected_ids] = useState<Set<string>>(new Set());
+  const [batch_delete_open, set_batch_delete_open] = useState(false);
 
   const { data, isLoading, refetch } = trpc.admin.list_cars.useQuery({
     search: search || undefined,
@@ -140,6 +143,65 @@ export default function AdminCarsPage() {
       });
     },
   });
+
+  const batch_delete_mutation = trpc.admin.batch_delete_cars.useMutation({
+    onSuccess: (result) => {
+      console.log("[AdminCarsPage] Batch delete success", result);
+      toast({
+        title: t("toast.batch_deleted", { count: result.deleted_count }),
+      });
+      set_batch_delete_open(false);
+      set_selected_ids(new Set());
+      utils.admin.list_cars.invalidate();
+      utils.admin.stats.invalidate();
+    },
+    onError: (error) => {
+      console.error("[AdminCarsPage] Batch delete error", error);
+      toast({
+        title: t("toast.batch_delete_error"),
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  /**
+   * Toggle selection of a single car
+   * @param id - Car ID to toggle
+   */
+  function toggle_selection(id: string) {
+    console.log("[AdminCarsPage] Toggle selection", { id });
+    const new_set = new Set(selected_ids);
+    if (new_set.has(id)) {
+      new_set.delete(id);
+    } else {
+      new_set.add(id);
+    }
+    set_selected_ids(new_set);
+  }
+
+  /**
+   * Toggle all visible cars selection
+   */
+  function toggle_all() {
+    console.log("[AdminCarsPage] Toggle all");
+    if (!data?.data) return;
+    const all_ids = data.data.map((car) => car.id);
+    const all_selected = all_ids.every((id) => selected_ids.has(id));
+    if (all_selected) {
+      set_selected_ids(new Set());
+    } else {
+      set_selected_ids(new Set(all_ids));
+    }
+  }
+
+  /**
+   * Handle batch delete confirmation
+   */
+  function handle_batch_delete() {
+    console.log("[AdminCarsPage] Batch deleting", { count: selected_ids.size });
+    batch_delete_mutation.mutate({ ids: Array.from(selected_ids) });
+  }
 
   /**
    * Handle search form submission
@@ -228,15 +290,37 @@ export default function AdminCarsPage() {
   }
 
   const is_saving = create_mutation.isPending || update_mutation.isPending;
+  const all_selected =
+    data?.data && data.data.length > 0 && data.data.every((car) => selected_ids.has(car.id));
+  const some_selected = selected_ids.size > 0;
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <Button onClick={open_add_dialog} className="w-full sm:w-auto">
-          <Plus className="h-4 w-4 mr-2" />
-          {t("add_car")}
-        </Button>
+        <div className="flex items-center gap-4">
+          <h1 className="text-2xl font-bold">{t("title")}</h1>
+          {some_selected && (
+            <span className="text-sm text-muted-foreground">
+              {t("selected", { count: selected_ids.size })}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {some_selected && (
+            <Button
+              variant="destructive"
+              onClick={() => set_batch_delete_open(true)}
+              className="w-full sm:w-auto"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {t("batch_delete")}
+            </Button>
+          )}
+          <Button onClick={open_add_dialog} className="w-full sm:w-auto">
+            <Plus className="h-4 w-4 mr-2" />
+            {t("add_car")}
+          </Button>
+        </div>
       </div>
 
       {/* Search */}
@@ -272,6 +356,13 @@ export default function AdminCarsPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-12">
+                        <Checkbox
+                          checked={all_selected}
+                          onCheckedChange={toggle_all}
+                          aria-label="Select all"
+                        />
+                      </TableHead>
                       <TableHead>{t("table.license_plate")}</TableHead>
                       <TableHead>{t("table.owner_phone")}</TableHead>
                       <TableHead>{t("table.owner_name")}</TableHead>
@@ -286,7 +377,17 @@ export default function AdminCarsPage() {
                   </TableHeader>
                   <TableBody>
                     {data.data.map((car) => (
-                      <TableRow key={car.id}>
+                      <TableRow
+                        key={car.id}
+                        className={selected_ids.has(car.id) ? "bg-muted/50" : ""}
+                      >
+                        <TableCell>
+                          <Checkbox
+                            checked={selected_ids.has(car.id)}
+                            onCheckedChange={() => toggle_selection(car.id)}
+                            aria-label={`Select ${car.license_plate}`}
+                          />
+                        </TableCell>
                         <TableCell className="font-medium">
                           {car.license_plate}
                         </TableCell>
@@ -473,6 +574,38 @@ export default function AdminCarsPage() {
               onClick={() => delete_id && handle_delete(delete_id)}
             >
               {t("delete_dialog.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Batch delete confirmation dialog */}
+      <AlertDialog
+        open={batch_delete_open}
+        onOpenChange={set_batch_delete_open}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {t("batch_delete_dialog.title", { count: selected_ids.size })}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("batch_delete_dialog.description")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={batch_delete_mutation.isPending}>
+              {t("batch_delete_dialog.cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handle_batch_delete}
+              disabled={batch_delete_mutation.isPending}
+            >
+              {batch_delete_mutation.isPending && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {t("batch_delete_dialog.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

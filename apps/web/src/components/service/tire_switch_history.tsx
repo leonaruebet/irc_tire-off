@@ -57,21 +57,23 @@ export function TireSwitchHistory({ car_id }: TireSwitchHistoryProps) {
     return null;
   }
 
-  // Check if tire switch recommendation is reset (null) due to recent tire change
-  const has_tire_switch_recommendation = !!data.next_tire_switch;
-
   // Find the most recent tire change to display info
   const most_recent_tire_change = data.tires
-    .filter((t) => t.has_data)
+    .filter((t) => t.has_data && t.install_date)
     .reduce((latest, current) => {
       if (!latest) return current;
+      if (!latest.install_date) return current;
+      if (!current.install_date) return latest;
       return current.install_date > latest.install_date ? current : latest;
     }, null as typeof data.tires[0] | null);
+
+  // Extract next_tire_switch for type narrowing in JSX
+  const next_tire_switch = data.next_tire_switch;
 
   return (
     <div className="space-y-4">
       {/* Tire switch recommendation card */}
-      {has_tire_switch_recommendation ? (
+      {next_tire_switch ? (
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base font-semibold">
@@ -81,7 +83,7 @@ export function TireSwitchHistory({ car_id }: TireSwitchHistoryProps) {
           </CardHeader>
           <CardContent className="pt-0 space-y-4">
             {/* Latest tire switch info */}
-            {data.next_tire_switch && (
+            {next_tire_switch && (
               <div className="space-y-2">
                 <div className="text-sm font-medium text-foreground">
                   {t("last_tire_switch")}
@@ -90,13 +92,13 @@ export function TireSwitchHistory({ car_id }: TireSwitchHistoryProps) {
                   <div className="flex items-center gap-2 text-sm">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <span>
-                      {t("date")}: {format_date(data.next_tire_switch.last_service_date)}
+                      {t("date")}: {format_date(next_tire_switch.last_service_date)}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Car className="h-4 w-4 text-muted-foreground" />
                     <span>
-                      {t("odometer")}: {format_number(data.next_tire_switch.last_service_km)} {t("km")}
+                      {t("odometer")}: {format_number(next_tire_switch.last_service_km)} {t("km")}
                     </span>
                   </div>
                 </div>
@@ -113,26 +115,26 @@ export function TireSwitchHistory({ car_id }: TireSwitchHistoryProps) {
                 <div className="flex items-center gap-2 text-sm">
                   <Car className="h-4 w-4 text-primary" />
                   <span>
-                    {t_next("at_km", { km: format_number(data.next_tire_switch.next_odometer_km) })}
+                    {t_next("at_km", { km: format_number(next_tire_switch.next_odometer_km) })}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Calendar className="h-4 w-4 text-primary" />
                   <span>
-                    {t_next("by_date", { date: format_date(data.next_tire_switch.next_date) })}
+                    {t_next("by_date", { date: format_date(next_tire_switch.next_date) })}
                   </span>
                 </div>
 
                 {/* Remaining time/distance */}
-                {!data.next_tire_switch.is_overdue && (
+                {!next_tire_switch.is_overdue && (
                   <div className="text-sm font-medium text-primary pt-1">
-                    {data.next_tire_switch.use_months
-                      ? t_next("in_months", { months: data.next_tire_switch.months_until })
-                      : t_next("in_days", { days: data.next_tire_switch.days_until })}
+                    {next_tire_switch.use_months
+                      ? t_next("in_months", { months: next_tire_switch.months_until })
+                      : t_next("in_days", { days: next_tire_switch.days_until })}
                     {" "}
                     {t_next("or")}
                     {" "}
-                    {t_next("in_km", { km: format_number(data.next_tire_switch.km_until) })}
+                    {t_next("in_km", { km: format_number(next_tire_switch.km_until) })}
                   </div>
                 )}
               </div>
@@ -141,8 +143,8 @@ export function TireSwitchHistory({ car_id }: TireSwitchHistoryProps) {
               <p className="text-xs text-muted-foreground">
                 * {t_next("recommendation_note", { km: "10,000", months: "6" })}
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </CardContent>
         </Card>
       ) : most_recent_tire_change ? (
         // Tire switch recommendation is reset due to recent tire change
@@ -163,7 +165,9 @@ export function TireSwitchHistory({ car_id }: TireSwitchHistoryProps) {
                   </p>
                   <p className="text-xs text-green-700">
                     {t_next("tires_recently_changed", {
-                      date: format_date(most_recent_tire_change.install_date),
+                      date: most_recent_tire_change.install_date
+                        ? format_date(most_recent_tire_change.install_date)
+                        : "-",
                     })}
                   </p>
                   <p className="text-xs text-muted-foreground">

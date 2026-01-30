@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   Car,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -23,6 +24,7 @@ import { cn } from "@/lib/utils";
  */
 const nav_items = [
   { href: "/admin", label_key: "dashboard", icon: LayoutDashboard },
+  { href: "/admin/users", label_key: "users", icon: Users },
   { href: "/admin/cars", label_key: "cars", icon: Car },
   { href: "/admin/services", label_key: "services", icon: FileText },
   { href: "/admin/branches", label_key: "branches", icon: GitBranch },

@@ -119,6 +119,8 @@
     "services": "ประวัติบริการ",
     "import": "นำเข้าข้อมูล",
     "branches": "สาขา",
+    "cars": "รถ",
+    "users": "ผู้ใช้",
     "search_placeholder": "ค้นหาทะเบียน, เบอร์โทร...",
     "logout": "ออกจากระบบ",
     "loading": "กำลังโหลด...",
@@ -167,6 +169,8 @@
       "no_records": "ไม่พบประวัติบริการ",
       "showing": "แสดง {from} ถึง {to} จาก {total} รายการ",
       "page_of": "หน้า {page} จาก {total}",
+      "selected": "เลือก {count} รายการ",
+      "batch_delete": "ลบที่เลือก",
 
       "table": {
         "date": "วันที่",
@@ -186,9 +190,121 @@
         "delete": "ลบ"
       },
 
+      "batch_delete_dialog": {
+        "title": "ลบ {count} รายการบริการ?",
+        "description": "การกระทำนี้ไม่สามารถยกเลิกได้ ข้อมูลการเข้ารับบริการที่เลือกและข้อมูลที่เกี่ยวข้องทั้งหมดจะถูกลบอย่างถาวร",
+        "cancel": "ยกเลิก",
+        "delete": "ลบทั้งหมด"
+      },
+
       "toast": {
         "deleted": "ลบประวัติบริการแล้ว",
-        "delete_error": "เกิดข้อผิดพลาดในการลบ"
+        "delete_error": "เกิดข้อผิดพลาดในการลบ",
+        "batch_deleted": "ลบ {count} รายการบริการแล้ว",
+        "batch_delete_error": "เกิดข้อผิดพลาดในการลบ"
+      }
+    },
+
+    "cars_page": {
+      "title": "รถ",
+      "add_car": "เพิ่มรถ",
+      "search_placeholder": "ค้นหาทะเบียน เบอร์โทร หรือชื่อ...",
+      "search": "ค้นหา",
+      "no_cars": "ไม่พบรถ",
+      "showing": "แสดง {from} ถึง {to} จาก {total} รายการ",
+      "page_of": "หน้า {page} จาก {total}",
+      "selected": "เลือก {count} รายการ",
+      "batch_delete": "ลบที่เลือก",
+
+      "table": {
+        "license_plate": "ทะเบียนรถ",
+        "owner_phone": "เบอร์เจ้าของ",
+        "owner_name": "ชื่อเจ้าของ",
+        "car_model": "รุ่นรถ",
+        "service_count": "บริการ",
+        "actions": "จัดการ"
+      },
+
+      "dialog": {
+        "add_title": "เพิ่มรถ",
+        "edit_title": "แก้ไขรถ",
+        "license_plate": "ทะเบียนรถ *",
+        "license_plate_placeholder": "กข 1234",
+        "phone": "เบอร์เจ้าของ *",
+        "phone_placeholder": "0812345678",
+        "owner_name": "ชื่อเจ้าของ",
+        "owner_name_placeholder": "ชื่อ นามสกุล",
+        "car_model": "รุ่นรถ",
+        "car_model_placeholder": "Toyota Camry",
+        "car_year": "ปี",
+        "car_year_placeholder": "2023",
+        "car_color": "สี",
+        "car_color_placeholder": "ขาว",
+        "car_vin": "เลขตัวถัง",
+        "car_vin_placeholder": "เลขตัวถัง",
+        "cancel": "ยกเลิก",
+        "create": "สร้าง",
+        "update": "อัปเดต"
+      },
+
+      "delete_dialog": {
+        "title": "ลบรถ?",
+        "description": "รถจะถูกนำออกจากระบบ ประวัติบริการจะยังคงอยู่",
+        "cancel": "ยกเลิก",
+        "delete": "ลบ"
+      },
+
+      "batch_delete_dialog": {
+        "title": "ลบ {count} คัน?",
+        "description": "รถที่เลือกทั้งหมดจะถูกนำออกจากระบบ ประวัติบริการจะยังคงอยู่",
+        "cancel": "ยกเลิก",
+        "delete": "ลบทั้งหมด"
+      },
+
+      "toast": {
+        "created": "สร้างรถแล้ว",
+        "restored": "กู้คืนรถแล้ว",
+        "updated": "อัปเดตรถแล้ว",
+        "deleted": "ลบรถแล้ว",
+        "error": "เกิดข้อผิดพลาด",
+        "delete_error": "เกิดข้อผิดพลาดในการลบ",
+        "batch_deleted": "ลบ {count} คันแล้ว",
+        "batch_delete_error": "เกิดข้อผิดพลาดในการลบ"
+      }
+    },
+
+    "users_page": {
+      "title": "ผู้ใช้",
+      "search_placeholder": "ค้นหาเบอร์โทรหรือชื่อ...",
+      "search": "ค้นหา",
+      "no_users": "ไม่พบผู้ใช้",
+      "showing": "แสดง {from} ถึง {to} จาก {total} รายการ",
+      "page_of": "หน้า {page} จาก {total}",
+
+      "table": {
+        "phone": "เบอร์โทร",
+        "name": "ชื่อ",
+        "car_count": "รถ",
+        "service_count": "บริการ",
+        "created_at": "วันที่ลงทะเบียน",
+        "actions": "จัดการ"
+      },
+
+      "reset_dialog": {
+        "title": "รีเซ็ตข้อมูลผู้ใช้?",
+        "description": "คำเตือน: ข้อมูลทั้งหมดของผู้ใช้นี้จะถูกลบอย่างถาวร รวมถึงบัญชี รถทั้งหมด และประวัติบริการทั้งหมด การกระทำนี้ไม่สามารถยกเลิกได้!",
+        "user_info": "ผู้ใช้: {phone}",
+        "data_to_delete": "ข้อมูลที่จะถูกลบ:",
+        "cars": "{count} คัน",
+        "services": "{count} รายการบริการ",
+        "cancel": "ยกเลิก",
+        "reset": "รีเซ็ต & ลบทั้งหมด"
+      },
+
+      "toast": {
+        "reset_success": "รีเซ็ตข้อมูลผู้ใช้สำเร็จ",
+        "reset_details": "ลบ {cars} คัน และ {visits} รายการบริการ",
+        "reset_error": "เกิดข้อผิดพลาดในการรีเซ็ต"
       }
     },
 
