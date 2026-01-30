@@ -95,6 +95,7 @@ const COLUMN_MAP: Record<string, keyof ParsedRecord> = {
   // Price & service note
   "ราคาทั้งหมด": "total_price",
   "บริการที่เข้ารับ": "services_note",
+  "บริการ": "services_note",
 
   // Tire fields
   "ไซส์ยาง": "tire_size",
@@ -110,6 +111,8 @@ const COLUMN_MAP: Record<string, keyof ParsedRecord> = {
   "เครื่องยนต์": "engine_type",
   "ประเภทน้ำมันเครื่อง": "oil_type",
   "ระยะเปลี่ยนถ่าย (กม.)": "oil_interval",
+  // Additional engine type variations
+  "เครื่องยนต์": "engine_type",
 };
 
 /**
@@ -171,40 +174,37 @@ function service_type_badge_classes(type: ServiceType): string {
 /**
  * Template headers for the downloadable Excel template.
  * Matches the standard Excel layout used by the business.
- * Sections: car info → tire change → service visit (x2) → pricing → oil change
+ * Structure: car info → service visit (shared by all types) → tire fields → oil fields
+ *
+ * NOTE: This template uses a simpler structure where service visit columns are shared:
+ * - Tire change rows: fill service visit columns + tire-specific columns
+ * - Tire switch rows: fill service visit columns + note (บริการ)
+ * - Oil change rows: fill service visit columns + oil-specific columns
  */
 const TEMPLATE_HEADERS: string[] = [
-  // Car info
+  // Car info (cols 0-2)
   "ทะเบียนรถ",
   "เบอร์โทรศัพท์",
   "รถรุ่น",
-  // Tire change section
-  "วันที่เปลื่ยนยาง",
-  "สาขาที่เปลื่ยนยาง",
-  "ระยะที่เปลื่ยนยาง (กม.)",
+  // Service visit info - shared by all service types (cols 3-6)
+  "สาขาที่เข้ารับบริการ",
+  "วันที่เข้ารับบริการ",
+  "ระยะที่เข้ารับบริการ",
+  "ราคาทั้งหมด",
+  // Tire change fields (cols 7-12)
   "ไซส์ยาง",
   "ยี่ห้อ",
   "รุ่นยาง",
+  "ตำแหน่ง",
   "สัปดาห์ผลิต",
   "ราคาเส้นละ",
-  "ตำแหน่ง",
-  // Service visit section 1
-  "วันที่เข้ารับบริการ",
-  "สาขาที่เข้ารับบริการ",
-  "ระยะที่เข้ารับบริการ (กม.)",
-  "บริการที่เข้ารับ",
-  // Service visit section 2
-  "วันที่เข้ารับบริการ",
-  "สาขาที่เข้ารับบริการ",
-  "ระยะที่เข้ารับบริการ (กม.)",
-  "บริการที่เข้ารับ",
-  // Pricing
-  "ราคาทั้งหมด",
-  // Oil change section
+  // Oil change fields (cols 13-16)
   "ชื่อรุ่น",
   "ความหนืด",
-  "เครื่องยนต์",
   "ประเภทน้ำมันเครื่อง",
+  "ระยะเปลี่ยนถ่าย (กม.)",
+  // Service note - for tire switch or other notes (col 17)
+  "บริการ",
 ];
 
 /**
