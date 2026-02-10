@@ -4,6 +4,57 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-02-10 - Fix: Excel Import Template + Multi-Sheet + Year Conversion
+
+#### Root Cause
+1. **Missing tire switch sheet**: Template had tire change and oil change columns but no dedicated tire switch section. Users had to know to use the "บริการ" column implicitly.
+2. **Missing oil interval column**: `"ระยะเปลี่ยนถ่าย (กม.)"` was in COLUMN_MAP and backend schema but missing from template.
+3. **Single-sheet import**: Importer only read `workbook.SheetNames[0]`, so multi-sheet templates couldn't work.
+4. **2-digit year BE/CE mismatch**: 2-digit year "67" (Thai BE 2567 = CE 2024) was incorrectly converted to 1967 instead of 2024. The logic `year >= 50 → +1900` is wrong for Thai context.
+5. **Fallback date path**: ISO-format BE dates (e.g., "2567-01-15") in fallback parsing were not checked for BE conversion.
+6. **oil_price not converted**: Missing from client-side number conversion array.
+
+#### Fixed
+- **Multi-sheet template**: Replaced single-sheet `TEMPLATE_HEADERS` with `TEMPLATE_SHEETS` array containing 3 sheets:
+  - "เปลี่ยนยาง" (Tire Change) — car info + tire-change-specific date/branch/odometer + tire fields
+  - "สลับยาง" (Tire Switch) — car info + tire-switch-specific date/branch/odometer + service note
+  - "เปลี่ยนน้ำมัน" (Oil Change) — car info + oil-change-specific date/branch/odometer + oil fields
+- **Multi-sheet import**: Updated `on_drop()` to iterate ALL sheets in workbook, processing each with its own headers and carry-forward state
+- **2-digit year fix**: Changed `year >= 50 → +1900` to `year >= 50 → +1957` (BE short form: 67 + 2500 = 2567, minus 543 = 2024, equivalent to +1957)
+- **Fallback BE check**: Added `getFullYear() > 2400` check on fallback `new Date()` result
+- **oil_price conversion**: Added to numeric field array
+
+#### Files Modified
+- `apps/web/src/app/admin/import/page.tsx` - Multi-sheet template, multi-sheet import, year conversion fixes
+
+---
+
+### 2026-02-10 - Fix: Missing i18n Translation Keys (EN + TH)
+
+#### Root Cause
+- Many translation keys were used in components but not defined in the translation JSON files (en.json / th.json)
+- Raw translation key strings (e.g., `profile.title`, `nav.history`, `tire.last_changed`) were displayed in the UI instead of translated text
+- Affected both client-side (customer app) and admin-side components
+
+#### Fixed
+- **`history` namespace** (7 keys): title, no_records, tire_change, tire_switch, oil_change, km, positions
+- **`profile` namespace** (7 keys): account_info, phone_number, registered_plates, plates_count, settings, language, actions, logout_success
+- **`nav` keys** (5 keys): history, user, tire, switch, oil
+- **`car` keys** (27 keys): select_to_view, car_year/color/vin + placeholders, vehicle_info, update/remove success/failed, register_success/failed, plate_not_registered + message, try_another_plate, view_plates, plate_registered + message, add_another, vehicle_info_subtitle, license_plate_format, optional, register_plate, no_records
+- **`tire` keys** (21 keys): no_tire_data, last_changed, time_ago, installed_km/date, branch, show/hide_details, remaining_km, usage_percent, detail_title/no_data/position/brand_model/size/production_week/price_per_tire/installed_date/installed_km/branch
+- **`oil` keys** (16 keys): title, no_data, last_change, odometer, km, next_service, approx, or, recommendation_note, view_details, brand_model, change_interval, price, type_synthetic/semi_synthetic/conventional
+- **`admin.service_detail` namespace** (25 keys): full service detail dialog translations
+- **`admin.add_service` additional keys** (31 keys): form.car_selection/select_existing/enter_new/search_car_placeholder/type_to_search/no_cars_found, tire.position_fl/fr/rl/rr/change, tire_switch section (9 keys), oil.engine_type + engine types + oil types + price
+- **`auth` key** (1 key): otp_send_failed
+
+#### Files Modified
+- `apps/web/src/i18n/messages/en.json` - Added ~140 missing English translation keys
+- `apps/web/src/i18n/messages/th.json` - Added ~140 missing Thai translation keys
+- `packages/shared/src/i18n/messages/en.json` - Synced from apps/web
+- `packages/shared/src/i18n/messages/th.json` - Synced from apps/web
+
+---
+
 ### 2026-01-30 - Fix: Excel Import Inconsistent Odometer Values
 
 #### Root Cause

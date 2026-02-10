@@ -30,6 +30,7 @@
     "otp_invalid": "Invalid OTP code",
     "otp_expired": "OTP expired. Please request a new code.",
     "otp_resend": "Resend OTP",
+    "otp_send_failed": "Failed to send OTP",
     "otp_resend_wait": "Resend OTP in {seconds} seconds",
     "verify": "Verify",
     "back": "Back",
@@ -50,7 +51,33 @@
     "remove_car_confirm": "Are you sure you want to remove {plate} from your account?",
     "last_service": "Last Service",
     "last_tire_change": "Last Tire Change",
-    "last_oil_change": "Last Oil Change"
+    "last_oil_change": "Last Oil Change",
+    "select_to_view": "Select a car to view details",
+    "car_year": "Year",
+    "car_year_placeholder": "e.g., 2023",
+    "car_color": "Color",
+    "car_color_placeholder": "e.g., White",
+    "car_vin": "VIN",
+    "car_vin_placeholder": "VIN number",
+    "vehicle_info": "Vehicle Information",
+    "update_success": "Car updated successfully",
+    "update_failed": "Failed to update car",
+    "remove_success": "Car removed successfully",
+    "remove_failed": "Failed to remove car",
+    "register_success": "Car registered successfully",
+    "register_failed": "Failed to register car",
+    "plate_not_registered": "Plate Not Registered",
+    "plate_not_registered_message": "This license plate is not registered in our system. Please contact the shop to register your vehicle first.",
+    "try_another_plate": "Try Another Plate",
+    "view_plates": "View My Cars",
+    "plate_registered": "Car Registered!",
+    "plate_registered_message": "Your car has been added to your account successfully.",
+    "add_another": "Add Another",
+    "vehicle_info_subtitle": "Enter your vehicle details to register",
+    "license_plate_format": "Thai format: กข 1234 or 1กข 1234",
+    "optional": "Optional",
+    "register_plate": "Register Car",
+    "no_records": "No service records"
   },
   "service": {
     "history": "Service History",
@@ -79,14 +106,50 @@
     "production_week": "Production Week",
     "price_per_tire": "Price per Tire",
     "switch_from": "From",
-    "switch_to": "To"
+    "switch_to": "To",
+    "no_tire_data": "No tire data",
+    "last_changed": "Last changed",
+    "time_ago": "ago",
+    "installed_km": "Installed at",
+    "installed_date": "Installed date",
+    "branch": "Branch",
+    "show_details": "Show details",
+    "hide_details": "Hide details",
+    "remaining_km": "{km} km remaining",
+    "usage_percent": "{percent}% used",
+    "detail_title": "Tire Details",
+    "detail_no_data": "No data available",
+    "detail_position": "Position",
+    "detail_brand_model": "Brand / Model",
+    "detail_size": "Size",
+    "detail_production_week": "Production Week",
+    "detail_price_per_tire": "Price per Tire",
+    "detail_installed_date": "Installed Date",
+    "detail_installed_km": "Installed Odometer",
+    "detail_branch": "Branch"
   },
   "oil": {
+    "title": "Oil Change",
     "model": "Oil Model",
     "viscosity": "Viscosity",
     "engine_type": "Engine Type",
     "oil_type": "Oil Type",
-    "interval": "Change Interval (km)"
+    "interval": "Change Interval (km)",
+    "no_data": "No oil change data",
+    "last_change": "Last change",
+    "odometer": "Odometer",
+    "km": "km",
+    "next_service": "Next service",
+    "approx": "Approx.",
+    "or": "or",
+    "recommendation_note": "Recommended every {km} km",
+    "view_details": "View details",
+    "brand_model": "Brand/Model",
+    "change_interval": "Change interval",
+    "price": "Price",
+    "type_synthetic": "Full Synthetic",
+    "type_semi_synthetic": "Semi-Synthetic",
+    "type_conventional": "Conventional"
   },
   "next_service": {
     "tire_switch": "Tire Switch",
@@ -108,10 +171,34 @@
     "tires_recently_changed": "Tires changed on {date}",
     "reset_after_install": "No tire switch needed - tires are new"
   },
+  "history": {
+    "title": "Service History",
+    "no_records": "No service history found",
+    "tire_change": "Tire Change",
+    "tire_switch": "Tire Switch",
+    "oil_change": "Oil Change",
+    "km": "km",
+    "positions": "Position"
+  },
+  "profile": {
+    "account_info": "Account Info",
+    "phone_number": "Phone Number",
+    "registered_plates": "Registered Cars",
+    "plates_count": "{count} car(s)",
+    "settings": "Settings",
+    "language": "Language",
+    "actions": "Actions",
+    "logout_success": "Logged out successfully"
+  },
   "nav": {
     "home": "Home",
     "cars": "My Cars",
-    "profile": "Profile"
+    "history": "History",
+    "user": "Profile",
+    "profile": "Profile",
+    "tire": "Tire",
+    "switch": "Switch",
+    "oil": "Oil"
   },
   "admin": {
     "title": "Admin Panel",
@@ -410,6 +497,34 @@
       }
     },
 
+    "service_detail": {
+      "title": "Service Details",
+      "car_info": "Car Information",
+      "license_plate": "License Plate",
+      "car_model": "Car Model",
+      "visit_info": "Visit Information",
+      "date": "Date",
+      "branch": "Branch",
+      "odometer": "Odometer",
+      "total_price": "Total Price",
+      "notes": "Notes",
+      "tire_changes": "Tire Changes",
+      "tire_size": "Size",
+      "production_week": "Production Week",
+      "price_per_tire": "Price per Tire",
+      "tire_switches": "Tire Switches",
+      "tire_switch_service": "Tire Switch",
+      "oil_changes": "Oil Changes",
+      "oil_model": "Oil Model",
+      "viscosity": "Viscosity",
+      "oil_type": "Oil Type",
+      "engine_type": "Engine Type",
+      "interval_km": "Interval (km)",
+      "oil_price": "Price",
+      "no_services": "No service details found",
+      "not_found": "Service visit not found"
+    },
+
     "add_service": {
       "title": "Add Service Record",
       "description": "Create a new service visit record",
@@ -427,7 +542,13 @@
         "odometer": "Odometer (km) *",
         "odometer_placeholder": "50000",
         "total_price": "Total Price",
-        "total_price_placeholder": "2500"
+        "total_price_placeholder": "2500",
+        "car_selection": "Car Selection",
+        "select_existing": "Select Existing",
+        "enter_new": "Enter New",
+        "search_car_placeholder": "Search by plate, phone, or name...",
+        "type_to_search": "Type at least 2 characters to search",
+        "no_cars_found": "No cars found"
       },
 
       "tire": {
@@ -435,6 +556,11 @@
         "add_tire": "Add Tire",
         "tire_num": "Tire #{num}",
         "position": "Position",
+        "position_fl": "Front Left",
+        "position_fr": "Front Right",
+        "position_rl": "Rear Left",
+        "position_rr": "Rear Right",
+        "change": "Changed",
         "size": "Size",
         "size_placeholder": "205/55R16",
         "brand": "Brand",
@@ -447,6 +573,18 @@
         "price_placeholder": "3500"
       },
 
+      "tire_switch": {
+        "title": "Tire Switch",
+        "select_wheels": "Select wheels that were switched",
+        "position_fl": "Front Left",
+        "position_fr": "Front Right",
+        "position_rl": "Rear Left",
+        "position_rr": "Rear Right",
+        "notes": "Notes",
+        "notes_placeholder": "Enter switch notes...",
+        "default_notes": "Tire rotation service"
+      },
+
       "oil": {
         "title": "Oil Change",
         "model": "Oil Model",
@@ -455,8 +593,19 @@
         "viscosity_placeholder": "5W-30",
         "type": "Oil Type",
         "type_placeholder": "Synthetic",
+        "engine_type": "Engine Type",
+        "engine_type_placeholder": "Select engine type",
+        "engine_gasoline": "Gasoline",
+        "engine_diesel": "Diesel",
+        "engine_hybrid": "Hybrid",
+        "engine_electric": "Electric",
+        "type_synthetic": "Full Synthetic",
+        "type_semi_synthetic": "Semi-Synthetic",
+        "type_conventional": "Conventional",
         "interval": "Interval (km)",
-        "interval_placeholder": "10000"
+        "interval_placeholder": "10000",
+        "price": "Price",
+        "price_placeholder": "2500"
       },
 
       "buttons": {

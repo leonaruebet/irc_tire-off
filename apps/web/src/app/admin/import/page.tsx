@@ -172,40 +172,39 @@ function service_type_badge_classes(type: ServiceType): string {
 }
 
 /**
- * Template headers for the downloadable Excel template.
- * Matches the standard Excel layout used by the business.
- * Structure: car info → service visit (shared by all types) → tire fields → oil fields
+ * Template sheet definitions for the downloadable Excel template.
+ * Each service type has its own sheet with appropriate column headers.
+ * Headers match keys in COLUMN_MAP for seamless parsing.
  *
- * NOTE: This template uses a simpler structure where service visit columns are shared:
- * - Tire change rows: fill service visit columns + tire-specific columns
- * - Tire switch rows: fill service visit columns + note (บริการ)
- * - Oil change rows: fill service visit columns + oil-specific columns
+ * - Sheet "เปลี่ยนยาง": car info + tire-change date/branch/odometer + tire fields
+ * - Sheet "สลับยาง": car info + tire-switch date/branch/odometer + service note
+ * - Sheet "เปลี่ยนน้ำมัน": car info + oil-change date/branch/odometer + oil fields
  */
-const TEMPLATE_HEADERS: string[] = [
-  // Car info (cols 0-2)
-  "ทะเบียนรถ",
-  "เบอร์โทรศัพท์",
-  "รถรุ่น",
-  // Service visit info - shared by all service types (cols 3-6)
-  "สาขาที่เข้ารับบริการ",
-  "วันที่เข้ารับบริการ",
-  "ระยะที่เข้ารับบริการ",
-  "ราคาทั้งหมด",
-  // Tire change fields (cols 7-12)
-  "ไซส์ยาง",
-  "ยี่ห้อ",
-  "รุ่นยาง",
-  "ตำแหน่ง",
-  "สัปดาห์ผลิต",
-  "ราคาเส้นละ",
-  // Oil change fields (cols 13-17)
-  "ชื่อรุ่น",
-  "ความหนืด",
-  "ประเภทน้ำมันเครื่อง",
-  "เครื่องยนต์",
-  "ราคาน้ำมัน",
-  // Service note - for tire switch or other notes (col 18)
-  "บริการ",
+const TEMPLATE_SHEETS: { name: string; headers: string[] }[] = [
+  {
+    name: "เปลี่ยนยาง",
+    headers: [
+      "ทะเบียนรถ", "เบอร์โทรศัพท์", "รถรุ่น",
+      "วันที่เปลื่ยนยาง", "สาขาที่เข้ารับบริการ", "ระยะที่เปลื่ยนยาง (กม.)", "ราคาทั้งหมด",
+      "ไซส์ยาง", "ยี่ห้อ", "รุ่นยาง", "ตำแหน่ง", "สัปดาห์ผลิต", "ราคาเส้นละ",
+    ],
+  },
+  {
+    name: "สลับยาง",
+    headers: [
+      "ทะเบียนรถ", "เบอร์โทรศัพท์", "รถรุ่น",
+      "วันที่สลับยาง", "สาขาที่สลับยาง", "ระยะสลับยาง (กม.)", "ราคาทั้งหมด",
+      "บริการ",
+    ],
+  },
+  {
+    name: "เปลี่ยนน้ำมัน",
+    headers: [
+      "ทะเบียนรถ", "เบอร์โทรศัพท์", "รถรุ่น",
+      "วันที่เปลี่ยนน้ำมันเครื่อง", "สาขาที่เปลี่ยนน้ำมันเครื่อง", "ระยะเปลี่ยนน้ำมันเครื่อง (กม.)", "ราคาทั้งหมด",
+      "ชื่อรุ่น", "ความหนืด", "ประเภทน้ำมันเครื่อง", "เครื่องยนต์", "ระยะเปลี่ยนถ่าย (กม.)", "ราคาน้ำมัน",
+    ],
+  },
 ];
 
 /**
@@ -250,8 +249,10 @@ function parse_excel_date(value: unknown): Date {
     }
 
     // Handle 2-digit year
+    // In Thai context: >= 50 are likely Buddhist Era short form (e.g., "67" = BE 2567 = CE 2024)
+    // < 50 are CE (e.g., "24" = CE 2024)
     if (year < 100) {
-      year += year < 50 ? 2000 : 1900;
+      year += year < 50 ? 2000 : 1957;
     }
 
     // Use UTC to avoid timezone issues - creates date at UTC midnight
@@ -260,26 +261,38 @@ function parse_excel_date(value: unknown): Date {
 
   // Fallback: try native Date parsing
   const fallback = new Date(str);
+
+  // Check if fallback year is Buddhist Era (e.g., ISO string "2567-01-15")
+  if (!isNaN(fallback.getTime()) && fallback.getFullYear() > 2400) {
+    console.log("[parse_excel_date] Converting fallback BE year", {
+      be: fallback.getFullYear(),
+      ce: fallback.getFullYear() - 543,
+    });
+    fallback.setFullYear(fallback.getFullYear() - 543);
+  }
+
   return fallback;
 }
 
 /**
- * Generate and download an Excel template file with correct Thai headers.
- * Creates a .xlsx file client-side using the xlsx library.
+ * Generate and download a multi-sheet Excel template file with correct Thai headers.
+ * Creates one sheet per service type (tire change, tire switch, oil change).
+ * Each sheet has appropriate column headers matching COLUMN_MAP keys.
  */
 function download_template(): void {
-  console.log("[AdminImportPage] Generating template file");
+  console.log("[AdminImportPage] Generating multi-sheet template file");
   const workbook = XLSX.utils.book_new();
-  const worksheet = XLSX.utils.aoa_to_sheet([TEMPLATE_HEADERS]);
 
-  // Set column widths for readability
-  worksheet["!cols"] = TEMPLATE_HEADERS.map((header) => ({
-    wch: Math.max(header.length * 2, 16),
-  }));
+  for (const sheet of TEMPLATE_SHEETS) {
+    const worksheet = XLSX.utils.aoa_to_sheet([sheet.headers]);
+    worksheet["!cols"] = sheet.headers.map((header) => ({
+      wch: Math.max(header.length * 2, 16),
+    }));
+    XLSX.utils.book_append_sheet(workbook, worksheet, sheet.name);
+  }
 
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Template");
   XLSX.writeFile(workbook, "import_template.xlsx");
-  console.log("[AdminImportPage] Template file downloaded");
+  console.log("[AdminImportPage] Multi-sheet template file downloaded");
 }
 
 /**
@@ -370,11 +383,119 @@ export default function AdminImportPage() {
       try {
         const data = new Uint8Array(e.target?.result as ArrayBuffer);
         const workbook = XLSX.read(data, { type: "array" });
-        const sheet_name = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheet_name];
-        const json_data = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
 
-        if (json_data.length < 2) {
+        // Process ALL sheets in the workbook (supports multi-sheet templates)
+        const all_records: ParsedRecord[] = [];
+
+        for (const sheet_name of workbook.SheetNames) {
+          const worksheet = workbook.Sheets[sheet_name];
+          const json_data = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
+
+          // Skip sheets with no data rows (header only or empty)
+          if (json_data.length < 2) {
+            console.log("[AdminImportPage] Skipping empty sheet:", sheet_name);
+            continue;
+          }
+
+          console.log("[AdminImportPage] Processing sheet:", sheet_name, "rows:", json_data.length - 1);
+
+          const headers = json_data[0] as string[];
+
+          // Track previous row's car info for carry-forward (per sheet)
+          // Business Excel often only fills car info on the first row of a group
+          let prev_car_info: { license_plate?: string; phone?: string; car_model?: string } = {};
+
+          for (let i = 1; i < json_data.length; i++) {
+            const row = json_data[i];
+            if (!row || row.length === 0) continue;
+
+            // Skip rows where ALL cells are empty
+            const has_data = row.some((cell) => cell !== undefined && cell !== null && cell !== "");
+            if (!has_data) continue;
+
+            const record: any = {};
+
+            headers.forEach((header, col_index) => {
+              const field_name = COLUMN_MAP[header];
+              if (field_name && row[col_index] !== undefined && row[col_index] !== null && row[col_index] !== "") {
+                let value = row[col_index];
+
+                // Handle phone: Excel stores as number, coerce to string with leading zero
+                if (field_name === "phone") {
+                  value = String(value).trim();
+                  // Thai phones start with 0; Excel drops leading zero from numbers
+                  if (/^\d{9}$/.test(value)) {
+                    value = "0" + value;
+                  }
+                }
+
+                // Handle date conversion
+                if (field_name === "visit_date") {
+                  value = parse_excel_date(value);
+                }
+
+                // Handle number conversion
+                if (
+                  ["odometer_km", "total_price", "tire_price", "oil_interval", "oil_price"].includes(
+                    field_name
+                  )
+                ) {
+                  value = Number(value) || 0;
+                }
+
+                // Handle string coercion for fields that may come as numbers
+                if (
+                  ["license_plate", "tire_production_week", "tire_size"].includes(field_name) &&
+                  typeof value === "number"
+                ) {
+                  value = String(value);
+                }
+
+                record[field_name] = value;
+              }
+            });
+
+            // Carry-forward: inherit car info from previous row if missing
+            if (!record.license_plate && prev_car_info.license_plate) {
+              record.license_plate = prev_car_info.license_plate;
+            }
+            if (!record.phone && prev_car_info.phone) {
+              record.phone = prev_car_info.phone;
+            }
+            if (!record.car_model && prev_car_info.car_model) {
+              record.car_model = prev_car_info.car_model;
+            }
+
+            // Update carry-forward state when car info is present
+            if (record.license_plate) {
+              prev_car_info.license_plate = record.license_plate;
+            }
+            if (record.phone) {
+              prev_car_info.phone = record.phone;
+            }
+            if (record.car_model) {
+              prev_car_info.car_model = record.car_model;
+            }
+
+            // Validate: require car identity + at least one date
+            // Row must have car info and a parseable date to be valid
+            if (
+              record.license_plate &&
+              record.phone &&
+              record.visit_date &&
+              record.visit_date instanceof Date &&
+              !isNaN(record.visit_date.getTime())
+            ) {
+              // If branch_name is missing, use a default placeholder
+              if (!record.branch_name) {
+                record.branch_name = "-";
+              }
+              all_records.push(record as ParsedRecord);
+            }
+          }
+        }
+
+        if (all_records.length === 0) {
           toast({
             title: t("toast.invalid_file"),
             description: t("toast.invalid_file_desc"),
@@ -383,106 +504,10 @@ export default function AdminImportPage() {
           return;
         }
 
-        const headers = json_data[0] as string[];
-        const records: ParsedRecord[] = [];
-
-        // Track previous row's car info for carry-forward
-        // Business Excel often only fills car info on the first row of a group
-        let prev_car_info: { license_plate?: string; phone?: string; car_model?: string } = {};
-
-        for (let i = 1; i < json_data.length; i++) {
-          const row = json_data[i];
-          if (!row || row.length === 0) continue;
-
-          // Skip rows where ALL cells are empty
-          const has_data = row.some((cell) => cell !== undefined && cell !== null && cell !== "");
-          if (!has_data) continue;
-
-          const record: any = {};
-
-          headers.forEach((header, col_index) => {
-            const field_name = COLUMN_MAP[header];
-            if (field_name && row[col_index] !== undefined && row[col_index] !== null && row[col_index] !== "") {
-              let value = row[col_index];
-
-              // Handle phone: Excel stores as number, coerce to string with leading zero
-              if (field_name === "phone") {
-                value = String(value).trim();
-                // Thai phones start with 0; Excel drops leading zero from numbers
-                if (/^\d{9}$/.test(value)) {
-                  value = "0" + value;
-                }
-              }
-
-              // Handle date conversion
-              if (field_name === "visit_date") {
-                value = parse_excel_date(value);
-              }
-
-              // Handle number conversion
-              if (
-                ["odometer_km", "total_price", "tire_price", "oil_interval"].includes(
-                  field_name
-                )
-              ) {
-                value = Number(value) || 0;
-              }
-
-              // Handle string coercion for fields that may come as numbers
-              if (
-                ["license_plate", "tire_production_week", "tire_size"].includes(field_name) &&
-                typeof value === "number"
-              ) {
-                value = String(value);
-              }
-
-              record[field_name] = value;
-            }
-          });
-
-          // Carry-forward: inherit car info from previous row if missing
-          if (!record.license_plate && prev_car_info.license_plate) {
-            record.license_plate = prev_car_info.license_plate;
-          }
-          if (!record.phone && prev_car_info.phone) {
-            record.phone = prev_car_info.phone;
-          }
-          if (!record.car_model && prev_car_info.car_model) {
-            record.car_model = prev_car_info.car_model;
-          }
-
-          // Update carry-forward state when car info is present
-          if (record.license_plate) {
-            prev_car_info.license_plate = record.license_plate;
-          }
-          if (record.phone) {
-            prev_car_info.phone = record.phone;
-          }
-          if (record.car_model) {
-            prev_car_info.car_model = record.car_model;
-          }
-
-          // Validate: require car identity + at least one date
-          // Row must have car info and a parseable date to be valid
-          if (
-            record.license_plate &&
-            record.phone &&
-            record.visit_date &&
-            record.visit_date instanceof Date &&
-            !isNaN(record.visit_date.getTime())
-          ) {
-            // If branch_name is missing, use a default placeholder
-            if (!record.branch_name) {
-              record.branch_name = "-";
-            }
-            records.push(record as ParsedRecord);
-          }
-        }
-
-        set_parsed_data(records);
+        set_parsed_data(all_records);
         toast({
           title: t("toast.parsed"),
-          description: t("toast.parsed_desc", { count: records.length }),
+          description: t("toast.parsed_desc", { count: all_records.length }),
         });
       } catch (error) {
         console.error("[AdminImportPage] Error parsing file:", error);

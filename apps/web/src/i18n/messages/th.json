@@ -30,6 +30,7 @@
     "otp_invalid": "รหัส OTP ไม่ถูกต้อง",
     "otp_expired": "รหัส OTP หมดอายุ กรุณาขอรหัสใหม่",
     "otp_resend": "ส่งรหัสอีกครั้ง",
+    "otp_send_failed": "ส่งรหัส OTP ล้มเหลว",
     "otp_resend_wait": "ส่งรหัสอีกครั้งใน {seconds} วินาที",
     "verify": "ยืนยัน",
     "back": "กลับ",
@@ -50,7 +51,33 @@
     "remove_car_confirm": "คุณต้องการนำรถ {plate} ออกจากบัญชีหรือไม่?",
     "last_service": "เข้ารับบริการล่าสุด",
     "last_tire_change": "เปลี่ยนยางล่าสุด",
-    "last_oil_change": "เปลี่ยนน้ำมันเครื่องล่าสุด"
+    "last_oil_change": "เปลี่ยนน้ำมันเครื่องล่าสุด",
+    "select_to_view": "เลือกรถเพื่อดูรายละเอียด",
+    "car_year": "ปี",
+    "car_year_placeholder": "เช่น 2023",
+    "car_color": "สี",
+    "car_color_placeholder": "เช่น ขาว",
+    "car_vin": "เลขตัวถัง",
+    "car_vin_placeholder": "เลขตัวถัง",
+    "vehicle_info": "ข้อมูลรถ",
+    "update_success": "อัปเดตรถสำเร็จ",
+    "update_failed": "อัปเดตรถล้มเหลว",
+    "remove_success": "นำรถออกสำเร็จ",
+    "remove_failed": "นำรถออกล้มเหลว",
+    "register_success": "ลงทะเบียนรถสำเร็จ",
+    "register_failed": "ลงทะเบียนรถล้มเหลว",
+    "plate_not_registered": "ทะเบียนไม่อยู่ในระบบ",
+    "plate_not_registered_message": "ทะเบียนนี้ยังไม่ได้ลงทะเบียนในระบบ กรุณาติดต่อร้านเพื่อลงทะเบียนรถก่อน",
+    "try_another_plate": "ลองทะเบียนอื่น",
+    "view_plates": "ดูรถของฉัน",
+    "plate_registered": "ลงทะเบียนสำเร็จ!",
+    "plate_registered_message": "เพิ่มรถเข้าบัญชีของคุณเรียบร้อยแล้ว",
+    "add_another": "เพิ่มอีกคัน",
+    "vehicle_info_subtitle": "กรอกข้อมูลรถเพื่อลงทะเบียน",
+    "license_plate_format": "รูปแบบ: กข 1234 หรือ 1กข 1234",
+    "optional": "ไม่บังคับ",
+    "register_plate": "ลงทะเบียนรถ",
+    "no_records": "ไม่มีประวัติบริการ"
   },
   "service": {
     "history": "ประวัติการบริการ",
@@ -79,14 +106,50 @@
     "production_week": "สัปดาห์ผลิต",
     "price_per_tire": "ราคาต่อเส้น",
     "switch_from": "จาก",
-    "switch_to": "ไป"
+    "switch_to": "ไป",
+    "no_tire_data": "ไม่มีข้อมูลยาง",
+    "last_changed": "เปลี่ยนล่าสุด",
+    "time_ago": "ที่แล้ว",
+    "installed_km": "ติดตั้งที่",
+    "installed_date": "วันที่ติดตั้ง",
+    "branch": "สาขา",
+    "show_details": "ดูรายละเอียด",
+    "hide_details": "ซ่อนรายละเอียด",
+    "remaining_km": "เหลืออีก {km} กม.",
+    "usage_percent": "ใช้งาน {percent}%",
+    "detail_title": "รายละเอียดยาง",
+    "detail_no_data": "ไม่มีข้อมูล",
+    "detail_position": "ตำแหน่ง",
+    "detail_brand_model": "ยี่ห้อ / รุ่น",
+    "detail_size": "ขนาด",
+    "detail_production_week": "สัปดาห์ผลิต",
+    "detail_price_per_tire": "ราคาต่อเส้น",
+    "detail_installed_date": "วันที่ติดตั้ง",
+    "detail_installed_km": "เลขไมล์ตอนติดตั้ง",
+    "detail_branch": "สาขา"
   },
   "oil": {
+    "title": "เปลี่ยนน้ำมันเครื่อง",
     "model": "รุ่นน้ำมันเครื่อง",
     "viscosity": "ความหนืด",
     "engine_type": "ประเภทเครื่องยนต์",
     "oil_type": "ประเภทน้ำมัน",
-    "interval": "ระยะเปลี่ยนถ่าย (กม.)"
+    "interval": "ระยะเปลี่ยนถ่าย (กม.)",
+    "no_data": "ไม่มีข้อมูลเปลี่ยนน้ำมันเครื่อง",
+    "last_change": "เปลี่ยนล่าสุด",
+    "odometer": "เลขไมล์",
+    "km": "กม.",
+    "next_service": "ครั้งถัดไป",
+    "approx": "ประมาณ",
+    "or": "หรือ",
+    "recommendation_note": "แนะนำเปลี่ยนทุก {km} กม.",
+    "view_details": "ดูรายละเอียด",
+    "brand_model": "ยี่ห้อ/รุ่น",
+    "change_interval": "ระยะเปลี่ยนถ่าย",
+    "price": "ราคา",
+    "type_synthetic": "สังเคราะห์แท้",
+    "type_semi_synthetic": "กึ่งสังเคราะห์",
+    "type_conventional": "ธรรมดา"
   },
   "next_service": {
     "tire_switch": "สลับยาง",
@@ -108,10 +171,34 @@
     "tires_recently_changed": "เปลี่ยนยางเมื่อ {date}",
     "reset_after_install": "ไม่ต้องสลับยาง เพราะยางยังใหม่"
   },
+  "history": {
+    "title": "ประวัติบริการ",
+    "no_records": "ไม่พบประวัติบริการ",
+    "tire_change": "เปลี่ยนยาง",
+    "tire_switch": "สลับยาง",
+    "oil_change": "เปลี่ยนน้ำมันเครื่อง",
+    "km": "กม.",
+    "positions": "ตำแหน่ง"
+  },
+  "profile": {
+    "account_info": "ข้อมูลบัญชี",
+    "phone_number": "เบอร์โทรศัพท์",
+    "registered_plates": "รถที่ลงทะเบียน",
+    "plates_count": "{count} คัน",
+    "settings": "ตั้งค่า",
+    "language": "ภาษา",
+    "actions": "การดำเนินการ",
+    "logout_success": "ออกจากระบบสำเร็จ"
+  },
   "nav": {
     "home": "หน้าแรก",
     "cars": "รถของฉัน",
-    "profile": "โปรไฟล์"
+    "history": "ประวัติ",
+    "user": "โปรไฟล์",
+    "profile": "โปรไฟล์",
+    "tire": "ยาง",
+    "switch": "สลับยาง",
+    "oil": "น้ำมัน"
   },
   "admin": {
     "title": "ระบบจัดการ",
@@ -410,6 +497,34 @@
       }
     },
 
+    "service_detail": {
+      "title": "รายละเอียดบริการ",
+      "car_info": "ข้อมูลรถ",
+      "license_plate": "ทะเบียนรถ",
+      "car_model": "รุ่นรถ",
+      "visit_info": "ข้อมูลการเข้ารับบริการ",
+      "date": "วันที่",
+      "branch": "สาขา",
+      "odometer": "เลขไมล์",
+      "total_price": "ราคารวม",
+      "notes": "หมายเหตุ",
+      "tire_changes": "เปลี่ยนยาง",
+      "tire_size": "ขนาด",
+      "production_week": "สัปดาห์ผลิต",
+      "price_per_tire": "ราคาต่อเส้น",
+      "tire_switches": "สลับยาง",
+      "tire_switch_service": "สลับยาง",
+      "oil_changes": "เปลี่ยนน้ำมันเครื่อง",
+      "oil_model": "รุ่นน้ำมัน",
+      "viscosity": "ความหนืด",
+      "oil_type": "ประเภทน้ำมัน",
+      "engine_type": "ประเภทเครื่องยนต์",
+      "interval_km": "ระยะเปลี่ยนถ่าย (กม.)",
+      "oil_price": "ราคา",
+      "no_services": "ไม่พบรายละเอียดบริการ",
+      "not_found": "ไม่พบข้อมูลการเข้ารับบริการ"
+    },
+
     "add_service": {
       "title": "เพิ่มประวัติบริการ",
       "description": "สร้างข้อมูลการเข้ารับบริการใหม่",
@@ -427,7 +542,13 @@
         "odometer": "เลขไมล์ (กม.) *",
         "odometer_placeholder": "50000",
         "total_price": "ราคารวม",
-        "total_price_placeholder": "2500"
+        "total_price_placeholder": "2500",
+        "car_selection": "เลือกรถ",
+        "select_existing": "เลือกจากระบบ",
+        "enter_new": "กรอกใหม่",
+        "search_car_placeholder": "ค้นหาทะเบียน เบอร์โทร หรือชื่อ...",
+        "type_to_search": "พิมพ์อย่างน้อย 2 ตัวอักษรเพื่อค้นหา",
+        "no_cars_found": "ไม่พบรถ"
       },
 
       "tire": {
@@ -435,6 +556,11 @@
         "add_tire": "เพิ่มยาง",
         "tire_num": "ยางที่ #{num}",
         "position": "ตำแหน่ง",
+        "position_fl": "หน้าซ้าย",
+        "position_fr": "หน้าขวา",
+        "position_rl": "หลังซ้าย",
+        "position_rr": "หลังขวา",
+        "change": "เปลี่ยนแล้ว",
         "size": "ขนาด",
         "size_placeholder": "205/55R16",
         "brand": "ยี่ห้อ",
@@ -447,6 +573,18 @@
         "price_placeholder": "3500"
       },
 
+      "tire_switch": {
+        "title": "สลับยาง",
+        "select_wheels": "เลือกล้อที่สลับ",
+        "position_fl": "หน้าซ้าย",
+        "position_fr": "หน้าขวา",
+        "position_rl": "หลังซ้าย",
+        "position_rr": "หลังขวา",
+        "notes": "หมายเหตุ",
+        "notes_placeholder": "กรอกหมายเหตุการสลับ...",
+        "default_notes": "บริการสลับยาง"
+      },
+
       "oil": {
         "title": "เปลี่ยนน้ำมันเครื่อง",
         "model": "รุ่นน้ำมัน",
@@ -455,8 +593,19 @@
         "viscosity_placeholder": "5W-30",
         "type": "ประเภท",
         "type_placeholder": "สังเคราะห์แท้",
+        "engine_type": "ประเภทเครื่องยนต์",
+        "engine_type_placeholder": "เลือกประเภทเครื่องยนต์",
+        "engine_gasoline": "เบนซิน",
+        "engine_diesel": "ดีเซล",
+        "engine_hybrid": "ไฮบริด",
+        "engine_electric": "ไฟฟ้า",
+        "type_synthetic": "สังเคราะห์แท้",
+        "type_semi_synthetic": "กึ่งสังเคราะห์",
+        "type_conventional": "ธรรมดา",
         "interval": "ระยะเปลี่ยนถ่าย (กม.)",
-        "interval_placeholder": "10000"
+        "interval_placeholder": "10000",
+        "price": "ราคา",
+        "price_placeholder": "2500"
       },
 
       "buttons": {

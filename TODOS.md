@@ -1,5 +1,21 @@
 # TireTrack - Tire Age Tracking System Implementation
 
+## Fix Missing i18n Translation Keys
+### Done
+- [x] Add missing `history` namespace translations (EN + TH) ~0.1d #i18n 2026-02-10
+- [x] Add missing `profile` namespace translations (EN + TH) ~0.1d #i18n 2026-02-10
+- [x] Add missing `nav` keys (history, user, tire, switch, oil) ~0.1d #i18n 2026-02-10
+- [x] Add missing `car` keys (27 keys including registration flow) ~0.2d #i18n 2026-02-10
+- [x] Add missing `tire` keys (21 keys for status/details) ~0.2d #i18n 2026-02-10
+- [x] Add missing `oil` keys (16 keys for history/details) ~0.1d #i18n 2026-02-10
+- [x] Add missing `admin.service_detail` namespace (25 keys) ~0.1d #i18n 2026-02-10
+- [x] Add missing `admin.add_service` additional keys (31 keys) ~0.2d #i18n 2026-02-10
+- [x] Add missing `auth.otp_send_failed` key ~0.05d #i18n 2026-02-10
+- [x] Sync all translations to packages/shared ~0.05d #i18n 2026-02-10
+- [x] Update CHANGELOG.md with fix documentation ~0.05d #i18n 2026-02-10
+
+---
+
 ## Admin Batch Delete & User Reset Feature
 ### Done
 - [x] Add batch delete API endpoints (batch_delete_cars, batch_delete_visits) ~0.5d #admin 2026-01-30
