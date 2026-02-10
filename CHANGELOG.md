@@ -4,6 +4,24 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-02-10 - Fix: Clean Up Orphaned Visits on Soft-Deleted Car Restore
+
+#### Root Cause
+- `batch_delete_cars` soft-deletes the car (`is_deleted: true`) but does NOT delete its service visits
+- Import restores the car (`is_deleted: false`), but existing visits from before the soft-delete remain
+- All re-imported records match as "duplicate" (same car + same date) → 0 success, N duplicates
+- User sees the car restored but cannot re-import data
+
+#### Fixed
+- When import restores a soft-deleted car, it first deletes all orphaned visits (and their tire/oil/switch records)
+- Re-import then starts fresh with no false duplicates
+- Follows same cascade pattern as `batch_delete_visits`
+
+#### Files Modified
+- `packages/api/src/routers/admin.ts` - Import handler: cascade-delete orphaned visits before restoring car
+
+---
+
 ### 2026-02-10 - Fix: Backend Import Handler Edge Cases (OCD QA Trace)
 
 #### Root Cause

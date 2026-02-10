@@ -1307,6 +1307,33 @@ export const admin_router = create_router({
             console.log("[Admin] Created new car", { plate: normalized_plate });
           } else if (car.is_deleted) {
             // Restore soft-deleted car so it reappears on admin/cars page
+            // Also clean up orphaned visits from before the soft-delete,
+            // so re-import starts fresh and doesn't hit false duplicates.
+            const orphaned_visits = await ctx.db.serviceVisit.findMany({
+              where: { car_id: car.id },
+              select: { id: true },
+            });
+
+            if (orphaned_visits.length > 0) {
+              const orphaned_ids = orphaned_visits.map((v) => v.id);
+              await ctx.db.tireChange.deleteMany({
+                where: { service_visit_id: { in: orphaned_ids } },
+              });
+              await ctx.db.tireSwitch.deleteMany({
+                where: { service_visit_id: { in: orphaned_ids } },
+              });
+              await ctx.db.oilChange.deleteMany({
+                where: { service_visit_id: { in: orphaned_ids } },
+              });
+              await ctx.db.serviceVisit.deleteMany({
+                where: { id: { in: orphaned_ids } },
+              });
+              console.log("[Admin] Cleaned up orphaned visits for soft-deleted car", {
+                plate: normalized_plate,
+                deleted_visits: orphaned_ids.length,
+              });
+            }
+
             car = await ctx.db.car.update({
               where: { id: car.id },
               data: {
