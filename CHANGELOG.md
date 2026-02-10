@@ -19,15 +19,16 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
   - `GENERIC_HEADER_SECTIONS`: occurrence-based mapping for duplicate headers (1st = tire_switch, 2nd = oil_change)
 - **`build_column_map(headers)`**: Runs once per sheet, returns `Map<col_index, {field, section}>`. Resolves unique headers directly, duplicate headers by occurrence count, skips unknown headers.
 - **Section-aware row parsing**: Date/branch/odometer now stored per-section, then resolved to the active section's values with fallback inheritance.
-- **New 26-column template**: Unique headers per section (tire change date/branch/odo, tire switch date/branch/odo, oil change date/branch/odo). No more ambiguous shared columns.
+- **New 27-column template**: Unique headers per section (tire change date/branch/odo, tire switch date/branch/odo, oil change date/branch/odo). Column sort order matches client's Excel 1:1. No more ambiguous shared columns.
+- **Oil service note column**: Added `บริการน้ำมันเครื่อง` to template and SECTION_COLUMN_MAP, matching client's col 19 (`บริการที่เข้ารับ` for oil section). Template now aligns: cols 0-11 exact match, cols 12-19 renamed for uniqueness, cols 20-26 exact match.
 - **Updated column reference card**: Headers displayed grouped by section with color coding.
 - **Active section detection order fix**: Oil fields checked BEFORE services_note. Client's oil rows have `services_note="ถ่ายน้ำมันเครื่อง"` from col 19, which would misclassify as tire_switch if checked first.
 - **Missing tire switch odometer variants**: Added `ระยะสลับยาง`, `ระยะที่สลับยาง`, `ระยะที่สลับยาง (กม.)` to SECTION_COLUMN_MAP.
-- **Backward compatible**: Client's original 28-col Excel (duplicate headers) works via occurrence tracking. New 26-col template works via unique header resolution. Old 20-col template still works as fallback.
+- **Backward compatible**: Client's original 28-col Excel (duplicate headers) works via occurrence tracking. New 27-col template works via unique header resolution. Old 20-col template still works as fallback.
 
 #### QA Verification (column-by-column trace)
-- Client 28-col: all 26 data columns map correctly (2 metadata cols skipped)
-- New 26-col template: all columns resolve via SECTION_COLUMN_MAP (no duplicates)
+- Client 28-col: all 27 data columns map correctly (1 metadata col skipped: ผู้กรอก)
+- New 27-col template: all columns resolve via SECTION_COLUMN_MAP (no duplicates), sort order matches client's Excel
 - Tire change row (FL): tire fields → active_section=tire_change, date from tire_change section
 - Tire switch row: services_note only → active_section=tire_switch, date from tire_switch section
 - Oil change row: oil_viscosity present → active_section=oil_change, date from oil_change section (not misclassified despite having services_note)

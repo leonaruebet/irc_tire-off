@@ -120,6 +120,7 @@ const SECTION_COLUMN_MAP: Record<string, { section: SectionType; field: keyof Pa
   "ระยะที่ถ่ายน้ำมันเครื่อง":       { section: "oil_change", field: "odometer_km" },
   "ระยะถ่ายน้ำมัน (กม.)":          { section: "oil_change", field: "odometer_km" },
   "ระยะถ่ายน้ำมัน":                { section: "oil_change", field: "odometer_km" },
+  "บริการน้ำมันเครื่อง":            { section: "oil_change", field: "services_note" },
   "ราคาทั้งหมด":                  { section: "oil_change", field: "total_price" },
   "ชื่อรุ่น":                     { section: "oil_change", field: "oil_model" },
   "ความหนืด":                     { section: "oil_change", field: "oil_viscosity" },
@@ -286,10 +287,11 @@ const TEMPLATE_HEADERS: string[] = [
   "สาขาที่สลับยาง",
   "ระยะสลับยาง (กม.)",
   "บริการ",
-  // ── Oil Change (cols 16-25) — date/branch/odo specific to oil change ──
+  // ── Oil Change (cols 16-26) — date/branch/odo specific to oil change ──
   "วันที่เปลี่ยนน้ำมันเครื่อง",
   "สาขาที่เปลี่ยนน้ำมันเครื่อง",
   "ระยะเปลี่ยนน้ำมันเครื่อง (กม.)",
+  "บริการน้ำมันเครื่อง",
   "ราคาทั้งหมด",
   "ชื่อรุ่น",
   "ความหนืด",

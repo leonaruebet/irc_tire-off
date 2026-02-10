@@ -5,7 +5,9 @@
 - [x] Replace flat COLUMN_MAP with CAR_INFO_MAP + SECTION_COLUMN_MAP + GENERIC_HEADER_SECTIONS ~0.5d #import 2026-02-10
 - [x] Add build_column_map() function for per-sheet column resolution ~0.25d #import 2026-02-10
 - [x] Refactor on_drop parser with section-aware date/branch/odo routing ~0.5d #import 2026-02-10
-- [x] Replace 20-col template with 26-col section-unique template ~0.25d #import 2026-02-10
+- [x] Replace 20-col template with 27-col section-unique template ~0.25d #import 2026-02-10
+- [x] Fix template column sort order to match client's Excel layout ~0.1d #import 2026-02-10
+- [x] Add oil service note column (บริการน้ำมันเครื่อง) to template + mapping ~0.1d #import 2026-02-10
 - [x] Update column reference card with section-grouped display ~0.1d #import 2026-02-10
 - [x] Update CHANGELOG.md with fix documentation ~0.05d #import 2026-02-10
 
