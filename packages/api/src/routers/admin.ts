@@ -1230,6 +1230,9 @@ export const admin_router = create_router({
       let duplicate_count = 0;
       let error_count = 0;
       const errors: string[] = [];
+      // Track cars already refreshed in this batch (by car_id) to avoid
+      // re-cleaning visits when the same plate appears multiple times in one import
+      const refreshed_car_ids = new Set<string>();
 
       /**
        * Normalize date to start of day (UTC) for consistent comparison
@@ -1342,7 +1345,47 @@ export const admin_router = create_router({
                 car_model: record.car_model || car.car_model,
               },
             });
+            refreshed_car_ids.add(car.id);
             console.log("[Admin] Restored soft-deleted car", { plate: normalized_plate });
+          } else if (car.owner_id !== user.id && !refreshed_car_ids.has(car.id)) {
+            // Active car with different owner phone → data correction / re-import.
+            // Clean up existing visits so re-import starts fresh (same pattern as soft-delete restore).
+            const stale_visits = await ctx.db.serviceVisit.findMany({
+              where: { car_id: car.id },
+              select: { id: true },
+            });
+
+            if (stale_visits.length > 0) {
+              const stale_ids = stale_visits.map((v) => v.id);
+              await ctx.db.tireChange.deleteMany({
+                where: { service_visit_id: { in: stale_ids } },
+              });
+              await ctx.db.tireSwitch.deleteMany({
+                where: { service_visit_id: { in: stale_ids } },
+              });
+              await ctx.db.oilChange.deleteMany({
+                where: { service_visit_id: { in: stale_ids } },
+              });
+              await ctx.db.serviceVisit.deleteMany({
+                where: { id: { in: stale_ids } },
+              });
+              console.log("[Admin] Cleaned up stale visits for owner change", {
+                plate: normalized_plate,
+                old_owner: car.owner_id,
+                new_owner: user.id,
+                deleted_visits: stale_ids.length,
+              });
+            }
+
+            car = await ctx.db.car.update({
+              where: { id: car.id },
+              data: {
+                owner_id: user.id,
+                car_model: record.car_model || car.car_model,
+              },
+            });
+            refreshed_car_ids.add(car.id);
+            console.log("[Admin] Updated car owner", { plate: normalized_plate, new_phone: record.phone });
           }
 
           // Check for existing visit on same day for same car

@@ -4,6 +4,24 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-02-10 - Fix: Clean Up Stale Visits on Owner Phone Change During Import
+
+#### Root Cause
+- Same car plate imported with a different phone number than the existing owner
+- Car exists and is active (not soft-deleted), so no cleanup triggers
+- All visits from the previous import still exist → every record marked as "duplicate"
+- Only soft-deleted cars got orphaned visit cleanup; active cars with changed ownership were missed
+
+#### Fixed
+- When importing, if an active car's `owner_id` differs from the record's phone user, clean up existing visits and update the owner
+- Uses `refreshed_car_ids` Set to avoid re-cleaning when the same plate appears multiple times in one import batch
+- Same cascade-delete pattern as soft-delete restore (tire changes, switches, oil changes, visits)
+
+#### Files Modified
+- `packages/api/src/routers/admin.ts` - Owner-change detection + stale visit cleanup in import handler
+
+---
+
 ### 2026-02-10 - Fix: Clean Up Orphaned Visits on Soft-Deleted Car Restore
 
 #### Root Cause
