@@ -41,79 +41,165 @@ interface ParsedRecord {
   oil_price?: number;
 }
 
-// Column mapping from Thai headers
-// Supports tire-change ("เปลื่ยนยาง"), tire-switch ("สลับยาง"),
-// oil-change ("เปลี่ยนน้ำมัน"), and generic service ("เข้ารับบริการ") header variants.
-// Multiple headers may map to the same field — the last non-empty value wins (left-to-right).
-const COLUMN_MAP: Record<string, keyof ParsedRecord> = {
-  // Core car info fields
+/**
+ * Section types for column mapping.
+ * Each Excel row belongs to exactly one section (mutually exclusive).
+ * - tire_change: 4 rows per set (FL/FR/RL/RR), each row = 1 tire position
+ * - tire_switch: 1 row per event (e.g. "สลับยาง-ถ่วงล้อ")
+ * - oil_change: 1 row per event (e.g. "ถ่ายน้ำมันเครื่อง")
+ */
+type SectionType = "car_info" | "tire_change" | "tire_switch" | "oil_change";
+
+/**
+ * Resolved column mapping entry: tells the parser which ParsedRecord field
+ * to assign and which section the column belongs to.
+ */
+interface ColumnMapping {
+  field: keyof ParsedRecord;
+  section: SectionType;
+}
+
+/**
+ * Car info columns — shared across all row types.
+ * Maps Thai header text → ParsedRecord field name.
+ */
+const CAR_INFO_MAP: Record<string, keyof ParsedRecord> = {
   "ทะเบียนรถ": "license_plate",
   "เบอร์โทรศัพท์": "phone",
   "รถรุ่น": "car_model",
   "ยี่ห้อรถ": "car_model",
-
-  // --- Date variants ---
-  "วันที่เปลื่ยนยาง": "visit_date",
-  "วันที่เข้ารับบริการ": "visit_date",
-  "วันที่สลับยาง": "visit_date",
-  "วันที่เปลี่ยนน้ำมันเครื่อง": "visit_date",
-  "วันที่เปลี่ยนน้ำมัน": "visit_date",
-  "วันที่เปลี่ยนถ่าย": "visit_date",
-  "วันที่ถ่ายน้ำมันเครื่อง": "visit_date",
-  "วันที่ถ่ายน้ำมัน": "visit_date",
-
-  // --- Branch variants ---
-  "สาขาที่เปลื่ยนยาง": "branch_name",
-  "สาขาที่เข้ารับบริการ": "branch_name",
-  "สาขาที่สลับยาง": "branch_name",
-  "สาขาที่เปลี่ยนน้ำมันเครื่อง": "branch_name",
-  "สาขาที่เปลี่ยนน้ำมัน": "branch_name",
-  "สาขาที่เปลี่ยนถ่าย": "branch_name",
-  "สาขาที่ถ่ายน้ำมันเครื่อง": "branch_name",
-  "สาขาที่ถ่ายน้ำมัน": "branch_name",
-
-  // --- Odometer variants (with and without กม. suffix) ---
-  "ระยะที่เปลื่ยนยาง (กม.)": "odometer_km",
-  "ระยะที่เข้ารับบริการ": "odometer_km",
-  "ระยะที่เข้ารับบริการ (กม.)": "odometer_km",
-  "ระยะสลับยาง": "odometer_km",
-  "ระยะสลับยาง (กม.)": "odometer_km",
-  "ระยะที่สลับยาง": "odometer_km",
-  "ระยะที่สลับยาง (กม.)": "odometer_km",
-  "ระยะเปลี่ยนน้ำมันเครื่อง": "odometer_km",
-  "ระยะเปลี่ยนน้ำมันเครื่อง (กม.)": "odometer_km",
-  "ระยะที่เปลี่ยนน้ำมันเครื่อง": "odometer_km",
-  "ระยะที่เปลี่ยนน้ำมันเครื่อง (กม.)": "odometer_km",
-  "ระยะเปลี่ยนน้ำมัน": "odometer_km",
-  "ระยะเปลี่ยนน้ำมัน (กม.)": "odometer_km",
-  "ระยะถ่ายน้ำมันเครื่อง": "odometer_km",
-  "ระยะถ่ายน้ำมันเครื่อง (กม.)": "odometer_km",
-  "ระยะที่ถ่ายน้ำมันเครื่อง": "odometer_km",
-  "ระยะที่ถ่ายน้ำมันเครื่อง (กม.)": "odometer_km",
-  "ระยะถ่ายน้ำมัน": "odometer_km",
-  "ระยะถ่ายน้ำมัน (กม.)": "odometer_km",
-
-  // Price & service note
-  "ราคาทั้งหมด": "total_price",
-  "บริการที่เข้ารับ": "services_note",
-  "บริการ": "services_note",
-
-  // Tire fields
-  "ไซส์ยาง": "tire_size",
-  "ยี่ห้อ": "tire_brand",
-  "รุ่นยาง": "tire_model",
-  "ตำแหน่ง": "tire_position",
-  "สัปดาห์ผลิต": "tire_production_week",
-  "ราคาเส้นละ": "tire_price",
-
-  // Oil fields
-  "ชื่อรุ่น": "oil_model",
-  "ความหนืด": "oil_viscosity",
-  "เครื่องยนต์": "engine_type",
-  "ประเภทน้ำมันเครื่อง": "oil_type",
-  "ระยะเปลี่ยนถ่าย (กม.)": "oil_interval",
-  "ราคาน้ำมัน": "oil_price",
 };
+
+/**
+ * Section-specific columns with UNIQUE header names.
+ * These headers appear only once in any Excel layout and
+ * unambiguously identify which section they belong to.
+ * Maps Thai header text → { section, field }.
+ */
+const SECTION_COLUMN_MAP: Record<string, { section: SectionType; field: keyof ParsedRecord }> = {
+  // ── Tire Change: unique date/branch/odo headers ──
+  "วันที่เปลื่ยนยาง":          { section: "tire_change", field: "visit_date" },
+  "สาขาที่เปลื่ยนยาง":         { section: "tire_change", field: "branch_name" },
+  "ระยะที่เปลื่ยนยาง (กม.)":   { section: "tire_change", field: "odometer_km" },
+  "ไซส์ยาง":                   { section: "tire_change", field: "tire_size" },
+  "ยี่ห้อ":                    { section: "tire_change", field: "tire_brand" },
+  "รุ่นยาง":                   { section: "tire_change", field: "tire_model" },
+  "สัปดาห์ผลิต":               { section: "tire_change", field: "tire_production_week" },
+  "ราคาเส้นละ":                { section: "tire_change", field: "tire_price" },
+  "ตำแหน่ง":                   { section: "tire_change", field: "tire_position" },
+
+  // ── Tire Switch: unique date/branch/odo headers (with Thai spelling variants) ──
+  "วันที่สลับยาง":             { section: "tire_switch", field: "visit_date" },
+  "สาขาที่สลับยาง":            { section: "tire_switch", field: "branch_name" },
+  "ระยะสลับยาง":               { section: "tire_switch", field: "odometer_km" },
+  "ระยะสลับยาง (กม.)":         { section: "tire_switch", field: "odometer_km" },
+  "ระยะที่สลับยาง":            { section: "tire_switch", field: "odometer_km" },
+  "ระยะที่สลับยาง (กม.)":      { section: "tire_switch", field: "odometer_km" },
+  "บริการ":                    { section: "tire_switch", field: "services_note" },
+
+  // ── Oil Change: unique date/branch/odo headers ──
+  "วันที่เปลี่ยนน้ำมันเครื่อง":    { section: "oil_change", field: "visit_date" },
+  "วันที่เปลี่ยนน้ำมัน":          { section: "oil_change", field: "visit_date" },
+  "วันที่เปลี่ยนถ่าย":           { section: "oil_change", field: "visit_date" },
+  "วันที่ถ่ายน้ำมันเครื่อง":      { section: "oil_change", field: "visit_date" },
+  "วันที่ถ่ายน้ำมัน":            { section: "oil_change", field: "visit_date" },
+  "สาขาที่เปลี่ยนน้ำมันเครื่อง":   { section: "oil_change", field: "branch_name" },
+  "สาขาที่เปลี่ยนน้ำมัน":         { section: "oil_change", field: "branch_name" },
+  "สาขาที่เปลี่ยนถ่าย":          { section: "oil_change", field: "branch_name" },
+  "สาขาที่ถ่ายน้ำมันเครื่อง":     { section: "oil_change", field: "branch_name" },
+  "สาขาที่ถ่ายน้ำมัน":           { section: "oil_change", field: "branch_name" },
+  "ระยะเปลี่ยนน้ำมันเครื่อง (กม.)":  { section: "oil_change", field: "odometer_km" },
+  "ระยะเปลี่ยนน้ำมันเครื่อง":      { section: "oil_change", field: "odometer_km" },
+  "ระยะที่เปลี่ยนน้ำมันเครื่อง (กม.)": { section: "oil_change", field: "odometer_km" },
+  "ระยะที่เปลี่ยนน้ำมันเครื่อง":    { section: "oil_change", field: "odometer_km" },
+  "ระยะเปลี่ยนน้ำมัน (กม.)":       { section: "oil_change", field: "odometer_km" },
+  "ระยะเปลี่ยนน้ำมัน":             { section: "oil_change", field: "odometer_km" },
+  "ระยะถ่ายน้ำมันเครื่อง (กม.)":    { section: "oil_change", field: "odometer_km" },
+  "ระยะถ่ายน้ำมันเครื่อง":          { section: "oil_change", field: "odometer_km" },
+  "ระยะที่ถ่ายน้ำมันเครื่อง (กม.)":  { section: "oil_change", field: "odometer_km" },
+  "ระยะที่ถ่ายน้ำมันเครื่อง":       { section: "oil_change", field: "odometer_km" },
+  "ระยะถ่ายน้ำมัน (กม.)":          { section: "oil_change", field: "odometer_km" },
+  "ระยะถ่ายน้ำมัน":                { section: "oil_change", field: "odometer_km" },
+  "ราคาทั้งหมด":                  { section: "oil_change", field: "total_price" },
+  "ชื่อรุ่น":                     { section: "oil_change", field: "oil_model" },
+  "ความหนืด":                     { section: "oil_change", field: "oil_viscosity" },
+  "เครื่องยนต์":                   { section: "oil_change", field: "engine_type" },
+  "ประเภทน้ำมันเครื่อง":           { section: "oil_change", field: "oil_type" },
+  "ระยะเปลี่ยนถ่าย (กม.)":         { section: "oil_change", field: "oil_interval" },
+  "ราคาน้ำมัน":                    { section: "oil_change", field: "oil_price" },
+};
+
+/**
+ * Generic (ambiguous) headers that appear multiple times in the client's
+ * original Excel file. The occurrence order (left-to-right) determines
+ * which section each instance belongs to.
+ *
+ * Client layout: cols 12-15 = tire_switch (1st occurrence),
+ *                cols 16-19 = oil_change (2nd occurrence).
+ *
+ * Each entry maps header text → [field, [section_for_1st, section_for_2nd, ...]].
+ */
+const GENERIC_HEADER_SECTIONS: Record<string, { field: keyof ParsedRecord; sections: SectionType[] }> = {
+  "วันที่เข้ารับบริการ":          { field: "visit_date",    sections: ["tire_switch", "oil_change"] },
+  "สาขาที่เข้ารับบริการ":         { field: "branch_name",   sections: ["tire_switch", "oil_change"] },
+  "ระยะที่เข้ารับบริการ":         { field: "odometer_km",   sections: ["tire_switch", "oil_change"] },
+  "ระยะที่เข้ารับบริการ (กม.)":   { field: "odometer_km",   sections: ["tire_switch", "oil_change"] },
+  "บริการที่เข้ารับ":             { field: "services_note", sections: ["tire_switch", "oil_change"] },
+};
+
+/**
+ * Build a column map for a specific sheet's headers.
+ * Runs once per sheet. Returns a Map<col_index, ColumnMapping>.
+ *
+ * Resolution order:
+ *   1. CAR_INFO_MAP → car_info section
+ *   2. SECTION_COLUMN_MAP → uniquely-named section columns
+ *   3. GENERIC_HEADER_SECTIONS → occurrence-based (1st = tire_switch, 2nd = oil_change)
+ *   4. Unknown headers (ผู้กรอก, LOGIC, etc.) → silently skipped
+ *
+ * @param headers - Array of Thai header strings from the sheet's first row
+ * @returns Map from column index to { field, section }
+ */
+function build_column_map(headers: string[]): Map<number, ColumnMapping> {
+  console.log("[build_column_map] Building map for headers:", headers.length);
+  const col_map = new Map<number, ColumnMapping>();
+  const occurrence_count: Record<string, number> = {};
+
+  for (let col = 0; col < headers.length; col++) {
+    const header = String(headers[col] ?? "").trim();
+    if (!header) continue;
+
+    // 1. Check car info
+    const car_field = CAR_INFO_MAP[header];
+    if (car_field) {
+      col_map.set(col, { field: car_field, section: "car_info" });
+      continue;
+    }
+
+    // 2. Check unique section columns
+    const section_entry = SECTION_COLUMN_MAP[header];
+    if (section_entry) {
+      col_map.set(col, { field: section_entry.field, section: section_entry.section });
+      continue;
+    }
+
+    // 3. Check generic/duplicate headers (occurrence-based)
+    const generic_entry = GENERIC_HEADER_SECTIONS[header];
+    if (generic_entry) {
+      const count = occurrence_count[header] ?? 0;
+      occurrence_count[header] = count + 1;
+      const section = generic_entry.sections[count] ?? generic_entry.sections[generic_entry.sections.length - 1];
+      col_map.set(col, { field: generic_entry.field, section });
+      continue;
+    }
+
+    // 4. Unknown header → skip silently
+    console.log("[build_column_map] Skipping unknown header:", header, "at col:", col);
+  }
+
+  console.log("[build_column_map] Mapped", col_map.size, "of", headers.length, "columns");
+  return col_map;
+}
 
 /**
  * Service type categories used for preview filtering.
@@ -172,40 +258,45 @@ function service_type_badge_classes(type: ServiceType): string {
 }
 
 /**
- * Template headers for the downloadable Excel template (single sheet).
- * All service types share one sheet with columns for every field.
- * Structure: car info → service visit → tire change → oil change → service note
+ * Template headers for the downloadable Excel template (single sheet, 26 columns).
+ * Each section has its OWN date/branch/odometer columns with unique header names.
+ * Sections are mutually exclusive per row:
  *
- * - Tire change rows: fill car info + service visit + tire fields (leave oil/note empty)
- * - Tire switch rows: fill car info + service visit + "บริการ" note (leave tire/oil empty)
- * - Oil change rows: fill car info + service visit + oil fields (leave tire/note empty)
+ * - Tire change rows: fill car info + tire change section (1 row per tire position FL/FR/RL/RR)
+ * - Tire switch rows: fill car info + tire switch section (1 row per event)
+ * - Oil change rows:  fill car info + oil change section (1 row per event)
  */
 const TEMPLATE_HEADERS: string[] = [
-  // Car info (cols 0-2)
+  // ── Car Info (cols 0-2) ──
   "ทะเบียนรถ",
   "เบอร์โทรศัพท์",
   "รถรุ่น",
-  // Service visit info - shared by all service types (cols 3-6)
-  "สาขาที่เข้ารับบริการ",
-  "วันที่เข้ารับบริการ",
-  "ระยะที่เข้ารับบริการ (กม.)",
-  "ราคาทั้งหมด",
-  // Tire change fields (cols 7-12)
+  // ── Tire Change (cols 3-11) — date/branch/odo specific to tire change ──
+  "วันที่เปลื่ยนยาง",
+  "สาขาที่เปลื่ยนยาง",
+  "ระยะที่เปลื่ยนยาง (กม.)",
   "ไซส์ยาง",
   "ยี่ห้อ",
   "รุ่นยาง",
-  "ตำแหน่ง",
   "สัปดาห์ผลิต",
   "ราคาเส้นละ",
-  // Oil change fields (cols 13-18)
+  "ตำแหน่ง",
+  // ── Tire Switch (cols 12-15) — date/branch/odo specific to tire switch ──
+  "วันที่สลับยาง",
+  "สาขาที่สลับยาง",
+  "ระยะสลับยาง (กม.)",
+  "บริการ",
+  // ── Oil Change (cols 16-25) — date/branch/odo specific to oil change ──
+  "วันที่เปลี่ยนน้ำมันเครื่อง",
+  "สาขาที่เปลี่ยนน้ำมันเครื่อง",
+  "ระยะเปลี่ยนน้ำมันเครื่อง (กม.)",
+  "ราคาทั้งหมด",
   "ชื่อรุ่น",
   "ความหนืด",
-  "ประเภทน้ำมันเครื่อง",
   "เครื่องยนต์",
+  "ประเภทน้ำมันเครื่อง",
   "ระยะเปลี่ยนถ่าย (กม.)",
   "ราคาน้ำมัน",
-  // Service note - for tire switch or other notes (col 19)
-  "บริการ",
 ];
 
 /**
@@ -401,6 +492,9 @@ export default function AdminImportPage() {
 
           const headers = json_data[0] as string[];
 
+          // Build section-aware column map for this sheet's headers
+          const col_map = build_column_map(headers);
+
           // Track previous row's car info for carry-forward (per sheet)
           // Business Excel often only fills car info on the first row of a group
           let prev_car_info: { license_plate?: string; phone?: string; car_model?: string } = {};
@@ -413,47 +507,106 @@ export default function AdminImportPage() {
             const has_data = row.some((cell) => cell !== undefined && cell !== null && cell !== "");
             if (!has_data) continue;
 
+            // Parse cells into section buckets first, then merge into record
             const record: any = {};
+            // Track which sections have data in this row
+            const section_dates: Partial<Record<SectionType, Date>> = {};
+            const section_branches: Partial<Record<SectionType, string>> = {};
+            const section_odometers: Partial<Record<SectionType, number>> = {};
 
-            headers.forEach((header, col_index) => {
-              const field_name = COLUMN_MAP[header];
-              if (field_name && row[col_index] !== undefined && row[col_index] !== null && row[col_index] !== "") {
-                let value = row[col_index];
+            col_map.forEach((mapping, col_index) => {
+              const cell = row[col_index];
+              if (cell === undefined || cell === null || cell === "") return;
 
-                // Handle phone: Excel stores as number, coerce to string with leading zero
-                if (field_name === "phone") {
-                  value = String(value).trim();
-                  // Thai phones start with 0; Excel drops leading zero from numbers
-                  if (/^\d{9}$/.test(value)) {
-                    value = "0" + value;
-                  }
+              const { field, section } = mapping;
+              let value: any = cell;
+
+              // Handle phone: Excel stores as number, coerce to string with leading zero
+              if (field === "phone") {
+                value = String(value).trim();
+                // Thai phones start with 0; Excel drops leading zero from numbers
+                if (/^\d{9}$/.test(value)) {
+                  value = "0" + value;
                 }
-
-                // Handle date conversion
-                if (field_name === "visit_date") {
-                  value = parse_excel_date(value);
-                }
-
-                // Handle number conversion
-                if (
-                  ["odometer_km", "total_price", "tire_price", "oil_interval", "oil_price"].includes(
-                    field_name
-                  )
-                ) {
-                  value = Number(value) || 0;
-                }
-
-                // Handle string coercion for fields that may come as numbers
-                if (
-                  ["license_plate", "tire_production_week", "tire_size"].includes(field_name) &&
-                  typeof value === "number"
-                ) {
-                  value = String(value);
-                }
-
-                record[field_name] = value;
               }
+
+              // Handle date conversion — store per-section for later resolution
+              if (field === "visit_date") {
+                const parsed_date = parse_excel_date(value);
+                if (parsed_date instanceof Date && !isNaN(parsed_date.getTime())) {
+                  section_dates[section] = parsed_date;
+                }
+                return; // Don't assign to record yet
+              }
+
+              // Handle branch — store per-section
+              if (field === "branch_name") {
+                section_branches[section] = String(value).trim();
+                return;
+              }
+
+              // Handle odometer — store per-section
+              if (field === "odometer_km") {
+                section_odometers[section] = Number(value) || 0;
+                return;
+              }
+
+              // Handle number conversion for other numeric fields
+              if (
+                ["total_price", "tire_price", "oil_interval", "oil_price"].includes(field)
+              ) {
+                value = Number(value) || 0;
+              }
+
+              // Handle string coercion for fields that may come as numbers
+              if (
+                ["license_plate", "tire_production_week", "tire_size"].includes(field) &&
+                typeof value === "number"
+              ) {
+                value = String(value);
+              }
+
+              record[field] = value;
             });
+
+            // Determine which section this row belongs to (mutually exclusive)
+            // Priority: tire_change (has tire fields) > oil_change (has oil fields) > tire_switch (services_note only)
+            // Oil rows in client's Excel also have services_note (col 19 "บริการที่เข้ารับ" = "ถ่ายน้ำมันเครื่อง"),
+            // so oil fields MUST be checked before services_note to avoid misclassifying oil rows as tire_switch.
+            let active_section: SectionType = "tire_change";
+            if (record.tire_size || record.tire_brand || record.tire_model || record.tire_position) {
+              active_section = "tire_change";
+            } else if (record.oil_model || record.oil_viscosity || record.oil_type || record.total_price) {
+              active_section = "oil_change";
+            } else if (record.services_note) {
+              active_section = "tire_switch";
+            } else {
+              // Fallback: use whichever section has a date
+              if (section_dates.tire_change) active_section = "tire_change";
+              else if (section_dates.tire_switch) active_section = "tire_switch";
+              else if (section_dates.oil_change) active_section = "oil_change";
+            }
+
+            // Resolve date: prefer the active section's date, fall back to any available date
+            record.visit_date =
+              section_dates[active_section] ??
+              section_dates.tire_change ??
+              section_dates.tire_switch ??
+              section_dates.oil_change;
+
+            // Resolve branch: prefer the active section's branch, fall back to any
+            record.branch_name =
+              section_branches[active_section] ??
+              section_branches.tire_change ??
+              section_branches.tire_switch ??
+              section_branches.oil_change;
+
+            // Resolve odometer: prefer the active section's odometer, fall back to any
+            record.odometer_km =
+              section_odometers[active_section] ??
+              section_odometers.tire_change ??
+              section_odometers.tire_switch ??
+              section_odometers.oil_change;
 
             // Carry-forward: inherit car info from previous row if missing
             if (!record.license_plate && prev_car_info.license_plate) {
@@ -824,7 +977,7 @@ export default function AdminImportPage() {
         </Card>
       )}
 
-      {/* Column mapping reference */}
+      {/* Column mapping reference — grouped by section */}
       <Card>
         <CardHeader>
           <CardTitle>{t("columns.title")}</CardTitle>
@@ -832,13 +985,51 @@ export default function AdminImportPage() {
             {t("columns.description")}
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
-            {Object.keys(COLUMN_MAP).map((header) => (
-              <div key={header} className="p-2 bg-muted rounded">
-                {header}
-              </div>
-            ))}
+        <CardContent className="space-y-4">
+          {/* Car Info */}
+          <div>
+            <p className="text-sm font-medium mb-2 text-muted-foreground">Car Info</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+              {Object.keys(CAR_INFO_MAP).map((header) => (
+                <div key={header} className="p-2 bg-muted rounded">{header}</div>
+              ))}
+            </div>
+          </div>
+          {/* Tire Change */}
+          <div>
+            <p className="text-sm font-medium mb-2 text-blue-600">Tire Change</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+              {Object.entries(SECTION_COLUMN_MAP)
+                .filter(([, v]) => v.section === "tire_change")
+                .map(([header]) => (
+                  <div key={header} className="p-2 bg-blue-50 rounded">{header}</div>
+                ))}
+            </div>
+          </div>
+          {/* Tire Switch */}
+          <div>
+            <p className="text-sm font-medium mb-2 text-green-600">Tire Switch</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+              {Object.entries(SECTION_COLUMN_MAP)
+                .filter(([, v]) => v.section === "tire_switch")
+                .map(([header]) => (
+                  <div key={header} className="p-2 bg-green-50 rounded">{header}</div>
+                ))}
+              {Object.keys(GENERIC_HEADER_SECTIONS).map((header) => (
+                <div key={`gen-${header}`} className="p-2 bg-green-50/50 rounded border border-dashed border-green-200 text-muted-foreground">{header}</div>
+              ))}
+            </div>
+          </div>
+          {/* Oil Change */}
+          <div>
+            <p className="text-sm font-medium mb-2 text-amber-600">Oil Change</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+              {Object.entries(SECTION_COLUMN_MAP)
+                .filter(([, v]) => v.section === "oil_change")
+                .map(([header]) => (
+                  <div key={header} className="p-2 bg-amber-50 rounded">{header}</div>
+                ))}
+            </div>
           </div>
         </CardContent>
       </Card>

@@ -4,6 +4,39 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-02-10 - Fix: Section-Aware Excel Import Column Mapping
+
+#### Root Cause
+1. **Flat COLUMN_MAP lost section context**: All date/branch/odometer header variants mapped to the same flat fields (`visit_date`, `branch_name`, `odometer_km`). In the client's Excel where tire change, tire switch, and oil change each have their OWN date/branch/odo columns, the last non-empty value overwrote earlier sections.
+2. **Duplicate headers in client's Excel**: Cols 12-15 (tire switch) and cols 16-19 (oil change) share identical header names (`วันที่เข้ารับบริการ`, `สาขาที่เข้ารับบริการ`, etc.). The flat map could not distinguish between them.
+3. **Template had generic shared columns**: Old 20-column template used shared "วันที่เข้ารับบริการ" for all service types instead of section-specific headers like "วันที่เปลื่ยนยาง", "วันที่สลับยาง", "วันที่เปลี่ยนน้ำมันเครื่อง".
+4. **1 row = 1 service event**: Each Excel row belongs to exactly one section (mutually exclusive). Tire change = 4 rows (FL/FR/RL/RR), tire switch = 1 row, oil change = 1 row.
+
+#### Fixed
+- **Section-aware column mapping**: Replaced flat `COLUMN_MAP` with three structures:
+  - `CAR_INFO_MAP`: shared car info fields (license_plate, phone, car_model)
+  - `SECTION_COLUMN_MAP`: uniquely-named headers → `{section, field}` for all Thai variants
+  - `GENERIC_HEADER_SECTIONS`: occurrence-based mapping for duplicate headers (1st = tire_switch, 2nd = oil_change)
+- **`build_column_map(headers)`**: Runs once per sheet, returns `Map<col_index, {field, section}>`. Resolves unique headers directly, duplicate headers by occurrence count, skips unknown headers.
+- **Section-aware row parsing**: Date/branch/odometer now stored per-section, then resolved to the active section's values with fallback inheritance.
+- **New 26-column template**: Unique headers per section (tire change date/branch/odo, tire switch date/branch/odo, oil change date/branch/odo). No more ambiguous shared columns.
+- **Updated column reference card**: Headers displayed grouped by section with color coding.
+- **Active section detection order fix**: Oil fields checked BEFORE services_note. Client's oil rows have `services_note="ถ่ายน้ำมันเครื่อง"` from col 19, which would misclassify as tire_switch if checked first.
+- **Missing tire switch odometer variants**: Added `ระยะสลับยาง`, `ระยะที่สลับยาง`, `ระยะที่สลับยาง (กม.)` to SECTION_COLUMN_MAP.
+- **Backward compatible**: Client's original 28-col Excel (duplicate headers) works via occurrence tracking. New 26-col template works via unique header resolution. Old 20-col template still works as fallback.
+
+#### QA Verification (column-by-column trace)
+- Client 28-col: all 26 data columns map correctly (2 metadata cols skipped)
+- New 26-col template: all columns resolve via SECTION_COLUMN_MAP (no duplicates)
+- Tire change row (FL): tire fields → active_section=tire_change, date from tire_change section
+- Tire switch row: services_note only → active_section=tire_switch, date from tire_switch section
+- Oil change row: oil_viscosity present → active_section=oil_change, date from oil_change section (not misclassified despite having services_note)
+
+#### Files Modified
+- `apps/web/src/app/admin/import/page.tsx` - Section-aware column mapping, new template headers, updated reference card
+
+---
+
 ### 2026-02-10 - Fix: Excel Import Template + Multi-Sheet + Year Conversion
 
 #### Root Cause
