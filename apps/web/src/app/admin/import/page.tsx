@@ -172,39 +172,40 @@ function service_type_badge_classes(type: ServiceType): string {
 }
 
 /**
- * Template sheet definitions for the downloadable Excel template.
- * Each service type has its own sheet with appropriate column headers.
- * Headers match keys in COLUMN_MAP for seamless parsing.
+ * Template headers for the downloadable Excel template (single sheet).
+ * All service types share one sheet with columns for every field.
+ * Structure: car info → service visit → tire change → oil change → service note
  *
- * - Sheet "เปลี่ยนยาง": car info + tire-change date/branch/odometer + tire fields
- * - Sheet "สลับยาง": car info + tire-switch date/branch/odometer + service note
- * - Sheet "เปลี่ยนน้ำมัน": car info + oil-change date/branch/odometer + oil fields
+ * - Tire change rows: fill car info + service visit + tire fields (leave oil/note empty)
+ * - Tire switch rows: fill car info + service visit + "บริการ" note (leave tire/oil empty)
+ * - Oil change rows: fill car info + service visit + oil fields (leave tire/note empty)
  */
-const TEMPLATE_SHEETS: { name: string; headers: string[] }[] = [
-  {
-    name: "เปลี่ยนยาง",
-    headers: [
-      "ทะเบียนรถ", "เบอร์โทรศัพท์", "รถรุ่น",
-      "วันที่เปลื่ยนยาง", "สาขาที่เข้ารับบริการ", "ระยะที่เปลื่ยนยาง (กม.)", "ราคาทั้งหมด",
-      "ไซส์ยาง", "ยี่ห้อ", "รุ่นยาง", "ตำแหน่ง", "สัปดาห์ผลิต", "ราคาเส้นละ",
-    ],
-  },
-  {
-    name: "สลับยาง",
-    headers: [
-      "ทะเบียนรถ", "เบอร์โทรศัพท์", "รถรุ่น",
-      "วันที่สลับยาง", "สาขาที่สลับยาง", "ระยะสลับยาง (กม.)", "ราคาทั้งหมด",
-      "บริการ",
-    ],
-  },
-  {
-    name: "เปลี่ยนน้ำมัน",
-    headers: [
-      "ทะเบียนรถ", "เบอร์โทรศัพท์", "รถรุ่น",
-      "วันที่เปลี่ยนน้ำมันเครื่อง", "สาขาที่เปลี่ยนน้ำมันเครื่อง", "ระยะเปลี่ยนน้ำมันเครื่อง (กม.)", "ราคาทั้งหมด",
-      "ชื่อรุ่น", "ความหนืด", "ประเภทน้ำมันเครื่อง", "เครื่องยนต์", "ระยะเปลี่ยนถ่าย (กม.)", "ราคาน้ำมัน",
-    ],
-  },
+const TEMPLATE_HEADERS: string[] = [
+  // Car info (cols 0-2)
+  "ทะเบียนรถ",
+  "เบอร์โทรศัพท์",
+  "รถรุ่น",
+  // Service visit info - shared by all service types (cols 3-6)
+  "สาขาที่เข้ารับบริการ",
+  "วันที่เข้ารับบริการ",
+  "ระยะที่เข้ารับบริการ (กม.)",
+  "ราคาทั้งหมด",
+  // Tire change fields (cols 7-12)
+  "ไซส์ยาง",
+  "ยี่ห้อ",
+  "รุ่นยาง",
+  "ตำแหน่ง",
+  "สัปดาห์ผลิต",
+  "ราคาเส้นละ",
+  // Oil change fields (cols 13-18)
+  "ชื่อรุ่น",
+  "ความหนืด",
+  "ประเภทน้ำมันเครื่อง",
+  "เครื่องยนต์",
+  "ระยะเปลี่ยนถ่าย (กม.)",
+  "ราคาน้ำมัน",
+  // Service note - for tire switch or other notes (col 19)
+  "บริการ",
 ];
 
 /**
@@ -275,24 +276,23 @@ function parse_excel_date(value: unknown): Date {
 }
 
 /**
- * Generate and download a multi-sheet Excel template file with correct Thai headers.
- * Creates one sheet per service type (tire change, tire switch, oil change).
- * Each sheet has appropriate column headers matching COLUMN_MAP keys.
+ * Generate and download an Excel template file with correct Thai headers.
+ * Single sheet with all columns for tire change, oil change, and tire switch.
+ * @returns void
  */
 function download_template(): void {
-  console.log("[AdminImportPage] Generating multi-sheet template file");
+  console.log("[AdminImportPage] Generating template file");
   const workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.aoa_to_sheet([TEMPLATE_HEADERS]);
 
-  for (const sheet of TEMPLATE_SHEETS) {
-    const worksheet = XLSX.utils.aoa_to_sheet([sheet.headers]);
-    worksheet["!cols"] = sheet.headers.map((header) => ({
-      wch: Math.max(header.length * 2, 16),
-    }));
-    XLSX.utils.book_append_sheet(workbook, worksheet, sheet.name);
-  }
+  // Set column widths for readability
+  worksheet["!cols"] = TEMPLATE_HEADERS.map((header) => ({
+    wch: Math.max(header.length * 2, 16),
+  }));
 
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Template");
   XLSX.writeFile(workbook, "import_template.xlsx");
-  console.log("[AdminImportPage] Multi-sheet template file downloaded");
+  console.log("[AdminImportPage] Template file downloaded");
 }
 
 /**
