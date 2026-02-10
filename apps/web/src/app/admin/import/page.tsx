@@ -287,7 +287,7 @@ const TEMPLATE_HEADERS: string[] = [
   "สาขาที่สลับยาง",
   "ระยะสลับยาง (กม.)",
   "บริการ",
-  // ── Oil Change (cols 16-26) — date/branch/odo specific to oil change ──
+  // ── Oil Change (cols 16-25) — date/branch/odo specific to oil change ──
   "วันที่เปลี่ยนน้ำมันเครื่อง",
   "สาขาที่เปลี่ยนน้ำมันเครื่อง",
   "ระยะเปลี่ยนน้ำมันเครื่อง (กม.)",
@@ -298,7 +298,6 @@ const TEMPLATE_HEADERS: string[] = [
   "เครื่องยนต์",
   "ประเภทน้ำมันเครื่อง",
   "ระยะเปลี่ยนถ่าย (กม.)",
-  "ราคาน้ำมัน",
 ];
 
 /**
