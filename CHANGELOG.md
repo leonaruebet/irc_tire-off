@@ -4,6 +4,23 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-02-10 - Fix: Import Restores Soft-Deleted Cars
+
+#### Root Cause
+- Import handler's car lookup (`findUnique({ license_plate })`) did NOT check `is_deleted` flag
+- When a car was soft-deleted via admin/cars batch delete, the import still found the car and its existing visits
+- Import marked records as "duplicate" (visits existed), but the car didn't appear on `/admin/cars` (`is_deleted: true` filtered out)
+- Result: user sees "0 success, 6 duplicates" but can't find the car in the admin interface
+
+#### Fixed
+- Import now restores soft-deleted cars: if `car.is_deleted === true`, update to `is_deleted: false` and refresh owner/model
+- Matches existing pattern from `register_car` endpoint (line 751-766)
+
+#### Files Modified
+- `packages/api/src/routers/admin.ts` - Import handler car lookup now restores soft-deleted cars
+
+---
+
 ### 2026-02-10 - Fix: Section-Aware Excel Import Column Mapping
 
 #### Root Cause

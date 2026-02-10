@@ -1291,7 +1291,7 @@ export const admin_router = create_router({
             console.log("[Admin] Created new user", { phone: record.phone });
           }
 
-          // Find or create car
+          // Find or create car (restore if soft-deleted)
           let car = await ctx.db.car.findUnique({
             where: { license_plate: normalized_plate },
           });
@@ -1305,6 +1305,17 @@ export const admin_router = create_router({
               },
             });
             console.log("[Admin] Created new car", { plate: normalized_plate });
+          } else if (car.is_deleted) {
+            // Restore soft-deleted car so it reappears on admin/cars page
+            car = await ctx.db.car.update({
+              where: { id: car.id },
+              data: {
+                is_deleted: false,
+                owner_id: user.id,
+                car_model: record.car_model || car.car_model,
+              },
+            });
+            console.log("[Admin] Restored soft-deleted car", { plate: normalized_plate });
           }
 
           // Check for existing visit on same day for same car
