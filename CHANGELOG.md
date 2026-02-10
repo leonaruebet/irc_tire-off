@@ -4,6 +4,26 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-02-10 - Fix: Backend Import Handler Edge Cases (OCD QA Trace)
+
+#### Root Cause
+Full trace of import flow (frontend → backend) revealed 4 edge cases:
+1. **Oil handler too narrow**: Only checked `oil_model || oil_viscosity`. Client's oil rows with only `oil_type` or `engine_type` (but no model/viscosity) were missed and misclassified as tire_switch.
+2. **Tire switch exclusion too narrow**: Only excluded `oil_model` and `oil_viscosity`. Oil rows with other oil fields but empty model/viscosity passed the tire_switch check.
+3. **Existing visit data loss**: When multiple rows share same car+date (e.g., tire row + oil row), only odometer was updated on the existing visit. `total_price` and `services_note` from subsequent rows were silently dropped.
+4. **Oil dedup false positive**: Dedup only compared viscosity + oil_model. Two distinct oil records with both fields null would falsely match as duplicates.
+
+#### Fixed
+- **Widened oil detection**: `has_oil_data` checks all 6 oil fields: `oil_model`, `oil_viscosity`, `oil_type`, `engine_type`, `oil_interval`, `oil_price`
+- **Tire switch exclusion uses `!has_oil_data`**: Prevents any row with oil data from being misclassified as tire_switch
+- **Existing visit field accumulation**: Updates `total_price` and `services_note` on existing visits when not already set (not just odometer)
+- **Oil dedup 3-field comparison**: Now matches on `viscosity + oil_model + oil_type` for more accurate deduplication
+
+#### Files Modified
+- `packages/api/src/routers/admin.ts` - Oil handler, tire_switch exclusion, visit update, oil dedup
+
+---
+
 ### 2026-02-10 - Fix: Import Restores Soft-Deleted Cars
 
 #### Root Cause

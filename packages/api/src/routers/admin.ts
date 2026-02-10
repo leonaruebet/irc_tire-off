@@ -1356,16 +1356,35 @@ export const admin_router = create_router({
           } else {
             console.log("[Admin] Found existing visit", { id: existing_visit.id });
 
+            // Update existing visit fields that may come from subsequent rows
+            // (e.g., oil row provides total_price, tire switch row provides services_note)
+            const visit_updates: any = {};
+
             // Update odometer if current row has a higher value (odometer only increases)
-            // This handles Excel rows with inconsistent odometer values for same date
             if (record.odometer_km && record.odometer_km > existing_visit.odometer_km) {
+              visit_updates.odometer_km = record.odometer_km;
               console.log("[Admin] Updating visit odometer", {
                 old: existing_visit.odometer_km,
                 new: record.odometer_km,
               });
+            }
+
+            // Update total_price if not yet set on existing visit
+            if (record.total_price && !existing_visit.total_price) {
+              visit_updates.total_price = record.total_price;
+              console.log("[Admin] Setting visit total_price", { price: record.total_price });
+            }
+
+            // Append services_note if existing visit doesn't have one yet
+            if (record.services_note && !existing_visit.services_note) {
+              visit_updates.services_note = record.services_note;
+              console.log("[Admin] Setting visit services_note", { note: record.services_note });
+            }
+
+            if (Object.keys(visit_updates).length > 0) {
               visit = await ctx.db.serviceVisit.update({
                 where: { id: existing_visit.id },
-                data: { odometer_km: record.odometer_km },
+                data: visit_updates,
                 include: {
                   tire_changes: true,
                   tire_switches: true,
@@ -1429,12 +1448,18 @@ export const admin_router = create_router({
           }
 
           // Handle oil change with deduplication
-          if (record.oil_model || record.oil_viscosity) {
-            // Check if oil change with same details already exists
+          // Check all oil-specific fields (not just model/viscosity) to match frontend detection
+          const has_oil_data =
+            record.oil_model || record.oil_viscosity || record.oil_type ||
+            record.engine_type || record.oil_interval || record.oil_price;
+
+          if (has_oil_data) {
+            // Dedup: match on viscosity + model + oil_type for more accurate comparison
             const existing_oil = visit!.oil_changes.find(
               (oc) =>
-                oc.viscosity === record.oil_viscosity &&
-                oc.oil_model === record.oil_model
+                oc.viscosity === (record.oil_viscosity ?? null) &&
+                oc.oil_model === (record.oil_model ?? null) &&
+                oc.oil_type === (record.oil_type ?? null)
             );
 
             if (!existing_oil) {
@@ -1453,6 +1478,7 @@ export const admin_router = create_router({
               was_duplicate = false;
               console.log("[Admin] Added oil change", {
                 viscosity: record.oil_viscosity,
+                model: record.oil_model,
               });
             } else {
               console.log("[Admin] Skipped duplicate oil change", {
@@ -1462,13 +1488,13 @@ export const admin_router = create_router({
           }
 
           // Handle tire switch with deduplication
-          // Tire switch rows are detected by having services_note but no tire/oil specific fields
+          // Tire switch rows have services_note but NO tire-specific or oil-specific fields.
+          // Must exclude ALL oil fields (not just model/viscosity) to prevent misclassification.
           const is_tire_switch_row =
             record.services_note &&
             !record.tire_position &&
             !record.tire_size &&
-            !record.oil_model &&
-            !record.oil_viscosity;
+            !has_oil_data;
 
           if (is_tire_switch_row) {
             // Check if a tire switch with same notes already exists for this visit
