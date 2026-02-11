@@ -4,6 +4,36 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-02-11 - Fix: Per-Tire Mileage (กม.) Mismatch After Import
+
+#### Root Cause
+1. **Shared odometer**: `odometer_km` was stored only on `ServiceVisit`, shared across all tire positions in the same visit. When 4 tires (FL/FR/RL/RR) had different mileage values in the Excel, all positions showed the last row's (highest) value.
+2. **Only-increase guard**: The import handler only updated visit odometer when `new > old` (line 1434). On re-import, correct lower values (e.g., 17,800) could not overwrite stale higher values (e.g., 114,000).
+3. **No per-tire storage**: `TireChange` model had no `install_odometer_km` field — mileage was always read from the parent `ServiceVisit`.
+
+#### Example
+Excel rows for same car on 23/2/2026:
+- FR: 22,500 km → app showed 22,516 (RR's value won)
+- FL: 22,500 km → app showed 22,516
+- RR: 22,516 km → correct (last row = highest)
+RL on 11/2/2026: 17,800 km → app showed 114,000 (stale visit odometer, couldn't be lowered)
+
+#### Fixed
+- **Schema**: Added `install_odometer_km Int?` to `TireChange` model for per-position mileage
+- **Import handler**: Stores `record.odometer_km` on each `TireChange.install_odometer_km` during create
+- **Import handler**: Changed visit odometer update from "only increase" to "always use newest" (allows correction)
+- **Import handler**: Updates existing tire's `install_odometer_km` on re-import (duplicate detection)
+- **Display**: `tire_status` and `tire_changes` endpoints now read `tire.install_odometer_km ?? visit.odometer_km` (backward compatible)
+- **History**: `all_history` endpoint uses per-tire odometer for tire_change entries
+- **Add visit**: Input schema accepts `install_odometer_km` per tire change
+
+#### Files Modified
+- `packages/db/prisma/schema.prisma` - Added `install_odometer_km Int?` to TireChange
+- `packages/api/src/routers/admin.ts` - Import: per-tire odometer + always-newest + re-import update + add_visit schema
+- `packages/api/src/routers/service.ts` - tire_status, tire_changes, all_history use per-tire odometer
+
+---
+
 ### 2026-02-11 - Fix: Stale Data After Login (Requires Manual Refresh)
 
 #### Root Cause

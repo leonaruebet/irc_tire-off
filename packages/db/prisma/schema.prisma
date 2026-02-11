@@ -142,15 +142,16 @@ model ServiceVisit {
 
 /// Tire change record per position
 model TireChange {
-  id               String       @id @default(auto()) @map("_id") @db.ObjectId
-  service_visit_id String       @db.ObjectId
-  position         TirePosition // FL, FR, RL, RR
-  tire_size        String? // ไซส์ยาง
-  brand            String? // ยี่ห้อ
-  tire_model       String? // รุ่นยาง
-  production_week  String? // สัปดาห์ผลิต (e.g., "2523" = week 25, year 2023)
-  price_per_tire   Float? // ราคาเส้นละ
-  created_at       DateTime     @default(now())
+  id                  String       @id @default(auto()) @map("_id") @db.ObjectId
+  service_visit_id    String       @db.ObjectId
+  position            TirePosition // FL, FR, RL, RR
+  tire_size           String? // ไซส์ยาง
+  brand               String? // ยี่ห้อ
+  tire_model          String? // รุ่นยาง
+  production_week     String? // สัปดาห์ผลิต (e.g., "2523" = week 25, year 2023)
+  price_per_tire      Float? // ราคาเส้นละ
+  install_odometer_km Int? // ระยะที่เปลี่ยนยาง per-position (km) — individual mileage at tire install
+  created_at          DateTime     @default(now())
 
   service_visit ServiceVisit @relation(fields: [service_visit_id], references: [id], onDelete: Cascade)
 

@@ -1,5 +1,20 @@
 # TireTrack - Tire Age Tracking System Implementation
 
+## Fix Per-Tire Mileage (กม.) Mismatch After Import
+### Done
+- [x] Add `install_odometer_km Int?` to TireChange schema ~0.1d #import 2026-02-11
+- [x] Store per-tire odometer during import create ~0.1d #import 2026-02-11
+- [x] Change visit odometer update to "always newest" (remove only-increase guard) ~0.1d #import 2026-02-11
+- [x] Update existing tire's odometer on re-import duplicate ~0.1d #import 2026-02-11
+- [x] Fix tire_status endpoint to read per-tire odometer ~0.1d #import 2026-02-11
+- [x] Fix tire_changes history to read per-tire odometer ~0.1d #import 2026-02-11
+- [x] Fix all_history to read per-tire odometer for tire entries ~0.1d #import 2026-02-11
+- [x] Add install_odometer_km to add_visit input schema ~0.05d #import 2026-02-11
+- [x] Run Prisma generate ~0.05d #import 2026-02-11
+- [x] Update CHANGELOG.md ~0.05d #import 2026-02-11
+
+---
+
 ## Fix Excel Import Section-Aware Column Mapping
 ### Done
 - [x] Replace flat COLUMN_MAP with CAR_INFO_MAP + SECTION_COLUMN_MAP + GENERIC_HEADER_SECTIONS ~0.5d #import 2026-02-10

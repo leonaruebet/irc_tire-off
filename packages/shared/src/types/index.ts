@@ -63,13 +63,14 @@ export interface TireChangeRecord {
   id: string;
   visit_date: Date;
   branch_name: string;
-  odometer_km: number;
+  odometer_km: number; // Display value: install_odometer_km ?? visit.odometer_km
   position: TirePosition;
   tire_size?: string;
   brand?: string;
   tire_model?: string;
   production_week?: string;
   price_per_tire?: number;
+  install_odometer_km?: number; // Per-tire mileage at install (null for legacy records)
 }
 
 export interface TireSwitchRecord {

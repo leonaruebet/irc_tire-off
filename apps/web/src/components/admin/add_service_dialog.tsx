@@ -346,6 +346,7 @@ export function AddServiceDialog({ open, onOpenChange }: AddServiceDialogProps) 
               tire_model: tc.tire_model || undefined,
               production_week: tc.production_week || undefined,
               price_per_tire: tc.price_per_tire,
+              install_odometer_km: data.odometer_km,
             }))
           : undefined,
       oil_change: has_oil_change

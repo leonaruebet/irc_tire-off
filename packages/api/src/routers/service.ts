@@ -85,7 +85,7 @@ export const service_router = create_router({
         id: r.id,
         visit_date: r.service_visit.visit_date,
         branch_name: r.service_visit.branch.name,
-        odometer_km: r.service_visit.odometer_km,
+        odometer_km: r.install_odometer_km ?? r.service_visit.odometer_km,
         position: r.position,
         tire_size: r.tire_size,
         brand: r.brand,
@@ -400,6 +400,10 @@ export const service_router = create_router({
           };
         }
 
+        // Per-tire odometer (falls back to visit-level for legacy records)
+        const tire_odometer_km =
+          latest_tire.install_odometer_km ?? latest_tire.service_visit.odometer_km;
+
         // Get latest service visit for current odometer (if not provided)
         const current_km =
           input.current_odometer_km ??
@@ -410,10 +414,10 @@ export const service_router = create_router({
               select: { odometer_km: true },
             })
           )?.odometer_km ??
-          latest_tire.service_visit.odometer_km;
+          tire_odometer_km;
 
         const usage = calculate_tire_usage(
-          latest_tire.service_visit.odometer_km,
+          tire_odometer_km,
           current_km,
           latest_tire.service_visit.visit_date
         );
@@ -429,7 +433,7 @@ export const service_router = create_router({
             price_per_tire: latest_tire.price_per_tire,
           },
           install_date: latest_tire.service_visit.visit_date,
-          install_odometer_km: latest_tire.service_visit.odometer_km,
+          install_odometer_km: tire_odometer_km,
           branch_name: latest_tire.service_visit.branch.name,
           usage,
         };
@@ -626,7 +630,7 @@ export const service_router = create_router({
           details: Record<string, unknown>;
         }> = [];
 
-        // Add tire changes
+        // Add tire changes (use per-tire odometer, fallback to visit-level)
         for (const tc of visit.tire_changes) {
           entries.push({
             id: tc.id,
@@ -636,7 +640,7 @@ export const service_router = create_router({
             car_model: car?.car_model ?? null,
             car_id: visit.car_id,
             branch_name: visit.branch.name,
-            odometer_km: visit.odometer_km,
+            odometer_km: tc.install_odometer_km ?? visit.odometer_km,
             details: {
               position: tc.position,
               brand: tc.brand,

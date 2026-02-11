@@ -371,6 +371,7 @@ export const admin_router = create_router({
               tire_model: z.string().optional(),
               production_week: z.string().optional(),
               price_per_tire: z.number().optional(),
+              install_odometer_km: z.number().int().optional(),
             })
           )
           .optional(),
@@ -1430,10 +1431,10 @@ export const admin_router = create_router({
             // (e.g., oil row provides total_price, tire switch row provides services_note)
             const visit_updates: any = {};
 
-            // Update odometer if current row has a higher value (odometer only increases)
-            if (record.odometer_km && record.odometer_km > existing_visit.odometer_km) {
+            // Always update visit odometer with newest import value (allows correction)
+            if (record.odometer_km && record.odometer_km !== existing_visit.odometer_km) {
               visit_updates.odometer_km = record.odometer_km;
-              console.log("[Admin] Updating visit odometer", {
+              console.log("[Admin] Updating visit odometer (newest wins)", {
                 old: existing_visit.odometer_km,
                 new: record.odometer_km,
               });
@@ -1502,6 +1503,7 @@ export const admin_router = create_router({
                   tire_model: record.tire_model,
                   production_week: record.tire_production_week,
                   price_per_tire: record.tire_price,
+                  install_odometer_km: record.odometer_km ?? undefined,
                 },
               });
               added_tire = true;
@@ -1509,8 +1511,21 @@ export const admin_router = create_router({
               console.log("[Admin] Added tire change", {
                 position: normalized_position,
                 size: record.tire_size,
+                install_odometer_km: record.odometer_km,
               });
             } else {
+              // Update existing tire's install_odometer_km with newest value
+              if (record.odometer_km && record.odometer_km !== existing_tire.install_odometer_km) {
+                await ctx.db.tireChange.update({
+                  where: { id: existing_tire.id },
+                  data: { install_odometer_km: record.odometer_km },
+                });
+                console.log("[Admin] Updated existing tire install_odometer_km", {
+                  position: normalized_position,
+                  old: existing_tire.install_odometer_km,
+                  new: record.odometer_km,
+                });
+              }
               console.log("[Admin] Skipped duplicate tire change", {
                 position: normalized_position,
               });
