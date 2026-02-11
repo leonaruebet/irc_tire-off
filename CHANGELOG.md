@@ -4,6 +4,25 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-02-11 - Fix: Stale Data After Login (Requires Manual Refresh)
+
+#### Root Cause
+- After OTP verification, `login_form.tsx` set the session cookie via `document.cookie` then called `router.push()` + `router.refresh()`
+- `router.push()` triggers client-side navigation using Next.js's **Router Cache** (prefetched RSC payload)
+- The cached RSC payload was generated **before** the cookie was set, so `cars/layout.tsx` server component ran `get_session()` against a stale cache with no session
+- `router.refresh()` invalidates the cache but executes **after** `push()` already consumed the stale payload — classic race condition
+- Result: first navigation sees no session → redirects to login; manual refresh sends a full HTTP request with the cookie → works
+
+#### Fixed
+- Replaced `router.push()` + `router.refresh()` with `window.location.href` for a full-page navigation
+- Full navigation always includes the newly set cookie in request headers — no RSC cache race
+- Removed unused `useRouter` import and variable
+
+#### Files Modified
+- `apps/web/src/components/auth/login_form.tsx` - Full-page navigation after login instead of client-side router
+
+---
+
 ### 2026-02-10 - Fix: Clean Up Stale Visits on Owner Phone Change During Import
 
 #### Root Cause

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -45,8 +44,6 @@ type OTPFormData = z.infer<typeof otp_form_schema>;
  */
 export function LoginForm() {
   const t = useTranslations("auth");
-  const router = useRouter();
-
   const [step, set_step] = useState<"phone" | "otp">("phone");
   const [phone, set_phone] = useState("");
   const [cooldown, set_cooldown] = useState(0);
@@ -114,9 +111,10 @@ export function LoginForm() {
           title: "Login successful!",
         });
 
-        // Redirect to cars page
-        router.push(APP_ROUTES.CARS);
-        router.refresh();
+        // Full page navigation to ensure server components see the new cookie
+        // router.push() + router.refresh() causes a race condition with RSC cache
+        console.log("[LoginForm] Redirecting to cars page via full navigation");
+        window.location.href = APP_ROUTES.CARS;
       } else {
         toast({
           title: data.error || t("otp_invalid"),
