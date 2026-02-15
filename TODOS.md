@@ -1,5 +1,22 @@
 # TireTrack - Tire Age Tracking System Implementation
 
+## Per-Tire Switch Recommendation Tracking
+### Done
+- [x] Modify backend `tire_status` with per-tire switch base tracking ~0.2d #service 2026-02-15
+  - Each position tracked independently (changed after switch → install date, otherwise → switch date)
+  - Added `per_tire_switch[]` with per-position recommendation to response
+  - Overall recommendation from oldest base across all tires (most overdue)
+  - Added `latest_switch_date`, `latest_switch_km`, `positions_changed_after_switch` to response
+- [x] Update frontend `tire_switch_history.tsx` with separate per-tire display ~0.3d #ui 2026-02-15
+  - Separate card per tire position: base date/km, source badge, next service, remaining/overdue
+  - Latest switch card with actual date/km or "-"
+  - Overall next switch recommendation from most overdue tire
+  - Removed green "New tires installed" card
+- [x] Add i18n keys for per-tire display (EN + TH, apps + shared) ~0.05d #i18n 2026-02-15
+- [x] Update CHANGELOG.md with changes ~0.05d #docs 2026-02-15
+
+---
+
 ## Fix Per-Tire Mileage (กม.) Mismatch After Import
 ### Done
 - [x] Add `install_odometer_km Int?` to TireChange schema ~0.1d #import 2026-02-11

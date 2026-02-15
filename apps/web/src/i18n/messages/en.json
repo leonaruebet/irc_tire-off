@@ -169,7 +169,11 @@
     "recommendation_note": "Recommended every {km} km or {months} months",
     "new_tires_installed": "New Tires Installed",
     "tires_recently_changed": "Tires changed on {date}",
-    "reset_after_install": "No tire switch needed - tires are new"
+    "reset_after_install": "No tire switch needed - tires are new",
+    "per_tire_status": "Per-Tire Status",
+    "base_tire_switch": "Last switch",
+    "base_tire_change": "Tire installed",
+    "next_switch_at": "{km} km / {date}"
   },
   "history": {
     "title": "Service History",

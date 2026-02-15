@@ -169,7 +169,11 @@
     "recommendation_note": "แนะนำตรวจเช็คทุก {km} กม. หรือ {months} เดือน",
     "new_tires_installed": "ยางใหม่ ติดตั้งใหม่",
     "tires_recently_changed": "เปลี่ยนยางเมื่อ {date}",
-    "reset_after_install": "ไม่ต้องสลับยาง เพราะยางยังใหม่"
+    "reset_after_install": "ไม่ต้องสลับยาง เพราะยางยังใหม่",
+    "per_tire_status": "สถานะแต่ละล้อ",
+    "base_tire_switch": "สลับยางล่าสุด",
+    "base_tire_change": "ติดตั้งยาง",
+    "next_switch_at": "{km} กม. / {date}"
   },
   "history": {
     "title": "ประวัติบริการ",

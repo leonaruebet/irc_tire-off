@@ -4,6 +4,55 @@ All notable changes to the TireOff Tire Age Tracking System will be documented i
 
 ## [Unreleased]
 
+### 2026-02-15 - Fix: Per-Tire Tire Switch Recommendation Tracking
+
+#### Root Cause
+- **Over-aggressive reset**: When ANY single tire was changed after the latest tire switch, the entire tire switch recommendation was reset (showed green "New tires installed" card with no next-service recommendation).
+- **Reality**: Changing 2 tires means the other 2 old tires still need rotation tracking. Each tire position should be tracked independently.
+- **Missing recommendation after reset**: Even when all tires were changed, the UI showed no next-service recommendation at all.
+- **No-switch case**: Cars with tire changes but no switch history showed an empty state instead of a recommendation.
+
+#### Fixed — Per-Tire Tracking Logic
+Each tire position is now tracked independently:
+- **Tire changed AFTER latest switch** → switch clock starts from tire install date/km (fresh tire)
+- **Tire NOT changed after switch** → switch clock tracks from latest switch date/km (old tire)
+- **No switch history exists** → switch clock starts from tire install date/km
+
+The overall recommendation uses the **oldest base** across all positions (the tire most in need of rotation).
+
+- **Backend** (`packages/api/src/routers/service.ts`):
+  - Builds per-tire `tire_switch_bases[]` with `base_date`, `base_km`, and `source` per position
+  - Calculates per-tire recommendation for each position (`per_tire_switch[]` in response)
+  - Finds `oldest_base` (earliest date) → calculates overall recommendation from it
+  - Added `per_tire_switch`, `latest_switch_date`, `latest_switch_km`, `positions_changed_after_switch` to response
+  - `next_tire_switch` is now always populated when any tire data exists
+- **Frontend** (`apps/web/src/components/service/tire_switch_history.tsx`):
+  - **Separate per-tire cards**: each position (FL/FR/RL/RR) shows its own base date/km, source (switch vs tire install), next service date/km, and remaining time — color-coded overdue in red
+  - Latest switch card: actual switch date/km or "-" when none
+  - Overall next service card: recommendation from the most overdue tire
+  - Removed green "New tires installed" card and `CheckCircle` import
+- **i18n** (EN + TH, apps/web + packages/shared):
+  - Added `per_tire_status`, `base_tire_switch`, `base_tire_change`, `next_switch_at` keys
+
+#### Edge Cases
+| Scenario | Recommendation base |
+|----------|---------------------|
+| No switch, no tires | Empty state |
+| No switch, 4 tires installed | Oldest tire install date |
+| Switch + 0 changed after | Switch date (all 4 tires) |
+| Switch + 2 changed after | Switch date (2 old tires are oldest) |
+| Switch + 4 changed after | Oldest tire install date (all fresh) |
+
+#### Files Modified
+- `packages/api/src/routers/service.ts` - Per-tire switch base tracking + per-tire recommendations + oldest-base overall
+- `apps/web/src/components/service/tire_switch_history.tsx` - Per-tire separate cards + latest switch + overall recommendation
+- `apps/web/src/i18n/messages/en.json` - Added per-tire i18n keys
+- `apps/web/src/i18n/messages/th.json` - Added per-tire i18n keys
+- `packages/shared/src/i18n/messages/en.json` - Synced per-tire i18n keys
+- `packages/shared/src/i18n/messages/th.json` - Synced per-tire i18n keys
+
+---
+
 ### 2026-02-11 - Fix: Per-Tire Mileage (กม.) Mismatch After Import
 
 #### Root Cause

@@ -494,29 +494,107 @@ export const service_router = create_router({
       });
       const current_km = input.current_odometer_km ?? latest_visit?.odometer_km ?? 0;
 
-      // Calculate next tire switch recommendation
-      // IF tires were changed AFTER the latest tire switch, reset the recommendation
-      // (because new tires don't need to be switched)
+      // Calculate next tire switch recommendation using per-tire tracking.
+      // Each tire position is tracked independently:
+      //   - Tire changed AFTER latest switch → base = tire install date/km (fresh tire)
+      //   - Tire NOT changed after switch   → base = latest switch date/km (old tire)
+      //   - No switch exists                → base = tire install date/km
+      // The recommendation uses the OLDEST base across all tires (most overdue for rotation).
       let next_tire_switch = null;
-      const should_reset_tire_switch =
-        most_recent_tire_change &&
-        most_recent_tire_change.install_date &&
-        latest_switch &&
-        most_recent_tire_change.install_date > latest_switch.service_visit.visit_date;
 
-      if (latest_switch && !should_reset_tire_switch) {
+      // Build per-tire switch base: the date/km each position's switch clock started
+      const tires_with_data = tire_status.filter((t) => t.has_data && t.install_date);
+
+      const tire_switch_bases = tires_with_data.map((t) => {
+        const changed_after_switch =
+          latest_switch &&
+          t.install_date &&
+          t.install_date > latest_switch.service_visit.visit_date;
+
+        if (changed_after_switch) {
+          // Tire replaced after last switch → switch clock starts from install
+          return {
+            position: t.position,
+            base_date: t.install_date!,
+            base_km: t.install_odometer_km ?? current_km,
+            source: "tire_change" as const,
+          };
+        } else if (latest_switch) {
+          // Old tire still in rotation → track from last switch
+          return {
+            position: t.position,
+            base_date: latest_switch.service_visit.visit_date,
+            base_km: latest_switch.service_visit.odometer_km,
+            source: "tire_switch" as const,
+          };
+        } else {
+          // No switch history → track from tire install
+          return {
+            position: t.position,
+            base_date: t.install_date!,
+            base_km: t.install_odometer_km ?? current_km,
+            source: "tire_change" as const,
+          };
+        }
+      });
+
+      // Count positions changed after latest switch (informational)
+      const positions_changed_after_switch = tire_switch_bases.filter(
+        (b) => b.source === "tire_change" && latest_switch
+      ).length;
+
+      // Find the oldest base = the tire most in need of switching
+      const oldest_base =
+        tire_switch_bases.length > 0
+          ? tire_switch_bases.reduce((oldest, current) =>
+              current.base_date < oldest.base_date ? current : oldest
+            )
+          : null;
+
+      console.log("[Service] Per-tire switch base calculation", {
+        car_id: input.car_id,
+        has_latest_switch: !!latest_switch,
+        tires_tracked: tire_switch_bases.length,
+        positions_changed_after_switch,
+        oldest_base_position: oldest_base?.position ?? null,
+        oldest_base_source: oldest_base?.source ?? null,
+      });
+
+      // Build per-tire recommendation for each position (for separate UI display)
+      const per_tire_switch = tire_switch_bases.map((base) => {
         const recommendation = calculate_next_tire_switch(
-          latest_switch.service_visit.odometer_km,
-          latest_switch.service_visit.visit_date,
+          base.base_km,
+          base.base_date,
+          current_km
+        );
+        return {
+          position: base.position,
+          source: base.source,
+          base_date: base.base_date,
+          base_km: base.base_km,
+          ...recommendation,
+          ...get_next_service_data(recommendation.km_until, recommendation.days_until),
+        };
+      });
+
+      // Overall recommendation from oldest base (most overdue tire)
+      if (oldest_base) {
+        const recommendation = calculate_next_tire_switch(
+          oldest_base.base_km,
+          oldest_base.base_date,
           current_km
         );
         next_tire_switch = {
-          last_service_date: latest_switch.service_visit.visit_date,
-          last_service_km: latest_switch.service_visit.odometer_km,
+          last_service_date: oldest_base.base_date,
+          last_service_km: oldest_base.base_km,
           ...recommendation,
           ...get_next_service_data(recommendation.km_until, recommendation.days_until),
         };
       }
+
+      // Latest switch info for frontend display (separate from recommendation base)
+      const latest_switch_date = latest_switch?.service_visit.visit_date ?? null;
+      const latest_switch_km = latest_switch?.service_visit.odometer_km ?? null;
 
       // Calculate next oil change recommendation
       let next_oil_change = null;
@@ -552,6 +630,10 @@ export const service_router = create_router({
         current_odometer_km: current_km,
         tires: tire_status,
         next_tire_switch,
+        per_tire_switch,
+        latest_switch_date,
+        latest_switch_km,
+        positions_changed_after_switch,
         next_oil_change,
       };
     }),
